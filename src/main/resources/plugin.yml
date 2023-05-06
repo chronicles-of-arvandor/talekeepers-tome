@@ -1,0 +1,4 @@
+name: talekeepers-tome
+author: alyphen
+version: ${version}
+main: net.arvandor.talekeeper.TalekeepersTome

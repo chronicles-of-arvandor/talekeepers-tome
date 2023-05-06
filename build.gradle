@@ -1,0 +1,144 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'nu.studer.jooq' version '8.2'
+    id 'org.jmailen.kotlinter' version '3.14.0'
+}
+
+group = 'net.arvandor'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/public/' }
+    maven { url 'https://oss.sonatype.org/content/groups/public/' }
+    maven { url 'https://repo.rpkit.com/repository/maven-public/' }
+}
+
+dependencies {
+    implementation 'org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT'
+    implementation platform("dev.forkhandles:forkhandles-bom:2.5.0.0")
+    implementation 'dev.forkhandles:result4k'
+    implementation 'org.jooq:jooq:3.18.3'
+    implementation 'org.flywaydb:flyway-core:9.17.0'
+    implementation 'org.flywaydb:flyway-mysql:9.17.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+    implementation 'com.rpkit:rpk-core-bukkit:2.4.2:all'
+    implementation 'com.rpkit:rpk-player-lib-bukkit:2.4.2:all'
+    implementation 'com.rpkit:rpk-character-lib-bukkit:2.4.2:all'
+    implementation 'com.rpkit:rpk-notification-lib-bukkit:2.4.2:all'
+    jooqGenerator 'org.jooq:jooq-meta-extensions:3.18.3'
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+tasks.named('check') {
+    dependsOn 'installKotlinterPrePushHook'
+}
+
+import org.jooq.meta.jaxb.Logging
+
+jooq {
+    configurations {
+        main {
+            generationTool {
+                logging = Logging.WARN
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                        inputSchema = 'PUBLIC'
+                        includes = '.*'
+                        excludes = ''
+                        properties {
+                            property {
+                                key = "scripts"
+                                value = "src/main/resources/net/arvandor/talekeeper/db/migration"
+                            }
+                            property {
+                                key = "sort"
+                                value = "semantic"
+                            }
+                            property {
+                                key = "defaultNameCase"
+                                value = "lower"
+                            }
+                        }
+                    }
+                    target {
+                        packageName = 'net.arvandor.talekeeper.jooq'
+                    }
+                }
+            }
+        }
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+    dependencies {
+        include(dependency('org.jetbrains.kotlin:kotlin-stdlib-jdk8'))
+        include(dependency('org.jetbrains.kotlin:kotlin-stdlib'))
+        include(dependency('org.jetbrains.kotlin:kotlin-stdlib-common'))
+        include(dependency('org.jetbrains:annotations'))
+        include(dependency('org.jetbrains.kotlin:kotlin-stdlib-jdk7'))
+        include(dependency('dev.forkhandles:result4k'))
+        include(dependency('org.jooq:jooq'))
+        include(dependency('io.r2dbc:r2dbc-spi'))
+        include(dependency('org.reactivestreams:reactive-streams'))
+        include(dependency('org.flywaydb:flyway-core'))
+        include(dependency('com.fasterxml.jackson.dataformat:jackson-dataformat-toml'))
+        include(dependency('com.fasterxml.jackson.core:jackson-databind'))
+        include(dependency('com.fasterxml.jackson.core:jackson-annotations'))
+        include(dependency('com.fasterxml.jackson.core:jackson-core'))
+        include(dependency('org.apache.commons:commons-text'))
+        include(dependency('org.apache.commons:commons-lang3'))
+        include(dependency('com.google.code.gson:gson'))
+        include(dependency('org.flywaydb:flyway-mysql'))
+        include(dependency('org.mariadb.jdbc:mariadb-java-client'))
+        include(dependency('com.github.waffle:waffle-jna'))
+        include(dependency('net.java.dev.jna:jna'))
+        include(dependency('net.java.dev.jna:jna-platform'))
+        include(dependency('org.slf4j:jcl-over-slf4j'))
+        include(dependency('com.github.ben-manes.caffeine:caffeine'))
+        include(dependency('org.checkerframework:checker-qual'))
+        include(dependency('com.google.errorprone:error_prone_annotations'))
+        include(dependency('com.zaxxer:HikariCP'))
+    }
+
+    relocate 'com.fasterxml', 'net.arvandor.talekeeper.shadow.com.fasterxml'
+    relocate 'com.github', 'net.arvandor.talekeeper.shadow.com.github'
+    relocate 'com.google', 'net.arvandor.talekeeper.shadow.com.google'
+    relocate 'com.sun', 'net.arvandor.talekeeper.shadow.com.sun'
+    relocate 'com.zaxxer', 'net.arvandor.talekeeper.shadow.com.zaxxer'
+    relocate 'dev.forkhandles', 'net.arvandor.talekeeper.shadow.dev.forkhandles'
+    relocate 'io.r2dbc', 'net.arvandor.talekeeper.shadow.io.r2dbc'
+    relocate 'kotlin', 'net.arvandor.talekeeper.shadow.kotlin'
+    relocate 'org.apache', 'net.arvandor.talekeeper.shadow.org.apache'
+    relocate 'org.checkerframework', 'net.arvandor.talekeeper.shadow.org.checkerframework'
+    relocate 'org.flywaydb', 'net.arvandor.talekeeper.shadow.org.flywaydb'
+    relocate 'org.intellij', 'net.arvandor.talekeeper.shadow.org.intellij'
+    relocate 'org.jetbrains', 'net.arvandor.talekeeper.shadow.org.jetbrains'
+    relocate 'org.jooq', 'net.arvandor.talekeeper.shadow.org.jooq'
+    relocate 'org.mariadb', 'net.arvandor.talekeeper.shadow.org.mariadb'
+    relocate 'org.reactivestreams', 'net.arvandor.talekeeper.shadow.org.reactivestreams'
+    relocate 'waffle', 'net.arvandor.talekeeper.shadow.waffle'
+}
+
+artifacts {
+    archives shadowJar
+}
