@@ -8,11 +8,28 @@ plugins {
 group = 'net.arvandor'
 version = '1.0.0-SNAPSHOT'
 
+def githubUsername = ""
+def githubToken = ""
+def githubPropertiesFile = new File(project.projectDir, "github.properties")
+if (githubPropertiesFile.exists()) {
+    def githubProperties = new Properties()
+    githubProperties.load(new FileInputStream(githubPropertiesFile))
+    githubUsername = githubProperties.get("github-username")
+    githubToken = githubProperties.get("github-token")
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/public/' }
     maven { url 'https://oss.sonatype.org/content/groups/public/' }
     maven { url 'https://repo.rpkit.com/repository/maven-public/' }
+    maven {
+        url 'https://maven.pkg.github.com/chronicles-of-arvandor/numinous-treasury'
+        credentials {
+            username githubUsername
+            password githubToken
+        }
+    }
 }
 
 dependencies {
@@ -30,6 +47,9 @@ dependencies {
     implementation 'com.rpkit:rpk-player-lib-bukkit:2.4.2:all'
     implementation 'com.rpkit:rpk-character-lib-bukkit:2.4.2:all'
     implementation 'com.rpkit:rpk-notification-lib-bukkit:2.4.2:all'
+    implementation 'com.rpkit:rpk-stat-lib-bukkit:2.4.2:all'
+    implementation 'com.rpkit:rpk-language-lib-bukkit:2.4.2:all'
+    implementation 'net.kingdommc.darkages:numinous-treasury:0.4.1'
     jooqGenerator 'org.jooq:jooq-meta-extensions:3.18.3'
 }
 

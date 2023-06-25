@@ -1,0 +1,26 @@
+package net.arvandor.talekeeper.creature
+
+enum class TtCreatureType {
+
+    ABERRATION,
+    BEAST,
+    CELESTIAL,
+    CONSTRUCT,
+    DRAGON,
+    ELEMENTAL,
+    FEY,
+    FIEND,
+    GIANT,
+    HUMANOID,
+    MONSTROSITY,
+    OOZE,
+    PLANT,
+    SWARM_OF_MEDIUM_UNDEAD,
+    SWARM_OF_TINY_ABERRATIONS,
+    SWARM_OF_TINY_BEASTS,
+    SWAM_OF_TINY_CONSTRUCTS,
+    SWARM_OF_TINY_MONSTROSITIES,
+    SWARM_OF_TINY_PLANTS,
+    SWARM_OF_TINY_UNDEAD,
+    UNDEAD,
+}
