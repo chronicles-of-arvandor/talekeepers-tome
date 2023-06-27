@@ -1,6 +1,7 @@
 package net.arvandor.talekeeper.command.character.context
 
 import net.arvandor.talekeeper.TalekeepersTome
+import net.arvandor.talekeeper.command.character.context.name.TtCharacterContextNameCommand
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor

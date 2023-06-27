@@ -1,4 +1,4 @@
-package net.arvandor.talekeeper.command.character.context
+package net.arvandor.talekeeper.command.character.context.name
 
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
@@ -8,6 +8,8 @@ import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.conversation.ErrorMessagePrompt
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.scheduler.syncTask
+import net.md_5.bungee.api.ChatColor.GRAY
+import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -77,6 +79,11 @@ class TtCharacterContextNameSetCommand(private val plugin: TalekeepersTome) : Co
                 }
 
                 syncTask(plugin) {
+                    conversable.sendMessage(
+                        "$GRAY================================",
+                        "${GREEN}Name set.",
+                        "$GRAY================================",
+                    )
                     updatedCtx.display(conversable)
                 }
             }
@@ -109,29 +116,46 @@ class TtCharacterContextNameSetCommand(private val plugin: TalekeepersTome) : Co
             return true
         }
 
-        val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
-            sender.sendMessage("${RED}An error occurred while getting your character creation context.")
-            plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
-            return true
-        }
-
-        if (ctx == null) {
-            sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
-            return true
-        }
-
-        if (args.isNotEmpty()) {
-            val updatedCtx = characterService.save(ctx.copy(name = args.joinToString(" "))).onFailure {
-                sender.sendMessage("${RED}An error occurred while saving your character creation context.")
+        asyncTask(plugin) {
+            val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
+                syncTask(plugin) {
+                    sender.sendMessage("${RED}An error occurred while getting your character creation context.")
+                }
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
-                return true
+                return@asyncTask
             }
 
-            updatedCtx.display(sender)
-        } else {
-            val conversation = conversationFactory.buildConversation(sender)
-            conversation.context.setSessionData("characterService", characterService)
-            conversation.begin()
+            if (ctx == null) {
+                syncTask(plugin) {
+                    sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
+                }
+                return@asyncTask
+            }
+
+            if (args.isNotEmpty()) {
+                val updatedCtx = characterService.save(ctx.copy(name = args.joinToString(" "))).onFailure {
+                    syncTask(plugin) {
+                        sender.sendMessage("${RED}An error occurred while saving your character creation context.")
+                    }
+                    plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
+                    return@asyncTask
+                }
+
+                syncTask(plugin) {
+                    sender.sendMessage(
+                        "$GRAY================================",
+                        "${GREEN}Name set.",
+                        "$GRAY================================",
+                    )
+                    updatedCtx.display(sender)
+                }
+            } else {
+                syncTask(plugin) {
+                    val conversation = conversationFactory.buildConversation(sender)
+                    conversation.context.setSessionData("characterService", characterService)
+                    conversation.begin()
+                }
+            }
         }
         return true
     }
