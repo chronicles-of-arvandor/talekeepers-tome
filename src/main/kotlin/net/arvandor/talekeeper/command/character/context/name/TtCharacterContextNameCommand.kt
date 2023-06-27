@@ -11,7 +11,7 @@ class TtCharacterContextNameCommand(plugin: TalekeepersTome) : CommandExecutor, 
 
     private val setCommand = TtCharacterContextNameSetCommand(plugin)
     private val hideCommand = TtCharacterContextNameHideCommand(plugin)
-//    private val unhideCommand = TtCharacterContextNameUnhideCommand(plugin)
+    private val unhideCommand = TtCharacterContextNameUnhideCommand(plugin)
 
     private val setAliases = listOf("set")
     private val hideAliases = listOf("hide")
@@ -25,7 +25,7 @@ class TtCharacterContextNameCommand(plugin: TalekeepersTome) : CommandExecutor, 
         when (args.firstOrNull()?.lowercase()) {
             in setAliases -> setCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in hideAliases -> hideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context name [${subcommands.joinToString("|")}]")
                 true
@@ -43,7 +43,7 @@ class TtCharacterContextNameCommand(plugin: TalekeepersTome) : CommandExecutor, 
         args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
             in setAliases -> setCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
         else -> emptyList()
