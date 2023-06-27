@@ -2,6 +2,7 @@ package net.arvandor.talekeeper.command.character.context
 
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.command.character.context.name.TtCharacterContextNameCommand
+import net.arvandor.talekeeper.command.character.context.profile.TtCharacterContextProfileCommand
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -11,7 +12,7 @@ import org.bukkit.command.TabCompleter
 class TtCharacterContextCommand(plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val nameCommand = TtCharacterContextNameCommand(plugin)
-//    private val profileCommand = TtCharacterContextProfileCommand()
+    private val profileCommand = TtCharacterContextProfileCommand(plugin)
 //    private val pronounsCommand = TtCharacterContextPronounsCommand()
 //    private val ancestryCommand = TtCharacterContextAncestryCommand()
 //    private val subAncestryCommand = TtCharacterContextSubAncestryCommand()
@@ -54,6 +55,18 @@ class TtCharacterContextCommand(plugin: TalekeepersTome) : CommandExecutor, TabC
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) =
         when (args.firstOrNull()?.lowercase()) {
             in nameAliases -> nameCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in profileAliases -> profileCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in pronounsAliases -> pronounsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in ancestryAliases -> ancestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in subAncestryAliases -> subAncestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in classAliases -> classCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in backgroundAliases -> backgroundCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in alignmentAliases -> alignmentCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in abilitiesAliases -> abilitiesCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in descriptionAliases -> descriptionCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in heightAliases -> heightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in weightAliases -> weightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+//            in createAliases -> createCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context [${subcommands.joinToString("|")}]")
                 true
@@ -70,7 +83,7 @@ class TtCharacterContextCommand(plugin: TalekeepersTome) : CommandExecutor, TabC
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
         args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
             in nameAliases -> nameCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in profileAliases -> profileCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in profileAliases -> profileCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in pronounsAliases -> pronounsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in ancestryAliases -> ancestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in subAncestryAliases -> subAncestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
