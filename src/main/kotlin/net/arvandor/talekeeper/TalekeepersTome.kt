@@ -19,6 +19,7 @@ import net.arvandor.talekeeper.choice.option.TtChoiceOptionRepository
 import net.arvandor.talekeeper.clazz.TtClass
 import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.clazz.TtSubClass
+import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtEffect
 import net.arvandor.talekeeper.effect.TtEffectService
@@ -134,6 +135,8 @@ class TalekeepersTome : JavaPlugin() {
 
         saveDefaultConfig()
 
+        Class.forName("org.mariadb.jdbc.Driver")
+
         val hikariConfig = HikariConfig()
         hikariConfig.jdbcUrl = config.getString("database.url")
         val databaseUsername = config.getString("database.username")
@@ -165,7 +168,7 @@ class TalekeepersTome : JavaPlugin() {
         val dsl = DSL.using(
             dataSource,
             dialect,
-            jooqSettings
+            jooqSettings,
         )
 
         val characterCreationContextRepo = TtCharacterCreationContextRepository(this, dsl)
@@ -186,5 +189,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtSpellService::class.java] = TtSpellService(this)
 
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
+
+        getCommand("character")?.setExecutor(TtCharacterCommand(this))
     }
 }

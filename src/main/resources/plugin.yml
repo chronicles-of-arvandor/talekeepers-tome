@@ -2,3 +2,44 @@ name: talekeepers-tome
 author: alyphen
 version: ${version}
 main: net.arvandor.talekeeper.TalekeepersTome
+api-version: 1.19
+depend:
+  - rpk-core-bukkit
+  - rpk-player-lib-bukkit
+  - rpk-character-lib-bukkit
+  - rpk-notification-lib-bukkit
+  - rpk-stat-lib-bukkit
+  - rpk-language-lib-bukkit
+  - numinous-treasury
+commands:
+  character:
+    description: |
+      Character management command
+      /character context name set - Sets the name in the character creation context
+      /character context name hide - Hides the name in the character creation context
+      /character context name unhide - Shows the name in the character creation context
+      /character context profile hide - Hides the profile in the character creation context
+      /character context profile unhide - Shows the profile in the character creation context
+      /character context pronouns add - Adds a pronoun set to the character creation context
+      /character context pronouns remove - Removes a pronoun set from the character creation context
+      /character context pronouns setchance - Sets the chance of a pronoun set being used in the character creation context
+      /character context ancestry set - Sets the ancestry in the character creation context
+      /character context ancestry hide - Hides the ancestry in the character creation context
+      /character context ancestry unhide - Shows the ancestry in the character creation context
+      /character context subancestry set - Sets the subancestry in the character creation context
+      /character context class set - Sets the class in the character creation context
+      /character context background set - Sets the background in the character creation context
+      /character context alignment set - Sets the alignment in the character creation context
+      /character context abilities set - Sets the abilities in the character creation context
+      /character context description set - Sets the description in the character creation context
+      /character context description extend - Extends the description in the character creation context
+      /character context description hide - Hides the description in the character creation context
+      /character context description unhide - Shows the description in the character creation context
+      /character context height set - Sets the height in the character creation context
+      /character context height hide - Hides the height in the character creation context
+      /character context height unhide - Shows the height in the character creation context
+      /character context weight set - Sets the weight in the character creation context
+      /character context weight hide - Hides the weight in the character creation context
+      /character context weight unhide - Shows the weight in the character creation context
+    usage: /<command> [context]
+    aliases: [char, c]
