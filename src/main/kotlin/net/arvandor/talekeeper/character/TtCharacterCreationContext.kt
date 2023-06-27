@@ -132,7 +132,7 @@ data class TtCharacterCreationContext(
                                     TextComponent(" - ").apply {
                                         color = WHITE
                                     },
-                                    TextComponent("$weight/$totalPronounChance (${decimalFormat.format((weight / totalPronounChance) * 100.0)}%) ").apply {
+                                    TextComponent("$weight/$totalPronounChance (${decimalFormat.format((weight.toDouble() / totalPronounChance.toDouble()) * 100.0)}%) ").apply {
                                         color = GRAY
                                     },
                                     TextComponent("(Edit)").apply {

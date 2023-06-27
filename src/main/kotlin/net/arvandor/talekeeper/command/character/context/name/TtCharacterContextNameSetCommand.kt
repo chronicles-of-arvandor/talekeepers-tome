@@ -58,34 +58,26 @@ class TtCharacterContextNameSetCommand(private val plugin: TalekeepersTome) : Co
             asyncTask(plugin) {
                 val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
-                    syncTask(plugin) {
-                        conversable.sendMessage("${RED}An error occurred while getting your character creation context.")
-                    }
+                    conversable.sendMessage("${RED}An error occurred while getting your character creation context.")
                     return@asyncTask
                 }
                 if (ctx == null) {
-                    syncTask(plugin) {
-                        conversable.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
-                    }
+                    conversable.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
                     return@asyncTask
                 }
 
                 val updatedCtx = characterService.save(ctx.copy(name = input)).onFailure {
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
-                    syncTask(plugin) {
-                        conversable.sendMessage("${RED}An error occurred while saving your character creation context.")
-                    }
+                    conversable.sendMessage("${RED}An error occurred while saving your character creation context.")
                     return@asyncTask
                 }
 
-                syncTask(plugin) {
-                    conversable.sendMessage(
-                        "$GRAY================================",
-                        "${GREEN}Name set.",
-                        "$GRAY================================",
-                    )
-                    updatedCtx.display(conversable)
-                }
+                conversable.sendMessage(
+                    "$GRAY================================",
+                    "${GREEN}Name set.",
+                    "$GRAY================================",
+                )
+                updatedCtx.display(conversable)
             }
 
             return END_OF_CONVERSATION
@@ -118,37 +110,29 @@ class TtCharacterContextNameSetCommand(private val plugin: TalekeepersTome) : Co
 
         asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
-                syncTask(plugin) {
-                    sender.sendMessage("${RED}An error occurred while getting your character creation context.")
-                }
+                sender.sendMessage("${RED}An error occurred while getting your character creation context.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 
             if (ctx == null) {
-                syncTask(plugin) {
-                    sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
-                }
+                sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
                 return@asyncTask
             }
 
             if (args.isNotEmpty()) {
                 val updatedCtx = characterService.save(ctx.copy(name = args.joinToString(" "))).onFailure {
-                    syncTask(plugin) {
-                        sender.sendMessage("${RED}An error occurred while saving your character creation context.")
-                    }
+                    sender.sendMessage("${RED}An error occurred while saving your character creation context.")
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                     return@asyncTask
                 }
 
-                syncTask(plugin) {
-                    sender.sendMessage(
-                        "$GRAY================================",
-                        "${GREEN}Name set.",
-                        "$GRAY================================",
-                    )
-                    updatedCtx.display(sender)
-                }
+                sender.sendMessage(
+                    "$GRAY================================",
+                    "${GREEN}Name set.",
+                    "$GRAY================================",
+                )
+                updatedCtx.display(sender)
             } else {
                 syncTask(plugin) {
                     val conversation = conversationFactory.buildConversation(sender)

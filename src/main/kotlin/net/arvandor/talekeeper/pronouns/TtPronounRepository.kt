@@ -35,14 +35,19 @@ class TtPronounRepository(private val dsl: DSLContext) {
             .toDomain()
     }
 
-    fun getAll(): List<TtPronounSet> = dsl.selectFrom(TT_PRONOUN_SET)
+    fun getAll(includeCustom: Boolean = true): List<TtPronounSet> = dsl.selectFrom(TT_PRONOUN_SET)
+        .apply {
+            if (!includeCustom) {
+                where(TT_PRONOUN_SET.CREATED_BY.isNull)
+            }
+        }
         .fetch()
         .map { it.toDomain() }
 
     private fun TtPronounSetRecord.toDomain() = TtPronounSet(
         id.let(::TtPronounSetId),
         name,
-        createdBy.let(::TtPlayerId),
+        createdBy?.let(::TtPlayerId),
         subject,
         `object`,
         dependentPossessive,

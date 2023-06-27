@@ -6,7 +6,6 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.scheduler.asyncTask
-import net.arvandor.talekeeper.scheduler.syncTask
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
@@ -45,36 +44,28 @@ class TtCharacterContextNameHideCommand(private val plugin: TalekeepersTome) : C
 
         asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
-                syncTask(plugin) {
-                    sender.sendMessage("${RED}An error occurred while getting your character creation context.")
-                }
+                sender.sendMessage("${RED}An error occurred while getting your character creation context.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 
             if (ctx == null) {
-                syncTask(plugin) {
-                    sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
-                }
+                sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
                 return@asyncTask
             }
 
             val updatedCtx = characterService.save(ctx.copy(isNameHidden = true)).onFailure {
-                syncTask(plugin) {
-                    sender.sendMessage("${RED}An error occurred while saving your character creation context.")
-                }
+                sender.sendMessage("${RED}An error occurred while saving your character creation context.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 
-            syncTask(plugin) {
-                sender.sendMessage(
-                    "$GRAY================================",
-                    "${GREEN}Name hidden.",
-                    "$GRAY================================",
-                )
-                updatedCtx.display(sender)
-            }
+            sender.sendMessage(
+                "$GRAY================================",
+                "${GREEN}Name hidden.",
+                "$GRAY================================",
+            )
+            updatedCtx.display(sender)
         }
 
         return true
