@@ -10,7 +10,7 @@ import org.bukkit.command.TabCompleter
 class TtCharacterContextProfileCommand(plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val hideCommand = TtCharacterContextProfileHideCommand(plugin)
-//    private val unhideCommand = TtCharacterContextNameUnhideCommand(plugin)
+    private val unhideCommand = TtCharacterContextProfileUnhideCommand(plugin)
 
     private val hideAliases = listOf("hide")
     private val unhideAliases = listOf("unhide")
@@ -21,7 +21,7 @@ class TtCharacterContextProfileCommand(plugin: TalekeepersTome) : CommandExecuto
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) =
         when (args.firstOrNull()?.lowercase()) {
             in hideAliases -> hideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context profile [${subcommands.joinToString("|")}]")
                 true
@@ -38,7 +38,7 @@ class TtCharacterContextProfileCommand(plugin: TalekeepersTome) : CommandExecuto
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
         args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
             in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
         else -> emptyList()
