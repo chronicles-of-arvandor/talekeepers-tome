@@ -11,7 +11,7 @@ class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : C
 
     private val addCommand = TtCharacterContextPronounsAddCommand(plugin)
     private val removeCommand = TtCharacterContextPronounsRemoveCommand(plugin)
-//    private val setChanceCommand = TtCharacterContextPronounsSetChanceCommand()
+    private val setChanceCommand = TtCharacterContextPronounsSetChanceCommand(plugin)
 
     private val addAliases = listOf("add")
     private val removeAliases = listOf("remove")
@@ -25,7 +25,7 @@ class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : C
         when (args.firstOrNull()?.lowercase()) {
             in addAliases -> addCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in removeAliases -> removeCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in setChanceAliases -> setChanceCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in setChanceAliases -> setChanceCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context pronouns [${subcommands.joinToString("|")}]")
                 true
@@ -43,7 +43,7 @@ class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : C
         args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
             in addAliases -> addCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in removeAliases -> removeCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in setChanceAliases -> setChanceCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in setChanceAliases -> setChanceCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
         else -> emptyList()
