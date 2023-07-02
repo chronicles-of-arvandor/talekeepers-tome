@@ -138,13 +138,13 @@ data class TtCharacterCreationContext(
                                     TextComponent("(Edit)").apply {
                                         color = GREEN
                                         hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to modify the chance this pronoun set is used"))
-                                        clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns setchance ${pronounSet.id}")
+                                        clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns setchance ${pronounSet.id.value}")
                                     },
                                     TextComponent(" "),
                                     TextComponent("(Remove)").apply {
                                         color = RED
                                         hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to remove this pronoun set"))
-                                        clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns remove ${pronounSet.id}")
+                                        clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns remove ${pronounSet.id.value}")
                                     },
                                 )
                             }

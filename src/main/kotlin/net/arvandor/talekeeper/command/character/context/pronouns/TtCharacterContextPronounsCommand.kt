@@ -10,7 +10,7 @@ import org.bukkit.command.TabCompleter
 class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val addCommand = TtCharacterContextPronounsAddCommand(plugin)
-//    private val removeCommand = TtCharacterContextPronounsRemoveCommand()
+    private val removeCommand = TtCharacterContextPronounsRemoveCommand(plugin)
 //    private val setChanceCommand = TtCharacterContextPronounsSetChanceCommand()
 
     private val addAliases = listOf("add")
@@ -24,7 +24,7 @@ class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : C
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) =
         when (args.firstOrNull()?.lowercase()) {
             in addAliases -> addCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in removeAliases -> removeCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in removeAliases -> removeCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in setChanceAliases -> setChanceCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context pronouns [${subcommands.joinToString("|")}]")
@@ -42,7 +42,7 @@ class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : C
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
         args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
             in addAliases -> addCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in removeAliases -> removeCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in removeAliases -> removeCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in setChanceAliases -> setChanceCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }

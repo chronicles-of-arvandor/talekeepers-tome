@@ -151,6 +151,7 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
 
             val updatedCtx = characterService.save(ctx.copy(pronouns = ctx.pronouns + (pronounSet.id to 1))).onFailure {
                 sender.sendMessage("${RED}Failed to save character creation context. Please contact an admin.")
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 

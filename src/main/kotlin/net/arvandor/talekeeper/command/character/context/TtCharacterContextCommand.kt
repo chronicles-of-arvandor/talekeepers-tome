@@ -1,16 +1,22 @@
 package net.arvandor.talekeeper.command.character.context
 
+import com.rpkit.core.service.Services
+import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
+import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
+import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.command.character.context.name.TtCharacterContextNameCommand
 import net.arvandor.talekeeper.command.character.context.profile.TtCharacterContextProfileCommand
 import net.arvandor.talekeeper.command.character.context.pronouns.TtCharacterContextPronounsCommand
+import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
 
-class TtCharacterContextCommand(plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val nameCommand = TtCharacterContextNameCommand(plugin)
     private val profileCommand = TtCharacterContextProfileCommand(plugin)
@@ -69,10 +75,38 @@ class TtCharacterContextCommand(plugin: TalekeepersTome) : CommandExecutor, TabC
 //            in weightAliases -> weightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in createAliases -> createCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
-                sender.sendMessage("${RED}Usage: /character context [${subcommands.joinToString("|")}]")
+                displayContext(sender)
                 true
             }
         }
+
+    private fun displayContext(sender: CommandSender) {
+        if (sender !is Player) {
+            sender.sendMessage("${RED}You must be a player to perform this command.")
+            return
+        }
+        asyncTask(plugin) {
+            val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+            if (minecraftProfileService == null) {
+                sender.sendMessage("${RED}No Minecraft profile service was found. Please contact an admin.")
+                return@asyncTask
+            }
+            val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(sender)
+
+            val characterService = Services.INSTANCE[TtCharacterService::class.java]
+            val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
+                sender.sendMessage("${RED}Failed to retrieve character creation context. Please contact an admin.")
+                return@asyncTask
+            }
+            if (ctx == null) {
+                sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
+                return@asyncTask
+            }
+
+            ctx.display(sender)
+        }
+        return
+    }
 
     override fun onTabComplete(
         sender: CommandSender,
