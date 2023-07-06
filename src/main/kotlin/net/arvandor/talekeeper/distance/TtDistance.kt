@@ -10,6 +10,8 @@ data class TtDistance(val value: Double, val unit: TtDistanceUnit) : Configurati
         "unit" to unit.name,
     )
 
+    override fun toString() = unit.format(value)
+
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtDistance(

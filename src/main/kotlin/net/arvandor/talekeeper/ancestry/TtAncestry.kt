@@ -17,9 +17,10 @@ data class TtAncestry(
     val minimumWeight: Double,
     val maximumWeight: Double,
     val traits: List<TtAncestryTrait>,
+    val skullTexture: String,
 ) : ConfigurationSerializable {
 
-    fun getSubAncestry(id: TtSubAncestryId) = subAncestries.single { it.id == id }
+    fun getSubAncestry(id: TtSubAncestryId) = subAncestries.singleOrNull { it.id == id }
 
     override fun serialize() = mapOf(
         "id" to id.value,
@@ -33,6 +34,7 @@ data class TtAncestry(
         "minimum-weight" to minimumWeight,
         "maximum-weight" to maximumWeight,
         "traits" to traits,
+        "skull-texture" to skullTexture,
     )
 
     companion object {
@@ -40,7 +42,7 @@ data class TtAncestry(
         fun deserialize(serialized: Map<String, Any>) = TtAncestry(
             (serialized["id"] as String).let(::TtAncestryId),
             serialized["name"] as String,
-            serialized["sub-ancestries"] as List<TtSubAncestry>,
+            serialized["sub-ancestries"] as? List<TtSubAncestry> ?: emptyList(),
             serialized["dark-vision"] as TtDistance,
             serialized["minimum-age"] as Int,
             serialized["maximum-age"] as Int,
@@ -49,6 +51,7 @@ data class TtAncestry(
             serialized["minimum-weight"] as Double,
             serialized["maximum-weight"] as Double,
             serialized["traits"] as List<TtAncestryTrait>,
+            serialized["skull-texture"] as String,
         )
     }
 }

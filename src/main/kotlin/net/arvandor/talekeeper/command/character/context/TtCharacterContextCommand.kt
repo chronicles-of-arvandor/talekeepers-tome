@@ -5,9 +5,11 @@ import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
 import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
+import net.arvandor.talekeeper.command.character.context.ancestry.TtCharacterContextAncestryCommand
 import net.arvandor.talekeeper.command.character.context.name.TtCharacterContextNameCommand
 import net.arvandor.talekeeper.command.character.context.profile.TtCharacterContextProfileCommand
 import net.arvandor.talekeeper.command.character.context.pronouns.TtCharacterContextPronounsCommand
+import net.arvandor.talekeeper.command.character.context.subancestry.TtCharacterContextSubAncestryCommand
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
@@ -21,8 +23,8 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     private val nameCommand = TtCharacterContextNameCommand(plugin)
     private val profileCommand = TtCharacterContextProfileCommand(plugin)
     private val pronounsCommand = TtCharacterContextPronounsCommand(plugin)
-//    private val ancestryCommand = TtCharacterContextAncestryCommand()
-//    private val subAncestryCommand = TtCharacterContextSubAncestryCommand()
+    private val ancestryCommand = TtCharacterContextAncestryCommand(plugin)
+    private val subAncestryCommand = TtCharacterContextSubAncestryCommand(plugin)
 //    private val classCommand = TtCharacterContextClassCommand()
 //    private val backgroundCommand = TtCharacterContextBackgroundCommand()
 //    private val alignmentCommand = TtCharacterContextAlignmentCommand()
@@ -64,8 +66,8 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in nameAliases -> nameCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in profileAliases -> profileCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in pronounsAliases -> pronounsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in ancestryAliases -> ancestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in subAncestryAliases -> subAncestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in ancestryAliases -> ancestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in subAncestryAliases -> subAncestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in classAliases -> classCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in backgroundAliases -> backgroundCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in alignmentAliases -> alignmentCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
@@ -120,8 +122,8 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in nameAliases -> nameCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in profileAliases -> profileCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in pronounsAliases -> pronounsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in ancestryAliases -> ancestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in subAncestryAliases -> subAncestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in ancestryAliases -> ancestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in subAncestryAliases -> subAncestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in classAliases -> classCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in backgroundAliases -> backgroundCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in alignmentAliases -> alignmentCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())

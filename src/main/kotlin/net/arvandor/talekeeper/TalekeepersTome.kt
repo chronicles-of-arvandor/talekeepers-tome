@@ -28,6 +28,7 @@ import net.arvandor.talekeeper.feat.TtFeatService
 import net.arvandor.talekeeper.item.TtItemService
 import net.arvandor.talekeeper.language.TtLanguage
 import net.arvandor.talekeeper.language.TtLanguageService
+import net.arvandor.talekeeper.listener.InventoryClickListener
 import net.arvandor.talekeeper.listener.PlayerJoinListener
 import net.arvandor.talekeeper.prerequisite.TtAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtBackgroundPrerequisite
@@ -188,6 +189,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtPronounService::class.java] = TtPronounService(this, pronounRepo)
         Services.INSTANCE[TtSpellService::class.java] = TtSpellService(this)
 
+        server.pluginManager.registerEvents(InventoryClickListener(), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
 
         getCommand("character")?.setExecutor(TtCharacterCommand(this))

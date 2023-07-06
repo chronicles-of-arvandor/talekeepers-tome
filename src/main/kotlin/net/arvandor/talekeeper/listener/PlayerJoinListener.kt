@@ -66,6 +66,8 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
                     event.player.sendMessage("${RED}Failed to save character creation context")
                     return@asyncTask
                 }.display(event.player)
+            } else if (ctx != null) {
+                ctx.display(event.player)
             }
         }
     }
