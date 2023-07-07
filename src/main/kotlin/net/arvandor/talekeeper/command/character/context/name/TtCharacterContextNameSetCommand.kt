@@ -135,6 +135,11 @@ class TtCharacterContextNameSetCommand(private val plugin: TalekeepersTome) : Co
                 updatedCtx.display(sender)
             } else {
                 syncTask(plugin) {
+                    if (sender.isConversing) {
+                        sender.sendRawMessage("${RED}Please finish your current action before attempting to set your name.")
+                        return@syncTask
+                    }
+
                     val conversation = conversationFactory.buildConversation(sender)
                     conversation.context.setSessionData("characterService", characterService)
                     conversation.begin()
