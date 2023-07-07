@@ -19,6 +19,7 @@ import net.arvandor.talekeeper.choice.option.TtChoiceOptionRepository
 import net.arvandor.talekeeper.clazz.TtClass
 import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.clazz.TtSubClass
+import net.arvandor.talekeeper.command.ancestry.TtAncestryCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtEffect
@@ -193,5 +194,6 @@ class TalekeepersTome : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
 
         getCommand("character")?.setExecutor(TtCharacterCommand(this))
+        getCommand("ancestry")?.setExecutor(TtAncestryCommand())
     }
 }

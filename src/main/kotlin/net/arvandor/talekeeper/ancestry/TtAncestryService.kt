@@ -30,6 +30,7 @@ class TtAncestryService(private val plugin: TalekeepersTome) : Service {
         ?: emptyMap()
 
     fun getAncestry(id: TtAncestryId): TtAncestry? = ancestries[id]
+    fun getAncestry(name: String): TtAncestry? = ancestries.values.find { it.name.equals(name, ignoreCase = true) }
 
     fun getAll() = ancestries.values.toList()
 

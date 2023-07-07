@@ -43,3 +43,9 @@ commands:
       /character context weight unhide - Shows the weight in the character creation context
     usage: /<command> [context]
     aliases: [char, c]
+  ancestry:
+    description: |
+      Ancestry management command
+      /ancestry traits [ancestry] (page) - Lists the traits of an ancestry
+    usage: /<command> [traits]
+    aliases: [race, species]

@@ -21,6 +21,7 @@ data class TtAncestry(
 ) : ConfigurationSerializable {
 
     fun getSubAncestry(id: TtSubAncestryId) = subAncestries.singleOrNull { it.id == id }
+    fun getSubAncestry(name: String) = subAncestries.singleOrNull { it.name.equals(name, ignoreCase = true) }
 
     override fun serialize() = mapOf(
         "id" to id.value,

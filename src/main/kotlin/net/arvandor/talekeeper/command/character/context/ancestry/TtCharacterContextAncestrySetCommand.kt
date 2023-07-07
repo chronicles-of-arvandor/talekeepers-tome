@@ -114,7 +114,7 @@ class TtCharacterContextAncestrySetCommand(private val plugin: TalekeepersTome) 
                 updatedCtx.display(sender)
             } else {
                 syncTask(plugin) {
-                    val subAncestrySelectionGui = TtSubAncestrySelectionGui(plugin, ancestry.subAncestries)
+                    val subAncestrySelectionGui = TtSubAncestrySelectionGui(plugin, ancestry)
                     sender.openInventory(subAncestrySelectionGui.inventory)
                 }
             }
