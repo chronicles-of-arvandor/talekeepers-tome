@@ -23,6 +23,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import java.text.DecimalFormat
+import java.util.logging.Level
 
 class TtCharacterContextPronounsSetChanceCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
@@ -59,6 +60,7 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
         asyncTask(plugin) {
             var ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}You do not have a character creation context. Please contact an admin.")
+                plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
             if (ctx == null) {

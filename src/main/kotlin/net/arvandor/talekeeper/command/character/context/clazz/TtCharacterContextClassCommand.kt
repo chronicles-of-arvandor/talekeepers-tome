@@ -1,4 +1,4 @@
-package net.arvandor.talekeeper.command.character.context.subancestry
+package net.arvandor.talekeeper.command.character.context.clazz
 
 import net.arvandor.talekeeper.TalekeepersTome
 import net.md_5.bungee.api.ChatColor.RED
@@ -7,19 +7,19 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 
-class TtCharacterContextSubAncestryCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterContextClassCommand(plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
-    private val setCommand = TtCharacterContextSubAncestrySetCommand(plugin)
+    private val setCommand = TtCharacterContextClassSetCommand(plugin)
 
     private val setAliases = listOf("set")
 
     private val subcommands = setAliases
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) =
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean =
         when (args.firstOrNull()?.lowercase()) {
             in setAliases -> setCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
-                sender.sendMessage("${RED}Usage: /character context subancestry [${subcommands.joinToString("|")}]")
+                sender.sendMessage("${RED}Usage: /character context class [${subcommands.joinToString("|")}]")
                 true
             }
         }

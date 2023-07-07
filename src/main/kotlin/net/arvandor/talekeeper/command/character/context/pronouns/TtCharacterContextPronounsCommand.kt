@@ -40,7 +40,7 @@ class TtCharacterContextPronounsCommand(private val plugin: TalekeepersTome) : C
     ) = when {
         args.isEmpty() -> subcommands
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
-        args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
+        args.size > 1 -> when (args.first().lowercase()) {
             in addAliases -> addCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in removeAliases -> removeCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in setChanceAliases -> setChanceCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())

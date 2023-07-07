@@ -32,7 +32,7 @@ class TtAncestryService(private val plugin: TalekeepersTome) : Service {
     fun getAncestry(id: TtAncestryId): TtAncestry? = ancestries[id]
     fun getAncestry(name: String): TtAncestry? = ancestries.values.find { it.name.equals(name, ignoreCase = true) }
 
-    fun getAll() = ancestries.values.toList()
+    fun getAll() = ancestries.values.toList().sortedBy { it.name }
 
     private fun loadAncestry(file: File): TtAncestry {
         val config = YamlConfiguration.loadConfiguration(file)

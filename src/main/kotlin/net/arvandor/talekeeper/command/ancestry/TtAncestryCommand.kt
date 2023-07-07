@@ -33,7 +33,7 @@ class TtAncestryCommand : CommandExecutor, TabCompleter {
     ) = when {
         args.isEmpty() -> subcommands
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
-        args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
+        args.size > 1 -> when (args.first().lowercase()) {
             in traitsAliases -> traitsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }

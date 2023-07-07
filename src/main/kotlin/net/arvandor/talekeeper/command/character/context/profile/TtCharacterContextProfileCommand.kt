@@ -36,7 +36,7 @@ class TtCharacterContextProfileCommand(plugin: TalekeepersTome) : CommandExecuto
     ) = when {
         args.isEmpty() -> subcommands
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
-        args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
+        args.size > 1 -> when (args.first().lowercase()) {
             in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()

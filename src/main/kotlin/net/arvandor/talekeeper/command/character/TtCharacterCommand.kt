@@ -34,7 +34,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
         return when {
             args.isEmpty() -> subcommands
             args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
-            args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
+            args.size > 1 -> when (args.first().lowercase()) {
                 in contextAliases -> contextCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 else -> emptyList()
             }

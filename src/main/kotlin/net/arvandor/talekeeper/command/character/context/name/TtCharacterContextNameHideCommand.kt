@@ -14,7 +14,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
-import java.util.logging.Level
+import java.util.logging.Level.SEVERE
 
 class TtCharacterContextNameHideCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
@@ -45,7 +45,7 @@ class TtCharacterContextNameHideCommand(private val plugin: TalekeepersTome) : C
         asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}An error occurred while getting your character creation context.")
-                plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 
@@ -56,7 +56,7 @@ class TtCharacterContextNameHideCommand(private val plugin: TalekeepersTome) : C
 
             val updatedCtx = characterService.save(ctx.copy(isNameHidden = true)).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character creation context.")
-                plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 

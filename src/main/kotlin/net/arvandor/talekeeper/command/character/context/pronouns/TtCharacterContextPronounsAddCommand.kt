@@ -58,6 +58,7 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
         asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}You do not have a character creation context. Please contact an admin.")
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
             if (ctx == null) {

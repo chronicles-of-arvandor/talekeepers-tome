@@ -6,6 +6,7 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.command.character.context.ancestry.TtCharacterContextAncestryCommand
+import net.arvandor.talekeeper.command.character.context.clazz.TtCharacterContextClassCommand
 import net.arvandor.talekeeper.command.character.context.name.TtCharacterContextNameCommand
 import net.arvandor.talekeeper.command.character.context.profile.TtCharacterContextProfileCommand
 import net.arvandor.talekeeper.command.character.context.pronouns.TtCharacterContextPronounsCommand
@@ -17,6 +18,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.util.logging.Level
 
 class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
@@ -25,7 +27,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     private val pronounsCommand = TtCharacterContextPronounsCommand(plugin)
     private val ancestryCommand = TtCharacterContextAncestryCommand(plugin)
     private val subAncestryCommand = TtCharacterContextSubAncestryCommand(plugin)
-//    private val classCommand = TtCharacterContextClassCommand()
+    private val classCommand = TtCharacterContextClassCommand(plugin)
 //    private val backgroundCommand = TtCharacterContextBackgroundCommand()
 //    private val alignmentCommand = TtCharacterContextAlignmentCommand()
 //    private val abilitiesCommand = TtCharacterContextAbilitiesCommand()
@@ -68,7 +70,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in pronounsAliases -> pronounsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in ancestryAliases -> ancestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in subAncestryAliases -> subAncestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in classAliases -> classCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in classAliases -> classCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in backgroundAliases -> backgroundCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in alignmentAliases -> alignmentCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in abilitiesAliases -> abilitiesCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
@@ -98,6 +100,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             val characterService = Services.INSTANCE[TtCharacterService::class.java]
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}Failed to retrieve character creation context. Please contact an admin.")
+                plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
             if (ctx == null) {
@@ -118,13 +121,13 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     ) = when {
         args.isEmpty() -> subcommands
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
-        args.size > 1 -> when (args.firstOrNull()?.lowercase()) {
+        args.size > 1 -> when (args.first().lowercase()) {
             in nameAliases -> nameCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in profileAliases -> profileCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in pronounsAliases -> pronounsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in ancestryAliases -> ancestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in subAncestryAliases -> subAncestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in classAliases -> classCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in classAliases -> classCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in backgroundAliases -> backgroundCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in alignmentAliases -> alignmentCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in abilitiesAliases -> abilitiesCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())

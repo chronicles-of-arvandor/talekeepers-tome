@@ -15,6 +15,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.util.logging.Level.SEVERE
 
 class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
@@ -51,6 +52,7 @@ class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTom
         asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}You do not have a character creation context. Please contact an admin.")
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
             if (ctx == null) {
@@ -76,6 +78,7 @@ class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTom
                 ),
             ).onFailure {
                 sender.sendMessage("${RED}Failed to save character creation context. Please contact an admin.")
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 
