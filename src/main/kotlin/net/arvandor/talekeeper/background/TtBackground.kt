@@ -7,11 +7,13 @@ import org.bukkit.configuration.serialization.SerializableAs
 data class TtBackground(
     val id: TtBackgroundId,
     val name: String,
+    val description: String,
 ) : ConfigurationSerializable {
 
     override fun serialize() = mapOf(
         "id" to id.value,
         "name" to name,
+        "description" to description,
     )
 
     companion object {
@@ -19,6 +21,7 @@ data class TtBackground(
         fun deserialize(serialized: Map<String, Any>) = TtBackground(
             (serialized["id"] as String).let(::TtBackgroundId),
             serialized["name"] as String,
+            serialized["description"] as String,
         )
     }
 }
