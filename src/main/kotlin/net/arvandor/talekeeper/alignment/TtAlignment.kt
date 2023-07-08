@@ -15,4 +15,10 @@ enum class TtAlignment(
     LAWFUL_EVIL("Lawful Evil", "LE", TtOrder.LAWFUL, TtMorality.EVIL),
     NEUTRAL_EVIL("Neutral Evil", "NE", TtOrder.NEUTRAL, TtMorality.EVIL),
     CHAOTIC_EVIL("Chaotic Evil", "CE", TtOrder.CHAOTIC, TtMorality.EVIL),
+    ;
+
+    companion object {
+        fun of(order: TtOrder, morality: TtMorality) = values().single { it.order == order && it.morality == morality }
+        fun fromAcronym(acronym: String) = values().singleOrNull { it.acronym == acronym }
+    }
 }
