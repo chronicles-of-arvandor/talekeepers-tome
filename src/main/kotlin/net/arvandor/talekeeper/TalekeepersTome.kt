@@ -3,6 +3,7 @@ package net.arvandor.talekeeper
 import com.rpkit.core.service.Services
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import net.arvandor.talekeeper.ability.TtAbilityService
 import net.arvandor.talekeeper.ancestry.TtAncestry
 import net.arvandor.talekeeper.ancestry.TtAncestryService
 import net.arvandor.talekeeper.ancestry.TtAncestryTrait
@@ -190,6 +191,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtLanguageService::class.java] = TtLanguageService(this)
         Services.INSTANCE[TtPronounService::class.java] = TtPronounService(this, pronounRepo)
         Services.INSTANCE[TtSpellService::class.java] = TtSpellService(this)
+        Services.INSTANCE[TtAbilityService::class.java] = TtAbilityService(this)
 
         server.pluginManager.registerEvents(InventoryClickListener(), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
