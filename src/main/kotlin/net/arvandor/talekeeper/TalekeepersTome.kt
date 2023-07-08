@@ -1,6 +1,7 @@
 package net.arvandor.talekeeper
 
 import com.rpkit.core.service.Services
+import com.rpkit.players.bukkit.unit.RPKUnitService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import net.arvandor.talekeeper.ability.TtAbilityService
@@ -180,7 +181,10 @@ class TalekeepersTome : JavaPlugin() {
         val optionRepo = TtChoiceOptionRepository(dsl)
         val pronounRepo = TtPronounRepository(dsl)
 
-        Services.INSTANCE[TtAncestryService::class.java] = TtAncestryService(this)
+        // Having access to unit formatting is required for ancestry serialization when saving default ancestries
+        Services.INSTANCE.require(RPKUnitService::class.java).whenAvailable {
+            Services.INSTANCE[TtAncestryService::class.java] = TtAncestryService(this)
+        }
         Services.INSTANCE[TtBackgroundService::class.java] = TtBackgroundService(this)
         Services.INSTANCE[TtCharacterService::class.java] = TtCharacterService(this, characterRepo, characterCreationContextRepo)
         Services.INSTANCE[TtChoiceService::class.java] = TtChoiceService(this, optionRepo)
