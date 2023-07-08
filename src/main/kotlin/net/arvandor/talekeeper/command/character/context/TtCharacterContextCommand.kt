@@ -10,6 +10,7 @@ import net.arvandor.talekeeper.command.character.context.alignment.TtCharacterCo
 import net.arvandor.talekeeper.command.character.context.ancestry.TtCharacterContextAncestryCommand
 import net.arvandor.talekeeper.command.character.context.background.TtCharacterContextBackgroundCommand
 import net.arvandor.talekeeper.command.character.context.clazz.TtCharacterContextClassCommand
+import net.arvandor.talekeeper.command.character.context.description.TtCharacterContextDescriptionCommand
 import net.arvandor.talekeeper.command.character.context.name.TtCharacterContextNameCommand
 import net.arvandor.talekeeper.command.character.context.profile.TtCharacterContextProfileCommand
 import net.arvandor.talekeeper.command.character.context.pronouns.TtCharacterContextPronounsCommand
@@ -34,7 +35,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     private val backgroundCommand = TtCharacterContextBackgroundCommand(plugin)
     private val alignmentCommand = TtCharacterContextAlignmentCommand(plugin)
     private val abilitiesCommand = TtCharacterContextAbilitiesCommand(plugin)
-//    private val descriptionCommand = TtCharacterContextDescriptionCommand()
+    private val descriptionCommand = TtCharacterContextDescriptionCommand(plugin)
 //    private val heightCommand = TtCharacterContextHeightCommand()
 //    private val weightCommand = TtCharacterContextWeightCommand()
 //    private val createCommand = TtCharacterContextCreateCommand()
@@ -77,7 +78,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in backgroundAliases -> backgroundCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in alignmentAliases -> alignmentCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in abilitiesAliases -> abilitiesCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in descriptionAliases -> descriptionCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in descriptionAliases -> descriptionCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in heightAliases -> heightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in weightAliases -> weightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in createAliases -> createCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
@@ -134,7 +135,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in backgroundAliases -> backgroundCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in alignmentAliases -> alignmentCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in abilitiesAliases -> abilitiesCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in descriptionAliases -> descriptionCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in descriptionAliases -> descriptionCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in heightAliases -> heightCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in weightAliases -> weightCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in createAliases -> createCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())

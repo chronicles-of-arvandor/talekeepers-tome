@@ -56,8 +56,8 @@ data class TtAncestry(
             serialized["maximum-age"] as Int,
             HeightUnit.FEET.parse(serialized["minimum-height"] as String),
             HeightUnit.FEET.parse(serialized["maximum-height"] as String),
-            HeightUnit.FEET.parse(serialized["minimum-weight"] as String),
-            HeightUnit.FEET.parse(serialized["maximum-weight"] as String),
+            WeightUnit.POUNDS.parse(serialized["minimum-weight"] as String),
+            WeightUnit.POUNDS.parse(serialized["maximum-weight"] as String),
             serialized["traits"] as List<TtAncestryTrait>,
             serialized["skull-texture"] as String,
         )
