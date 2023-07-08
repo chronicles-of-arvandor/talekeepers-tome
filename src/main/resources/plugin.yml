@@ -49,3 +49,9 @@ commands:
       /ancestry traits [ancestry] (page) - Lists the traits of an ancestry
     usage: /<command> [traits]
     aliases: [race, species]
+  background:
+    description: |
+      Background management command
+      /background view [background] - Views the details of a background
+    usage: /<command> [view]
+    aliases: [bg]

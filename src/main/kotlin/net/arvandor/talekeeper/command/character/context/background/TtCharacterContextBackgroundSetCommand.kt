@@ -27,6 +27,11 @@ import org.bukkit.entity.Player
 import java.util.logging.Level.SEVERE
 
 class TtCharacterContextBackgroundSetCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+
+    companion object {
+        const val BACKGROUNDS_PER_PAGE = 10
+    }
+
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
             sender.sendMessage("${RED}You must be a player to perform this command.")
@@ -84,22 +89,13 @@ class TtCharacterContextBackgroundSetCommand(private val plugin: TalekeepersTome
                             color = GRAY
                         },
                     ),
-                    backgrounds.flatMap { bg ->
-                        listOf(
-                            arrayOf(
-                                TextComponent(bg.name).apply {
-                                    color = GREEN
-                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to set your background to ${bg.name}"))
-                                    clickEvent = ClickEvent(RUN_COMMAND, "/character context background set ${bg.id.value}")
-                                },
-                            ),
-                            arrayOf(
-                                TextComponent(bg.description).apply {
-                                    color = GRAY
-                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to set your background to ${bg.name}"))
-                                    clickEvent = ClickEvent(RUN_COMMAND, "/character context background set ${bg.id.value}")
-                                },
-                            ),
+                    backgrounds.map { bg ->
+                        arrayOf(
+                            TextComponent(bg.name).apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view the details of ${bg.name}"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/background view ${bg.id.value} --return-page=$page")
+                            },
                         )
                     },
                     "$GREEN< Previous",
@@ -107,7 +103,7 @@ class TtCharacterContextBackgroundSetCommand(private val plugin: TalekeepersTome
                     "${GREEN}Next >",
                     "Click here to view the next page",
                     { pageNumber -> "Page $pageNumber" },
-                    4,
+                    BACKGROUNDS_PER_PAGE,
                     { pageNumber -> "/character context background set $pageNumber" },
                 )
                 if (view.isPageValid(page)) {
@@ -150,8 +146,8 @@ class TtCharacterContextBackgroundSetCommand(private val plugin: TalekeepersTome
             ?: return emptyList()
         val backgrounds = backgroundService.getAll()
         return when {
-            args.isEmpty() -> backgrounds.map(TtBackground::name)
-            args.size == 1 -> backgrounds.map(TtBackground::name).filter { it.startsWith(args[0], ignoreCase = true) } + (1..(backgrounds.size / 2)).map(Int::toString)
+            args.isEmpty() -> backgrounds.map(TtBackground::name) + (1..(backgrounds.size / BACKGROUNDS_PER_PAGE)).map(Int::toString)
+            args.size == 1 -> backgrounds.map(TtBackground::name).filter { it.startsWith(args[0], ignoreCase = true) } + (1..(backgrounds.size / BACKGROUNDS_PER_PAGE)).map(Int::toString)
             else -> emptyList()
         }
     }
