@@ -22,11 +22,11 @@ import org.bukkit.conversations.StringPrompt
 import org.bukkit.entity.Player
 import java.util.logging.Level.SEVERE
 
-class TtCharacterContextDescriptionSetCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterContextDescriptionExtendCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val conversationFactory = ConversationFactory(plugin)
         .withModality(true)
-        .withFirstPrompt(DescriptionPrompt(false))
+        .withFirstPrompt(DescriptionPrompt())
         .withEscapeSequence("cancel")
         .withLocalEcho(true)
         .thatExcludesNonPlayersWithMessage("${RED}You must be a player to perform this command.")
@@ -39,12 +39,8 @@ class TtCharacterContextDescriptionSetCommand(private val plugin: TalekeepersTom
             }
         }
 
-    private inner class DescriptionPrompt(private val isContinue: Boolean) : StringPrompt() {
-        override fun getPromptText(context: ConversationContext) = if (isContinue) {
-            "Continue writing, or type \"end\" to finish. Cancel setting description with \"cancel\"."
-        } else {
-            "How would you describe your appearance & presence? (Type \"cancel\" to cancel, or \"end\" to finish.)"
-        }
+    private inner class DescriptionPrompt : StringPrompt() {
+        override fun getPromptText(context: ConversationContext) = "Continue writing, or type \"end\" to finish. Cancel setting description with \"cancel\"."
 
         override fun acceptInput(context: ConversationContext, input: String?): Prompt? {
             val conversable = context.forWhom
@@ -89,7 +85,7 @@ class TtCharacterContextDescriptionSetCommand(private val plugin: TalekeepersTom
                 return END_OF_CONVERSATION
             } else {
                 context.setSessionData("description", ((context.getSessionData("description") as? String)?.plus(" ") ?: "") + input)
-                return DescriptionPrompt(true)
+                return DescriptionPrompt()
             }
         }
     }
@@ -131,7 +127,7 @@ class TtCharacterContextDescriptionSetCommand(private val plugin: TalekeepersTom
             }
 
             if (args.isNotEmpty()) {
-                val updatedCtx = characterService.save(ctx.copy(description = args.joinToString(" "))).onFailure {
+                val updatedCtx = characterService.save(ctx.copy(description = ctx.description + " " + args.joinToString(" "))).onFailure {
                     sender.sendMessage("${RED}An error occurred while saving your character creation context.")
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                     return@asyncTask
@@ -152,6 +148,7 @@ class TtCharacterContextDescriptionSetCommand(private val plugin: TalekeepersTom
 
                     val conversation = conversationFactory.buildConversation(sender)
                     conversation.context.setSessionData("characterService", characterService)
+                    conversation.context.setSessionData("description", ctx.description)
                     conversation.begin()
                 }
             }
