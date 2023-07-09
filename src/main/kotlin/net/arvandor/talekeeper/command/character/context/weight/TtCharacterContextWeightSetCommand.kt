@@ -1,8 +1,8 @@
-package net.arvandor.talekeeper.command.character.context.height
+package net.arvandor.talekeeper.command.character.context.weight
 
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
-import com.rpkit.players.bukkit.unit.HeightUnit
+import com.rpkit.players.bukkit.unit.WeightUnit
 import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
@@ -22,11 +22,11 @@ import org.bukkit.conversations.ValidatingPrompt
 import org.bukkit.entity.Player
 import java.util.logging.Level
 
-class TtCharacterContextHeightSetCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterContextWeightSetCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val conversationFactory = ConversationFactory(plugin)
         .withModality(true)
-        .withFirstPrompt(HeightPrompt())
+        .withFirstPrompt(WeightPrompt())
         .withEscapeSequence("cancel")
         .withLocalEcho(false)
         .thatExcludesNonPlayersWithMessage("${RED}You must be a player to perform this command.")
@@ -39,20 +39,20 @@ class TtCharacterContextHeightSetCommand(private val plugin: TalekeepersTome) : 
             }
         }
 
-    private inner class HeightPrompt : ValidatingPrompt() {
-        override fun getPromptText(context: ConversationContext) = "What is your height? (Type \"cancel\" to cancel)"
+    private inner class WeightPrompt : ValidatingPrompt() {
+        override fun getPromptText(context: ConversationContext) = "What is your weight? (Type \"cancel\" to cancel)"
 
         override fun isInputValid(context: ConversationContext, input: String): Boolean {
-            val height = HeightUnit.FEET.parse(input)
-                ?: HeightUnit.METRES.parse(input)
-            return height != null
+            val weight = WeightUnit.POUNDS.parse(input)
+                ?: WeightUnit.KILOGRAMS.parse(input)
+            return weight != null
         }
 
         override fun getFailedValidationText(context: ConversationContext, invalidInput: String): String? {
-            val height = HeightUnit.FEET.parse(invalidInput)
-                ?: HeightUnit.METRES.parse(invalidInput)
-            if (height != null) return null
-            return "${RED}Failed to parse height - height must be in feet & inches or metres & centimetres. Example valid inputs: 1m 81cm, 181cm, 5'11\", 6', 71\""
+            val weight = WeightUnit.POUNDS.parse(invalidInput)
+                ?: WeightUnit.KILOGRAMS.parse(invalidInput)
+            if (weight != null) return null
+            return "${RED}Failed to parse weight - weight must be in stone & pounds or kilograms & grams. Example valid inputs: 80kg, 80kg 450g, 9st 3lb, 160lb"
         }
 
         override fun acceptValidatedInput(context: ConversationContext, input: String): Prompt? {
@@ -78,10 +78,10 @@ class TtCharacterContextHeightSetCommand(private val plugin: TalekeepersTome) : 
                     return@asyncTask
                 }
 
-                val height = HeightUnit.FEET.parse(input)
-                    ?: HeightUnit.METRES.parse(input)
+                val weight = WeightUnit.POUNDS.parse(input)
+                    ?: WeightUnit.KILOGRAMS.parse(input)
 
-                val updatedCtx = characterService.save(ctx.copy(height = height)).onFailure {
+                val updatedCtx = characterService.save(ctx.copy(weight = weight)).onFailure {
                     plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                     conversable.sendMessage("${RED}An error occurred while saving your character creation context.")
                     return@asyncTask
@@ -89,7 +89,7 @@ class TtCharacterContextHeightSetCommand(private val plugin: TalekeepersTome) : 
 
                 conversable.sendMessage(
                     "${ChatColor.GRAY}================================",
-                    "${ChatColor.GREEN}Height set.",
+                    "${ChatColor.GREEN}Weight set.",
                     "${ChatColor.GRAY}================================",
                 )
                 updatedCtx.display(conversable)
@@ -137,14 +137,14 @@ class TtCharacterContextHeightSetCommand(private val plugin: TalekeepersTome) : 
 
             if (args.isNotEmpty()) {
                 val input = args.joinToString(" ")
-                val height = HeightUnit.FEET.parse(input)
-                    ?: HeightUnit.METRES.parse(input)
-                if (height == null) {
-                    sender.sendMessage("${RED}Failed to parse height - height must be in feet & inches or metres & centimetres. Example valid inputs: 1m 81cm, 181cm, 5'11\", 6', 71\"")
+                val weight = WeightUnit.POUNDS.parse(input)
+                    ?: WeightUnit.KILOGRAMS.parse(input)
+                if (weight == null) {
+                    sender.sendMessage("${RED}Failed to parse weight - weight must be in stone & pounds or kilograms & grams. Example valid inputs: 80kg, 80kg 450g, 9st 3lb, 160lb")
                     return@asyncTask
                 }
 
-                val updatedCtx = characterService.save(ctx.copy(height = height)).onFailure {
+                val updatedCtx = characterService.save(ctx.copy(weight = weight)).onFailure {
                     sender.sendMessage("${RED}An error occurred while saving your character creation context.")
                     plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                     return@asyncTask
@@ -152,14 +152,14 @@ class TtCharacterContextHeightSetCommand(private val plugin: TalekeepersTome) : 
 
                 sender.sendMessage(
                     "${ChatColor.GRAY}================================",
-                    "${ChatColor.GREEN}Height set.",
+                    "${ChatColor.GREEN}Weight set.",
                     "${ChatColor.GRAY}================================",
                 )
                 updatedCtx.display(sender)
             } else {
                 syncTask(plugin) {
                     if (sender.isConversing) {
-                        sender.sendRawMessage("${RED}Please finish your current action before attempting to set your height.")
+                        sender.sendRawMessage("${RED}Please finish your current action before attempting to set your weight.")
                         return@syncTask
                     }
 
