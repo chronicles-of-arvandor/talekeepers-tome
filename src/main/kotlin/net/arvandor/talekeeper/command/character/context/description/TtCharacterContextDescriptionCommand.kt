@@ -12,7 +12,7 @@ class TtCharacterContextDescriptionCommand(plugin: TalekeepersTome) : CommandExe
     private val setCommand = TtCharacterContextDescriptionSetCommand(plugin)
     private val extendCommand = TtCharacterContextDescriptionExtendCommand(plugin)
     private val hideCommand = TtCharacterContextDescriptionHideCommand(plugin)
-//    private val unhideCommand = TtCharacterContextDescriptionUnhideCommand(plugin)
+    private val unhideCommand = TtCharacterContextDescriptionUnhideCommand(plugin)
 
     private val setAliases = listOf("set")
     private val extendAliases = listOf("extend")
@@ -29,7 +29,7 @@ class TtCharacterContextDescriptionCommand(plugin: TalekeepersTome) : CommandExe
             in setAliases -> setCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in extendAliases -> extendCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in hideAliases -> hideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context description [${subcommands.joinToString("|")}]")
                 true
@@ -48,7 +48,7 @@ class TtCharacterContextDescriptionCommand(plugin: TalekeepersTome) : CommandExe
             in setAliases -> setCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in extendAliases -> extendCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
         else -> emptyList()
