@@ -11,7 +11,7 @@ class TtCharacterContextHeightCommand(plugin: TalekeepersTome) : CommandExecutor
 
     private val setCommand = TtCharacterContextHeightSetCommand(plugin)
     private val hideCommand = TtCharacterContextHeightHideCommand(plugin)
-//    private val unhideCommand = TtCharacterContextHeightUnhideCommand(plugin)
+    private val unhideCommand = TtCharacterContextHeightUnhideCommand(plugin)
 
     private val setAliases = listOf("set")
     private val hideAliases = listOf("hide")
@@ -25,7 +25,7 @@ class TtCharacterContextHeightCommand(plugin: TalekeepersTome) : CommandExecutor
         when (args.firstOrNull()?.lowercase()) {
             in setAliases -> setCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in hideAliases -> hideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context height [${subcommands.joinToString("|")}]")
                 true
@@ -43,7 +43,7 @@ class TtCharacterContextHeightCommand(plugin: TalekeepersTome) : CommandExecutor
         args.size > 1 -> when (args.first().lowercase()) {
             in setAliases -> setCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
         else -> emptyList()
