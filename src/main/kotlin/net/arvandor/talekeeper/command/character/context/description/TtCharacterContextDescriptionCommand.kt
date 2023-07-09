@@ -11,7 +11,7 @@ class TtCharacterContextDescriptionCommand(plugin: TalekeepersTome) : CommandExe
 
     private val setCommand = TtCharacterContextDescriptionSetCommand(plugin)
     private val extendCommand = TtCharacterContextDescriptionExtendCommand(plugin)
-//    private val hideCommand = TtCharacterContextDescriptionHideCommand(plugin)
+    private val hideCommand = TtCharacterContextDescriptionHideCommand(plugin)
 //    private val unhideCommand = TtCharacterContextDescriptionUnhideCommand(plugin)
 
     private val setAliases = listOf("set")
@@ -28,7 +28,7 @@ class TtCharacterContextDescriptionCommand(plugin: TalekeepersTome) : CommandExe
         when (args.firstOrNull()?.lowercase()) {
             in setAliases -> setCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in extendAliases -> extendCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-//            in hideAliases -> hideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in hideAliases -> hideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
 //            in unhideAliases -> unhideCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character context description [${subcommands.joinToString("|")}]")
@@ -47,7 +47,7 @@ class TtCharacterContextDescriptionCommand(plugin: TalekeepersTome) : CommandExe
         args.size > 1 -> when (args.first().lowercase()) {
             in setAliases -> setCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in extendAliases -> extendCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
-//            in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in hideAliases -> hideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
 //            in unhideAliases -> unhideCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
