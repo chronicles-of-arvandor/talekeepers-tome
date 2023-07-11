@@ -3,3 +3,6 @@ database:
   username: username
   password: password
   dialect: MYSQL
+characters:
+  defaults:
+    inventory: []

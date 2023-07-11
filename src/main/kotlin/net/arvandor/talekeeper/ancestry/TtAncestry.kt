@@ -12,6 +12,7 @@ import org.bukkit.configuration.serialization.SerializableAs
 data class TtAncestry(
     val id: TtAncestryId,
     val name: String,
+    val namePlural: String,
     val subAncestries: List<TtSubAncestry>,
     val darkVision: TtDistance,
     val minimumAge: Int,
@@ -32,14 +33,15 @@ data class TtAncestry(
         return mapOf(
             "id" to id.value,
             "name" to name,
+            "name-plural" to namePlural,
             "sub-ancestries" to subAncestries,
             "dark-vision" to darkVision,
             "minimum-age" to minimumAge,
             "maximum-age" to maximumAge,
-            "minimum-height" to unitService.format(minimumHeight, HeightUnit.FEET),
-            "maximum-height" to unitService.format(maximumHeight, HeightUnit.FEET),
-            "minimum-weight" to unitService.format(minimumWeight, WeightUnit.POUNDS),
-            "maximum-weight" to unitService.format(maximumWeight, WeightUnit.POUNDS),
+            "minimum-height" to unitService.format(minimumHeight * HeightUnit.FEET.scaleFactor, HeightUnit.FEET),
+            "maximum-height" to unitService.format(maximumHeight * HeightUnit.FEET.scaleFactor, HeightUnit.FEET),
+            "minimum-weight" to unitService.format(minimumWeight * WeightUnit.POUNDS.scaleFactor, WeightUnit.POUNDS),
+            "maximum-weight" to unitService.format(maximumWeight * WeightUnit.POUNDS.scaleFactor, WeightUnit.POUNDS),
             "traits" to traits,
             "skull-texture" to skullTexture,
         )
@@ -50,6 +52,7 @@ data class TtAncestry(
         fun deserialize(serialized: Map<String, Any>) = TtAncestry(
             (serialized["id"] as String).let(::TtAncestryId),
             serialized["name"] as String,
+            serialized["name-plural"] as String,
             serialized["sub-ancestries"] as? List<TtSubAncestry> ?: emptyList(),
             serialized["dark-vision"] as TtDistance,
             serialized["minimum-age"] as Int,

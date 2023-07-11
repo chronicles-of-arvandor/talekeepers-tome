@@ -110,7 +110,7 @@ class TtAncestryTraitsCommand : CommandExecutor, TabCompleter {
                             TextComponent(" "),
                             TextComponent("Confirm").apply {
                                 color = ChatColor.GREEN
-                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to confirm your ancestry selection."))
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to confirm your sub-ancestry selection."))
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character context subancestry set ${subAncestry.id.value}")
                             },
                         )

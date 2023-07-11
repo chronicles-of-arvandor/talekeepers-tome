@@ -205,7 +205,7 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
             result.ability.let(TtAbility::valueOf) to result.choice
         }.toMap()
 
-    fun delete(id: TtCharacterCreationContextId) {
+    fun delete(id: TtCharacterCreationContextId, dsl: DSLContext = this.dsl) {
         dsl.deleteFrom(TT_CHARACTER_CREATION_CONTEXT)
             .where(TT_CHARACTER_CREATION_CONTEXT.ID.eq(id.value))
             .execute()

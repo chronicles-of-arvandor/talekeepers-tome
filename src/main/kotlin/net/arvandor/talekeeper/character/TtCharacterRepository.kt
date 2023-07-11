@@ -30,7 +30,7 @@ import java.util.*
 
 class TtCharacterRepository(private val dsl: DSLContext) {
 
-    fun upsert(character: TtCharacter): TtCharacter {
+    fun upsert(character: TtCharacter, dsl: DSLContext = this.dsl): TtCharacter {
         return dsl.transactionResult { config ->
             val transactionalDsl = config.dsl()
             val newState = upsertCharacter(transactionalDsl, character)
@@ -246,6 +246,29 @@ class TtCharacterRepository(private val dsl: DSLContext) {
         )
     }
 
+    fun setActive(minecraftProfileId: RPKMinecraftProfileId, characterId: TtCharacterId?) {
+        if (characterId != null) {
+            dsl.transaction { config ->
+                val transactionalDsl = config.dsl()
+
+                transactionalDsl.update(TT_CHARACTER)
+                    .set(TT_CHARACTER.MINECRAFT_PROFILE_ID, null as? Int?)
+                    .where(TT_CHARACTER.MINECRAFT_PROFILE_ID.eq(minecraftProfileId.value))
+                    .execute()
+
+                transactionalDsl.update(TT_CHARACTER)
+                    .set(TT_CHARACTER.MINECRAFT_PROFILE_ID, minecraftProfileId.value)
+                    .where(TT_CHARACTER.ID.eq(characterId.value))
+                    .execute()
+            }
+        } else {
+            dsl.update(TT_CHARACTER)
+                .set(TT_CHARACTER.MINECRAFT_PROFILE_ID, null as? Int?)
+                .where(TT_CHARACTER.MINECRAFT_PROFILE_ID.eq(minecraftProfileId.value))
+                .execute()
+        }
+    }
+
     private fun getPronouns(characterId: TtCharacterId): Map<TtPronounSetId, Int> =
         dsl.selectFrom(TT_CHARACTER_PRONOUNS)
             .where(TT_CHARACTER_PRONOUNS.CHARACTER_ID.eq(characterId.value))
@@ -273,7 +296,7 @@ class TtCharacterRepository(private val dsl: DSLContext) {
             }.toMap()
 
     private fun getTempAbilityScores(characterId: TtCharacterId): Map<TtAbility, Int> =
-        dsl.selectFrom(TT_CHARACTER_ABILITY_SCORE)
+        dsl.selectFrom(TT_CHARACTER_TEMP_ABILITY_SCORE)
             .where(TT_CHARACTER_TEMP_ABILITY_SCORE.CHARACTER_ID.eq(characterId.value))
             .fetch()
             .map { result ->

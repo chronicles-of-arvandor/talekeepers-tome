@@ -45,6 +45,7 @@ import net.arvandor.talekeeper.prerequisite.TtSubClassPrerequisite
 import net.arvandor.talekeeper.pronouns.TtPronounRepository
 import net.arvandor.talekeeper.pronouns.TtPronounService
 import net.arvandor.talekeeper.source.TtSource
+import net.arvandor.talekeeper.spawn.TtSpawnService
 import net.arvandor.talekeeper.spell.TtSpellService
 import net.arvandor.talekeeper.spell.component.TtMaterialSpellComponent
 import net.arvandor.talekeeper.spell.component.TtSpellComponentsWithNoMaterial
@@ -79,11 +80,14 @@ import net.arvandor.talekeeper.trait.TtCharacterTrait
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
 import org.flywaydb.core.Flyway
+import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.conf.Settings
 import org.jooq.impl.DSL
 
 class TalekeepersTome : JavaPlugin() {
+
+    internal lateinit var dsl: DSLContext
 
     override fun onEnable() {
         ConfigurationSerialization.registerClass(TtAncestry::class.java, "Ancestry")
@@ -170,7 +174,7 @@ class TalekeepersTome : JavaPlugin() {
         val dialect = config.getString("database.dialect")?.let(SQLDialect::valueOf)
         val jooqSettings = Settings().withRenderSchema(false)
 
-        val dsl = DSL.using(
+        dsl = DSL.using(
             dataSource,
             dialect,
             jooqSettings,
@@ -196,6 +200,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtPronounService::class.java] = TtPronounService(this, pronounRepo)
         Services.INSTANCE[TtSpellService::class.java] = TtSpellService(this)
         Services.INSTANCE[TtAbilityService::class.java] = TtAbilityService(this)
+        Services.INSTANCE[TtSpawnService::class.java] = TtSpawnService(this)
 
         server.pluginManager.registerEvents(InventoryClickListener(), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)

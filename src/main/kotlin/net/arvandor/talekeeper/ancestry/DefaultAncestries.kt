@@ -1,12 +1,13 @@
 package net.arvandor.talekeeper.ancestry
 
-import com.rpkit.players.bukkit.unit.ShortDistanceUnit
+import com.rpkit.players.bukkit.unit.HeightUnit
 import com.rpkit.players.bukkit.unit.WeightUnit
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.distance.TtDistanceUnit.FEET
 
 internal val aasimar = TtAncestry(
     TtAncestryId("59cb2ad6-b2bf-432c-b6e8-a5e804dc4243"),
+    "Aasimar",
     "Aasimar",
     listOf(
         TtSubAncestry(
@@ -15,8 +16,8 @@ internal val aasimar = TtAncestry(
             null,
             16,
             160,
-            ShortDistanceUnit.FEET.parse("4'10\""),
-            ShortDistanceUnit.FEET.parse("6'4\""),
+            HeightUnit.FEET.parse("4'10\""),
+            HeightUnit.FEET.parse("6'4\""),
             WeightUnit.POUNDS.parse("114lb"),
             WeightUnit.POUNDS.parse("270lb"),
             listOf(
@@ -57,8 +58,8 @@ internal val aasimar = TtAncestry(
             null,
             16,
             160,
-            ShortDistanceUnit.FEET.parse("4'10\""),
-            ShortDistanceUnit.FEET.parse("6'4\""),
+            HeightUnit.FEET.parse("4'10\""),
+            HeightUnit.FEET.parse("6'4\""),
             WeightUnit.POUNDS.parse("114lb"),
             WeightUnit.POUNDS.parse("270lb"),
             listOf(
@@ -99,8 +100,8 @@ internal val aasimar = TtAncestry(
             null,
             16,
             160,
-            ShortDistanceUnit.FEET.parse("4'10\""),
-            ShortDistanceUnit.FEET.parse("6'4\""),
+            HeightUnit.FEET.parse("4'10\""),
+            HeightUnit.FEET.parse("6'4\""),
             WeightUnit.POUNDS.parse("114lb"),
             WeightUnit.POUNDS.parse("270lb"),
             listOf(
@@ -139,8 +140,8 @@ internal val aasimar = TtAncestry(
     TtDistance(60.0, FEET),
     16,
     160,
-    ShortDistanceUnit.FEET.parse("4'10\""),
-    ShortDistanceUnit.FEET.parse("6'4\""),
+    HeightUnit.FEET.parse("4'10\""),
+    HeightUnit.FEET.parse("6'4\""),
     WeightUnit.POUNDS.parse("114lb"),
     WeightUnit.POUNDS.parse("270lb"),
     listOf(
@@ -187,6 +188,7 @@ internal val aasimar = TtAncestry(
 internal val gnome = TtAncestry(
     TtAncestryId("59ce9f43-f104-4eb6-af37-c7b7a56dddd8"),
     "Gnome",
+    "Gnomes",
     listOf(
         TtSubAncestry(
             TtSubAncestryId("e65c4614-ed6e-42d6-b037-ae4fd6215a44"),
@@ -194,8 +196,8 @@ internal val gnome = TtAncestry(
             null,
             40,
             500,
-            ShortDistanceUnit.FEET.parse("3'"),
-            ShortDistanceUnit.FEET.parse("4'"),
+            HeightUnit.FEET.parse("3'"),
+            HeightUnit.FEET.parse("4'"),
             WeightUnit.POUNDS.parse("35lb"),
             WeightUnit.POUNDS.parse("43lb"),
             listOf(
@@ -232,8 +234,8 @@ internal val gnome = TtAncestry(
             null,
             40,
             500,
-            ShortDistanceUnit.FEET.parse("3'"),
-            ShortDistanceUnit.FEET.parse("4'"),
+            HeightUnit.FEET.parse("3'"),
+            HeightUnit.FEET.parse("4'"),
             WeightUnit.POUNDS.parse("35lb"),
             WeightUnit.POUNDS.parse("43lb"),
             listOf(
@@ -282,8 +284,8 @@ internal val gnome = TtAncestry(
             TtDistance(120.0, FEET),
             25,
             250,
-            ShortDistanceUnit.FEET.parse("3'"),
-            ShortDistanceUnit.FEET.parse("4'"),
+            HeightUnit.FEET.parse("3'"),
+            HeightUnit.FEET.parse("4'"),
             WeightUnit.POUNDS.parse("80lb"),
             WeightUnit.POUNDS.parse("120lb"),
             listOf(
@@ -318,8 +320,8 @@ internal val gnome = TtAncestry(
     TtDistance(60.0, FEET),
     40,
     500,
-    ShortDistanceUnit.FEET.parse("3'"),
-    ShortDistanceUnit.FEET.parse("3'6\""),
+    HeightUnit.FEET.parse("3'"),
+    HeightUnit.FEET.parse("3'6\""),
     WeightUnit.POUNDS.parse("35lb"),
     WeightUnit.POUNDS.parse("43lb"),
     listOf(

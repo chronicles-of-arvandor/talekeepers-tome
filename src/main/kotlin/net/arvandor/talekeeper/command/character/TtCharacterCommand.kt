@@ -12,7 +12,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
 
     private val contextCommand = TtCharacterContextCommand(plugin)
 
-    private val contextAliases = listOf("context")
+    private val contextAliases = listOf("context", "ctx")
     private val subcommands = contextAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

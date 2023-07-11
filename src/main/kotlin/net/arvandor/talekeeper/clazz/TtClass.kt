@@ -9,6 +9,7 @@ data class TtClass(
     val name: String,
     val subClasses: List<TtSubClass>,
     val skullTexture: String,
+    val baseHp: Int,
 ) : ConfigurationSerializable {
 
     fun getSubClass(id: TtSubClassId) = subClasses.single { it.id == id }
@@ -18,6 +19,7 @@ data class TtClass(
         "name" to name,
         "sub-classes" to subClasses,
         "skull-texture" to skullTexture,
+        "base-hp" to baseHp,
     )
 
     companion object {
@@ -27,6 +29,7 @@ data class TtClass(
             serialized["name"] as String,
             serialized["sub-classes"] as List<TtSubClass>,
             serialized["skull-texture"] as String,
+            serialized["base-hp"] as Int,
         )
     }
 }
