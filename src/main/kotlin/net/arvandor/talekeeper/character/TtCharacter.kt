@@ -1,27 +1,55 @@
 package net.arvandor.talekeeper.character
 
 import com.rpkit.characters.bukkit.character.RPKCharacterId
+import com.rpkit.core.service.Services
+import com.rpkit.players.bukkit.profile.RPKProfile
 import com.rpkit.players.bukkit.profile.RPKProfileId
+import com.rpkit.players.bukkit.profile.RPKProfileService
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
+import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
+import com.rpkit.players.bukkit.unit.RPKUnitService
+import com.rpkit.players.bukkit.unit.UnitType
+import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
 import net.arvandor.talekeeper.alignment.TtAlignment
 import net.arvandor.talekeeper.ancestry.TtAncestryId
+import net.arvandor.talekeeper.ancestry.TtAncestryService
 import net.arvandor.talekeeper.ancestry.TtSubAncestryId
 import net.arvandor.talekeeper.background.TtBackgroundId
+import net.arvandor.talekeeper.background.TtBackgroundService
 import net.arvandor.talekeeper.clazz.TtClassId
 import net.arvandor.talekeeper.clazz.TtClassInfo
+import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.feat.TtFeatId
 import net.arvandor.talekeeper.item.TtItemId
 import net.arvandor.talekeeper.language.TtLanguageId
+import net.arvandor.talekeeper.pronouns.TtPronounService
 import net.arvandor.talekeeper.pronouns.TtPronounSetId
+import net.arvandor.talekeeper.scheduler.asyncTask
+import net.arvandor.talekeeper.scheduler.syncTask
 import net.arvandor.talekeeper.skill.TtSkill
 import net.arvandor.talekeeper.speed.TtSpeed
 import net.arvandor.talekeeper.spell.TtSpellId
 import net.arvandor.talekeeper.trait.TtCharacterTrait
+import net.md_5.bungee.api.ChatColor.GRAY
+import net.md_5.bungee.api.ChatColor.GREEN
+import net.md_5.bungee.api.ChatColor.RED
+import net.md_5.bungee.api.ChatColor.WHITE
+import net.md_5.bungee.api.ChatColor.YELLOW
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
+import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.Location
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.text.DecimalFormat
+import java.util.concurrent.CompletableFuture
 
 data class TtCharacter(
+    private val plugin: TalekeepersTome,
     // basic identity
     val id: TtCharacterId = TtCharacterId.generate(),
     val version: Int = 0,
@@ -69,4 +97,495 @@ data class TtCharacter(
     val isDescriptionHidden: Boolean,
     val isHeightHidden: Boolean,
     val isWeightHidden: Boolean,
-)
+) {
+
+    fun display(player: Player) {
+        syncTask(plugin) {
+            val unitService = Services.INSTANCE.get(RPKUnitService::class.java)
+            val minecraftProfileService = Services.INSTANCE.get(RPKMinecraftProfileService::class.java)
+            val profileService = Services.INSTANCE.get(RPKProfileService::class.java)
+
+            val viewerMinecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(player)
+            val viewerProfile = viewerMinecraftProfile.profile as? RPKProfile
+            val viewerProfileId = viewerProfile?.id
+
+            asyncTask(plugin) {
+                val preferredHeightUnitFuture = unitService.getPreferredUnit(viewerProfileId, UnitType.getHEIGHT())
+                val preferredWeightUnitFuture = unitService.getPreferredUnit(viewerProfileId, UnitType.getWEIGHT())
+                val profileFuture = profileService.getProfile(profileId)
+                CompletableFuture.allOf(
+                    preferredHeightUnitFuture,
+                    preferredWeightUnitFuture,
+                    profileFuture,
+                ).join()
+                val preferredHeightUnit = preferredHeightUnitFuture.join()
+                val preferredWeightUnit = preferredWeightUnitFuture.join()
+                val profile = profileFuture.join()
+
+                val isOwner = profile.id == viewerProfileId
+
+                syncTask(plugin) {
+                    val decimalFormat = DecimalFormat("#.##")
+                    player.spigot().sendMessage(
+                        *buildList {
+                            add(
+                                TextComponent("Name: ").apply {
+                                    color = WHITE
+                                },
+                            )
+                            if (isNameHidden && !isOwner) {
+                                add(
+                                    TextComponent("Hidden").apply {
+                                        color = RED
+                                    },
+                                )
+                            } else {
+                                add(
+                                    TextComponent("$name ").apply {
+                                        color = GRAY
+                                    },
+                                )
+                            }
+                            if (isOwner) {
+                                add(
+                                    TextComponent("(Edit) ").apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to modify your name"))
+                                        clickEvent = ClickEvent(RUN_COMMAND, "/character name set")
+                                    },
+                                )
+                                add(
+                                    TextComponent(
+                                        if (isNameHidden) "(Unhide)" else "(Hide)",
+                                    ).apply {
+                                        color = YELLOW
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to ${if (isNameHidden) "unhide" else "hide"} your name"),
+                                        )
+                                        clickEvent =
+                                            ClickEvent(RUN_COMMAND, "/character name ${if (isNameHidden) "unhide" else "hide"}")
+                                    },
+                                )
+                            }
+                        }.toTypedArray(),
+                    )
+                    player.spigot().sendMessage(
+                        *buildList {
+                            add(
+                                TextComponent("Profile: ").apply {
+                                    color = WHITE
+                                },
+                            )
+                            if (isProfileHidden && !isOwner) {
+                                add(
+                                    TextComponent("Hidden").apply {
+                                        color = RED
+                                    },
+                                )
+                            } else {
+                                add(
+                                    TextComponent("${profile.name.value}#${profile.discriminator.value} ").apply {
+                                        color = GRAY
+                                    },
+                                )
+                            }
+                            if (isOwner) {
+                                add(
+                                    TextComponent(
+                                        if (isProfileHidden) "(Unhide)" else "(Hide)",
+                                    ).apply {
+                                        color = YELLOW
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to ${if (isProfileHidden) "unhide" else "hide"} your profile"),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/character profile ${if (isProfileHidden) "unhide" else "hide"}",
+                                        )
+                                    },
+                                )
+                            }
+                        }.toTypedArray(),
+                    )
+                    player.spigot().sendMessage(
+                        TextComponent("Pronouns:").apply {
+                            color = WHITE
+                        },
+                    )
+                    if (isPronounsHidden && !isOwner) {
+                        player.spigot().sendMessage(
+                            TextComponent("Hidden").apply {
+                                color = RED
+                            },
+                        )
+                    } else {
+                        val pronounService = Services.INSTANCE.get(TtPronounService::class.java)
+                        val totalPronounChance = pronouns.values.sum()
+                        pronouns.mapKeys { (id, _) -> pronounService.get(id) }
+                            .forEach { (pronounSet, weight) ->
+                                if (pronounSet != null) {
+                                    player.spigot().sendMessage(
+                                        *buildList {
+                                            add(
+                                                TextComponent(pronounSet.name).apply {
+                                                    color = GRAY
+                                                },
+                                            )
+                                            add(
+                                                TextComponent(" - ").apply {
+                                                    color = WHITE
+                                                },
+                                            )
+                                            add(
+                                                TextComponent("$weight/$totalPronounChance (${decimalFormat.format((weight.toDouble() / totalPronounChance.toDouble()) * 100.0)}%) ").apply {
+                                                    color = GRAY
+                                                },
+                                            )
+                                            if (isOwner) {
+                                                add(
+                                                    TextComponent("(Edit)").apply {
+                                                        color = GREEN
+                                                        hoverEvent = HoverEvent(
+                                                            SHOW_TEXT,
+                                                            Text("Click here to modify the chance this pronoun set is used"),
+                                                        )
+                                                        clickEvent = ClickEvent(
+                                                            RUN_COMMAND,
+                                                            "/character pronouns setchance ${pronounSet.id.value}",
+                                                        )
+                                                    },
+                                                )
+                                                add(TextComponent(" "))
+                                                add(
+                                                    TextComponent("(Remove)").apply {
+                                                        color = RED
+                                                        hoverEvent =
+                                                            HoverEvent(
+                                                                SHOW_TEXT,
+                                                                Text("Click here to remove this pronoun set"),
+                                                            )
+                                                        clickEvent = ClickEvent(
+                                                            RUN_COMMAND,
+                                                            "/character pronouns remove ${pronounSet.id.value}",
+                                                        )
+                                                    },
+                                                )
+                                            }
+                                        }.toTypedArray(),
+                                    )
+                                }
+                            }
+                    }
+                    if (isOwner) {
+                        player.spigot().sendMessage(
+                            TextComponent("(Add) ").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to add new pronoun set"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character pronouns add")
+                            },
+                            TextComponent(
+                                if (isPronounsHidden) "(Unhide)" else "(Hide)",
+                            ).apply {
+                                color = YELLOW
+                                hoverEvent = HoverEvent(
+                                    SHOW_TEXT,
+                                    Text("Click here to ${if (isPronounsHidden) "unhide" else "hide"} your pronouns"),
+                                )
+                                clickEvent = ClickEvent(
+                                    RUN_COMMAND,
+                                    "/character pronouns ${if (isProfileHidden) "unhide" else "hide"}",
+                                )
+                            },
+                        )
+                    }
+                    val ancestryService = Services.INSTANCE.get(TtAncestryService::class.java)
+                    val ancestry = ancestryId.let { ancestryService.getAncestry(it) }
+                    player.spigot().sendMessage(
+                        *buildList {
+                            add(
+                                TextComponent("Ancestry: ").apply {
+                                    color = WHITE
+                                },
+                            )
+                            if (isAncestryHidden && !isOwner) {
+                                add(
+                                    TextComponent("Hidden").apply {
+                                        color = RED
+                                    },
+                                )
+                            } else {
+                                add(
+                                    TextComponent("${ancestry?.name ?: "unset"} ").apply {
+                                        color = GRAY
+                                    },
+                                )
+                            }
+                            if (isOwner) {
+                                add(
+                                    TextComponent(
+                                        if (isAncestryHidden) "(Unhide)" else "(Hide)",
+                                    ).apply {
+                                        color = YELLOW
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to ${if (isAncestryHidden) "unhide" else "hide"} your ancestry"),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/character ancestry ${if (isAncestryHidden) "unhide" else "hide"}",
+                                        )
+                                    },
+                                )
+                            }
+                        }.toTypedArray(),
+                    )
+                    if (ancestry?.subAncestries?.isNotEmpty() == true) {
+                        val subAncestry = subAncestryId?.let { ancestry.getSubAncestry(it) }
+                        player.spigot().sendMessage(
+                            *buildList {
+                                add(
+                                    TextComponent("Sub ancestry: ").apply {
+                                        color = WHITE
+                                    },
+                                )
+                                if (isAncestryHidden && !isOwner) {
+                                    add(
+                                        TextComponent("Hidden").apply {
+                                            color = RED
+                                        },
+                                    )
+                                } else {
+                                    add(
+                                        TextComponent("${subAncestry?.name ?: "unset"} ").apply {
+                                            color = GRAY
+                                        },
+                                    )
+                                }
+                            }.toTypedArray(),
+                        )
+                    }
+                    if (isOwner) {
+                        val classService = Services.INSTANCE.get(TtClassService::class.java)
+                        val classes = classes.mapKeys { (id, _) -> classService.getClass(id) }
+                            .flatMap { (clazz, info) ->
+                                if (clazz == null) {
+                                    emptyList()
+                                } else {
+                                    listOf(clazz to info)
+                                }
+                            }
+                            .toList()
+                            .sortedBy { (_, info) -> info.level }
+                        if (classes.size == 1) {
+                            val (clazz, classInfo) = classes.first()
+                            player.spigot().sendMessage(
+                                TextComponent("Class: ").apply {
+                                    color = WHITE
+                                },
+                                TextComponent("Lv${classInfo.level} ${clazz.name}").apply {
+                                    color = GRAY
+                                },
+                            )
+                        } else {
+                            player.spigot().sendMessage(
+                                TextComponent("Classes: ").apply {
+                                    color = WHITE
+                                },
+                            )
+                            classes.forEach { (clazz, classInfo) ->
+                                player.spigot().sendMessage(
+                                    TextComponent("Lv${classInfo.level} ${clazz.name}").apply {
+                                        color = GRAY
+                                    },
+                                )
+                            }
+                        }
+                        val backgroundService = Services.INSTANCE.get(TtBackgroundService::class.java)
+                        val background = backgroundId.let { backgroundService.getBackground(it) }
+                        player.spigot().sendMessage(
+                            TextComponent("Background: ").apply {
+                                color = WHITE
+                            },
+                            TextComponent("${background?.name ?: "unset"} ").apply {
+                                color = GRAY
+                            },
+                        )
+                        player.spigot().sendMessage(
+                            TextComponent("Alignment: ").apply {
+                                color = WHITE
+                            },
+                            TextComponent("${alignment.displayName} ").apply {
+                                color = GRAY
+                            },
+                            TextComponent("(Edit)").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your alignment"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character alignment set")
+                            },
+                        )
+                        player.spigot().sendMessage(
+                            TextComponent("Abilities: ").apply {
+                                color = WHITE
+                            },
+                            TextComponent(
+                                TtAbility.values()
+                                    .joinToString(" / ") { ability -> "${ability.shortName} ${abilityScores[ability] ?: "?"}" } + " ",
+                            ).apply {
+                                color = GRAY
+                            },
+                        )
+                    }
+                    player.spigot().sendMessage(
+                        TextComponent("Description:").apply {
+                            color = WHITE
+                        },
+                    )
+                    if (isDescriptionHidden && !isOwner) {
+                        player.spigot().sendMessage(
+                            TextComponent("Hidden").apply {
+                                color = RED
+                            },
+                        )
+                    } else {
+                        player.spigot().sendMessage(
+                            TextComponent(description).apply {
+                                color = GRAY
+                            },
+                        )
+                    }
+                    if (isOwner) {
+                        player.spigot().sendMessage(
+                            TextComponent("(Edit) ").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your description"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character description set")
+                            },
+                            TextComponent("(Extend) ").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to extend your description"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character description extend")
+                            },
+                            TextComponent(
+                                if (isDescriptionHidden) "(Unhide)" else "(Hide)",
+                            ).apply {
+                                color = YELLOW
+                                hoverEvent = HoverEvent(
+                                    SHOW_TEXT,
+                                    Text("Click here to ${if (isDescriptionHidden) "unhide" else "hide"} your description"),
+                                )
+                                clickEvent = ClickEvent(
+                                    RUN_COMMAND,
+                                    "/character description ${if (isDescriptionHidden) "unhide" else "hide"}",
+                                )
+                            },
+                        )
+                    }
+                    player.spigot().sendMessage(
+                        *buildList {
+                            add(
+                                TextComponent("Height: ").apply {
+                                    color = WHITE
+                                },
+                            )
+                            if (isHeightHidden && !isOwner) {
+                                add(
+                                    TextComponent("Hidden").apply {
+                                        color = RED
+                                    },
+                                )
+                            } else {
+                                add(
+                                    TextComponent(
+                                        "${
+                                            height.let {
+                                                unitService.format(
+                                                    preferredHeightUnit.scaleFactor * it,
+                                                    preferredHeightUnit,
+                                                )
+                                            } ?: "unset"
+                                        } ",
+                                    ).apply {
+                                        color = GRAY
+                                    },
+                                )
+                            }
+                            if (isOwner) {
+                                add(
+                                    TextComponent("(Edit) ").apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your height"))
+                                        clickEvent = ClickEvent(RUN_COMMAND, "/character height set")
+                                    },
+                                )
+                                add(
+                                    TextComponent(
+                                        if (isHeightHidden) "(Unhide)" else "(Hide)",
+                                    ).apply {
+                                        color = YELLOW
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to ${if (isHeightHidden) "unhide" else "hide"} your height"),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/character height ${if (isHeightHidden) "unhide" else "hide"}",
+                                        )
+                                    },
+                                )
+                            }
+                        }.toTypedArray(),
+                    )
+                    player.spigot().sendMessage(
+                        *buildList {
+                            add(
+                                TextComponent("Weight: ").apply {
+                                    color = WHITE
+                                },
+                            )
+                            add(
+                                TextComponent(
+                                    "${
+                                        weight.let {
+                                            unitService.format(
+                                                preferredWeightUnit.scaleFactor * it,
+                                                preferredWeightUnit,
+                                            )
+                                        } ?: "unset"
+                                    } ",
+                                ).apply {
+                                    color = GRAY
+                                },
+                            )
+                            if (isOwner) {
+                                add(
+                                    TextComponent("(Edit) ").apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your weight"))
+                                        clickEvent = ClickEvent(RUN_COMMAND, "/character weight set")
+                                    },
+                                )
+                                add(
+                                    TextComponent(
+                                        if (isWeightHidden) "(Unhide)" else "(Hide)",
+                                    ).apply {
+                                        color = YELLOW
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to ${if (isWeightHidden) "unhide" else "hide"} your weight"),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/character weight ${if (isWeightHidden) "unhide" else "hide"}",
+                                        )
+                                    },
+                                )
+                            }
+                        }.toTypedArray(),
+                    )
+                }
+            }
+        }
+    }
+}

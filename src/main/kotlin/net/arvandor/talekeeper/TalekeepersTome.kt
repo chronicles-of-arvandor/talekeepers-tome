@@ -181,7 +181,7 @@ class TalekeepersTome : JavaPlugin() {
         )
 
         val characterCreationContextRepo = TtCharacterCreationContextRepository(this, dsl)
-        val characterRepo = TtCharacterRepository(dsl)
+        val characterRepo = TtCharacterRepository(this, dsl)
         val optionRepo = TtChoiceOptionRepository(dsl)
         val pronounRepo = TtPronounRepository(dsl)
 

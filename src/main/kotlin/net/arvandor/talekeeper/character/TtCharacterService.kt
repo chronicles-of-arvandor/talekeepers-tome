@@ -1,16 +1,20 @@
 package net.arvandor.talekeeper.character
 
 import com.rpkit.core.service.Service
+import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.minecraft.BukkitExtensionsKt
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfile
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
+import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.onFailure
 import dev.forkhandles.result4k.resultFrom
 import net.arvandor.talekeeper.TalekeepersTome
+import net.arvandor.talekeeper.effect.TtEffectService
 import net.arvandor.talekeeper.failure.ServiceFailure
+import net.arvandor.talekeeper.failure.ServiceFailureType.GENERAL
 import net.arvandor.talekeeper.failure.toServiceFailure
 import net.arvandor.talekeeper.scheduler.syncTask
 import org.bukkit.inventory.ItemStack
@@ -35,9 +39,18 @@ class TtCharacterService(
             plugin.saveConfig()
         }
 
-    fun getCharacter(id: TtCharacterId): Result4k<TtCharacter?, ServiceFailure> = resultFrom {
-        characterRepo.get(id)
-    }.mapFailure { it.toServiceFailure() }
+    fun getCharacter(id: TtCharacterId): Result4k<TtCharacter?, ServiceFailure> {
+        val character = resultFrom {
+            characterRepo.get(id)
+        }.mapFailure { it.toServiceFailure() }
+            .onFailure { return it }
+            ?: return Success(null)
+
+        val effectService = Services.INSTANCE[TtEffectService::class.java]
+            ?: return Failure(ServiceFailure(GENERAL, "Effect service not found", RuntimeException("Effect service not found")))
+
+        return Success(effectService.applyEffects(character))
+    }
 
     fun getActiveCharacter(minecraftProfileId: RPKMinecraftProfileId): Result4k<TtCharacter?, ServiceFailure> = resultFrom {
         characterRepo.getActive(minecraftProfileId)

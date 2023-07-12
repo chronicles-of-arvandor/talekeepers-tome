@@ -96,15 +96,26 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             sender.sendMessage("${RED}You must be a player to perform this command.")
             return
         }
-        asyncTask(plugin) {
-            val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
-            if (minecraftProfileService == null) {
-                sender.sendMessage("${RED}No Minecraft profile service was found. Please contact an admin.")
-                return@asyncTask
-            }
-            val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(sender)
 
-            val characterService = Services.INSTANCE[TtCharacterService::class.java]
+        val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+        if (minecraftProfileService == null) {
+            sender.sendMessage("${RED}No Minecraft profile service was found. Please contact an admin.")
+            return
+        }
+
+        val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(sender)
+        if (minecraftProfile == null) {
+            sender.sendMessage("${RED}You do not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
+            return
+        }
+
+        val characterService = Services.INSTANCE[TtCharacterService::class.java]
+        if (characterService == null) {
+            sender.sendMessage("${RED}No character service was found. Please contact an admin.")
+            return
+        }
+
+        asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}Failed to retrieve character creation context. Please contact an admin.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)

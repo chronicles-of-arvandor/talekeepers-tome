@@ -185,20 +185,22 @@ data class TtCharacterCreationContext(
                             clickEvent = ClickEvent(RUN_COMMAND, "/character context ancestry ${if (isAncestryHidden) "unhide" else "hide"}")
                         },
                     )
-                    val subAncestry = subAncestryId?.let { ancestry?.getSubAncestry(it) }
-                    player.spigot().sendMessage(
-                        TextComponent("Sub ancestry: ").apply {
-                            color = WHITE
-                        },
-                        TextComponent("${subAncestry?.name ?: "unset"} ").apply {
-                            color = GRAY
-                        },
-                        TextComponent("(Edit)").apply {
-                            color = GREEN
-                            hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your subancestry"))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/character context subancestry set")
-                        },
-                    )
+                    if (ancestry?.subAncestries?.isNotEmpty() == true) {
+                        val subAncestry = subAncestryId?.let { ancestry.getSubAncestry(it) }
+                        player.spigot().sendMessage(
+                            TextComponent("Sub ancestry: ").apply {
+                                color = WHITE
+                            },
+                            TextComponent("${subAncestry?.name ?: "unset"} ").apply {
+                                color = GRAY
+                            },
+                            TextComponent("(Edit)").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your subancestry"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character context subancestry set")
+                            },
+                        )
+                    }
                     val classService = Services.INSTANCE.get(TtClassService::class.java)
                     val clazz = firstClassId?.let { classService.getClass(it) }
                     player.spigot().sendMessage(

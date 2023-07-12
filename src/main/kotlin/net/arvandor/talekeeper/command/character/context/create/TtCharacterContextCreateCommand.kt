@@ -240,6 +240,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
 
                     val character = characterService.save(
                         TtCharacter(
+                            plugin,
                             id = TtCharacterId.generate(),
                             profileId = ctx.profileId,
                             minecraftProfileId = ctx.minecraftProfileId,

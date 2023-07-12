@@ -5,6 +5,7 @@ import com.rpkit.core.bukkit.extension.ItemStacksKt.toByteArray
 import com.rpkit.core.bukkit.extension.ItemStacksKt.toItemStackArray
 import com.rpkit.players.bukkit.profile.RPKProfileId
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
+import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
 import net.arvandor.talekeeper.alignment.TtAlignment
 import net.arvandor.talekeeper.ancestry.TtAncestryId
@@ -28,7 +29,7 @@ import org.bukkit.Location
 import org.jooq.DSLContext
 import java.util.*
 
-class TtCharacterRepository(private val dsl: DSLContext) {
+class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl: DSLContext) {
 
     fun upsert(character: TtCharacter, dsl: DSLContext = this.dsl): TtCharacter {
         return dsl.transactionResult { config ->
@@ -309,6 +310,7 @@ class TtCharacterRepository(private val dsl: DSLContext) {
         abilityScores: Map<TtAbility, Int> = emptyMap(),
         tempAbilityScores: Map<TtAbility, Int> = emptyMap(),
     ) = TtCharacter(
+        plugin,
         id = id.let(::TtCharacterId),
         version = version,
         rpkitId = rpkitId.let(::RPKCharacterId),
