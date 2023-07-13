@@ -1,4 +1,4 @@
-package net.arvandor.talekeeper.command.character.context.pronouns
+package net.arvandor.talekeeper.command.character.pronouns
 
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
@@ -17,7 +17,7 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import java.util.logging.Level.SEVERE
 
-class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterPronounsRemoveCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -50,18 +50,18 @@ class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTom
         }
 
         asyncTask(plugin) {
-            val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your character creation context.")
+            val character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
+                sender.sendMessage("${RED}An error occurred while getting your active character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
-            if (ctx == null) {
-                sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
+            if (character == null) {
+                sender.sendMessage("${RED}You do not currently have an active character.")
                 return@asyncTask
             }
 
             val pronounSetId = TtPronounSetId(args[0])
-            if (!ctx.pronouns.containsKey(pronounSetId)) {
+            if (!character.pronouns.containsKey(pronounSetId)) {
                 sender.sendMessage("${RED}Invalid pronoun set ID.")
                 return@asyncTask
             }
@@ -72,12 +72,12 @@ class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTom
                 return@asyncTask
             }
 
-            val updatedCtx = characterService.save(
-                ctx.copy(
-                    pronouns = ctx.pronouns - pronounSetId,
+            val updatedCharacter = characterService.save(
+                character.copy(
+                    pronouns = character.pronouns - pronounSetId,
                 ),
             ).onFailure {
-                sender.sendMessage("${RED}Failed to save character creation context. Please contact an admin.")
+                sender.sendMessage("${RED}Failed to save character. Please contact an admin.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
@@ -87,7 +87,7 @@ class TtCharacterContextPronounsRemoveCommand(private val plugin: TalekeepersTom
                 "${ChatColor.GREEN}${pronounSet.name} pronouns removed.",
                 "${ChatColor.GRAY}================================",
             )
-            updatedCtx.display(sender)
+            updatedCharacter.display(sender)
         }
         return true
     }

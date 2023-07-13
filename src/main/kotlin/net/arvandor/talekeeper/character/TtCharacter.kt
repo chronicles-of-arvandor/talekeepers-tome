@@ -91,7 +91,6 @@ data class TtCharacter(
     val saturation: Float,
     val isProfileHidden: Boolean,
     val isNameHidden: Boolean,
-    val isPronounsHidden: Boolean,
     val isAgeHidden: Boolean,
     val isAncestryHidden: Boolean,
     val isDescriptionHidden: Boolean,
@@ -214,89 +213,68 @@ data class TtCharacter(
                             color = WHITE
                         },
                     )
-                    if (isPronounsHidden && !isOwner) {
-                        player.spigot().sendMessage(
-                            TextComponent("Hidden").apply {
-                                color = RED
-                            },
-                        )
-                    } else {
-                        val pronounService = Services.INSTANCE.get(TtPronounService::class.java)
-                        val totalPronounChance = pronouns.values.sum()
-                        pronouns.mapKeys { (id, _) -> pronounService.get(id) }
-                            .forEach { (pronounSet, weight) ->
-                                if (pronounSet != null) {
-                                    player.spigot().sendMessage(
-                                        *buildList {
+                    val pronounService = Services.INSTANCE.get(TtPronounService::class.java)
+                    val totalPronounChance = pronouns.values.sum()
+                    pronouns.mapKeys { (id, _) -> pronounService.get(id) }
+                        .forEach { (pronounSet, weight) ->
+                            if (pronounSet != null) {
+                                player.spigot().sendMessage(
+                                    *buildList {
+                                        add(
+                                            TextComponent(pronounSet.name).apply {
+                                                color = GRAY
+                                            },
+                                        )
+                                        add(
+                                            TextComponent(" - ").apply {
+                                                color = WHITE
+                                            },
+                                        )
+                                        add(
+                                            TextComponent("$weight/$totalPronounChance (${decimalFormat.format((weight.toDouble() / totalPronounChance.toDouble()) * 100.0)}%) ").apply {
+                                                color = GRAY
+                                            },
+                                        )
+                                        if (isOwner) {
                                             add(
-                                                TextComponent(pronounSet.name).apply {
-                                                    color = GRAY
+                                                TextComponent("(Edit)").apply {
+                                                    color = GREEN
+                                                    hoverEvent = HoverEvent(
+                                                        SHOW_TEXT,
+                                                        Text("Click here to modify the chance this pronoun set is used"),
+                                                    )
+                                                    clickEvent = ClickEvent(
+                                                        RUN_COMMAND,
+                                                        "/character pronouns setchance ${pronounSet.id.value}",
+                                                    )
                                                 },
                                             )
+                                            add(TextComponent(" "))
                                             add(
-                                                TextComponent(" - ").apply {
-                                                    color = WHITE
-                                                },
-                                            )
-                                            add(
-                                                TextComponent("$weight/$totalPronounChance (${decimalFormat.format((weight.toDouble() / totalPronounChance.toDouble()) * 100.0)}%) ").apply {
-                                                    color = GRAY
-                                                },
-                                            )
-                                            if (isOwner) {
-                                                add(
-                                                    TextComponent("(Edit)").apply {
-                                                        color = GREEN
-                                                        hoverEvent = HoverEvent(
+                                                TextComponent("(Remove)").apply {
+                                                    color = RED
+                                                    hoverEvent =
+                                                        HoverEvent(
                                                             SHOW_TEXT,
-                                                            Text("Click here to modify the chance this pronoun set is used"),
+                                                            Text("Click here to remove this pronoun set"),
                                                         )
-                                                        clickEvent = ClickEvent(
-                                                            RUN_COMMAND,
-                                                            "/character pronouns setchance ${pronounSet.id.value}",
-                                                        )
-                                                    },
-                                                )
-                                                add(TextComponent(" "))
-                                                add(
-                                                    TextComponent("(Remove)").apply {
-                                                        color = RED
-                                                        hoverEvent =
-                                                            HoverEvent(
-                                                                SHOW_TEXT,
-                                                                Text("Click here to remove this pronoun set"),
-                                                            )
-                                                        clickEvent = ClickEvent(
-                                                            RUN_COMMAND,
-                                                            "/character pronouns remove ${pronounSet.id.value}",
-                                                        )
-                                                    },
-                                                )
-                                            }
-                                        }.toTypedArray(),
-                                    )
-                                }
+                                                    clickEvent = ClickEvent(
+                                                        RUN_COMMAND,
+                                                        "/character pronouns remove ${pronounSet.id.value}",
+                                                    )
+                                                },
+                                            )
+                                        }
+                                    }.toTypedArray(),
+                                )
                             }
-                    }
+                        }
                     if (isOwner) {
                         player.spigot().sendMessage(
                             TextComponent("(Add) ").apply {
                                 color = GREEN
                                 hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to add new pronoun set"))
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character pronouns add")
-                            },
-                            TextComponent(
-                                if (isPronounsHidden) "(Unhide)" else "(Hide)",
-                            ).apply {
-                                color = YELLOW
-                                hoverEvent = HoverEvent(
-                                    SHOW_TEXT,
-                                    Text("Click here to ${if (isPronounsHidden) "unhide" else "hide"} your pronouns"),
-                                )
-                                clickEvent = ClickEvent(
-                                    RUN_COMMAND,
-                                    "/character pronouns ${if (isProfileHidden) "unhide" else "hide"}",
-                                )
                             },
                         )
                     }

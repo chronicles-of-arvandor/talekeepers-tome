@@ -1,4 +1,4 @@
-package net.arvandor.talekeeper.command.character.context.pronouns
+package net.arvandor.talekeeper.command.character.pronouns
 
 import com.rpkit.core.bukkit.pagination.PaginatedView
 import com.rpkit.core.service.Services
@@ -24,7 +24,7 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import java.util.logging.Level.SEVERE
 
-class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterPronounsAddCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
             sender.sendMessage("${RED}You must be a player to perform this command.")
@@ -56,13 +56,13 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
         }
 
         asyncTask(plugin) {
-            val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your character creation context.")
+            val character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
+                sender.sendMessage("${RED}An error occurred while getting your active character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
-            if (ctx == null) {
-                sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
+            if (character == null) {
+                sender.sendMessage("${RED}You do not currently have an active character.")
                 return@asyncTask
             }
 
@@ -100,7 +100,7 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
                                 )
                                 clickEvent = ClickEvent(
                                     ClickEvent.Action.RUN_COMMAND,
-                                    "/character context pronouns add ${pronounSet.id.value}",
+                                    "/character pronouns add ${pronounSet.id.value}",
                                 )
                             },
                         )
@@ -117,7 +117,7 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
                                 )
                                 clickEvent = ClickEvent(
                                     ClickEvent.Action.RUN_COMMAND,
-                                    "/character context pronouns add custom"
+                                    "/character pronouns add custom"
                                 )
                             }
                         )
@@ -128,7 +128,7 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
                     "Click here to view the next page",
                     { pageNumber -> "Page $pageNumber" },
                     10,
-                    { pageNumber -> "/character context pronouns add p=$pageNumber" },
+                    { pageNumber -> "/character pronouns add p=$pageNumber" },
                 )
                 if (view.isPageValid(page)) {
                     view.sendPage(sender, page)
@@ -150,8 +150,8 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
                 return@asyncTask
             }
 
-            val updatedCtx = characterService.save(ctx.copy(pronouns = ctx.pronouns + (pronounSet.id to 1))).onFailure {
-                sender.sendMessage("${RED}Failed to save character creation context. Please contact an admin.")
+            val updatedCharacter = characterService.save(character.copy(pronouns = character.pronouns + (pronounSet.id to 1))).onFailure {
+                sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
@@ -161,7 +161,7 @@ class TtCharacterContextPronounsAddCommand(private val plugin: TalekeepersTome) 
                 "$GREEN${pronounSet.name} pronouns added.",
                 "$GRAY================================",
             )
-            updatedCtx.display(sender)
+            updatedCharacter.display(sender)
         }
         return true
     }

@@ -58,7 +58,6 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
             .set(TT_CHARACTER_CREATION_CONTEXT.WEIGHT, ctx.weight)
             .set(TT_CHARACTER_CREATION_CONTEXT.PROFILE_HIDDEN, ctx.isProfileHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.NAME_HIDDEN, ctx.isNameHidden)
-            .set(TT_CHARACTER_CREATION_CONTEXT.PRONOUNS_HIDDEN, ctx.isPronounsHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.AGE_HIDDEN, ctx.isAgeHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.ANCESTRY_HIDDEN, ctx.isAncestryHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.DESCRIPTION_HIDDEN, ctx.isDescriptionHidden)
@@ -80,7 +79,6 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
             .set(TT_CHARACTER_CREATION_CONTEXT.WEIGHT, ctx.weight)
             .set(TT_CHARACTER_CREATION_CONTEXT.PROFILE_HIDDEN, ctx.isProfileHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.NAME_HIDDEN, ctx.isNameHidden)
-            .set(TT_CHARACTER_CREATION_CONTEXT.PRONOUNS_HIDDEN, ctx.isPronounsHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.AGE_HIDDEN, ctx.isAgeHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.ANCESTRY_HIDDEN, ctx.isAncestryHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.DESCRIPTION_HIDDEN, ctx.isDescriptionHidden)
@@ -236,7 +234,6 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
         weight,
         profileHidden,
         nameHidden,
-        pronounsHidden,
         ageHidden,
         ancestryHidden,
         descriptionHidden,

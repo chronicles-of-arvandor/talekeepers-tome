@@ -5,7 +5,7 @@ import com.rpkit.core.service.Services
 import net.arvandor.talekeeper.ancestry.TtAncestryId
 import net.arvandor.talekeeper.ancestry.TtAncestryService
 import net.arvandor.talekeeper.ancestry.TtSubAncestryId
-import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.ChatColor.AQUA
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
@@ -89,13 +89,13 @@ class TtAncestryTraitsCommand : CommandExecutor, TabCompleter {
                     val buttons = if (subAncestry == null) {
                         arrayOf(
                             TextComponent("Back").apply {
-                                color = ChatColor.AQUA
+                                color = AQUA
                                 hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to go back to the ancestry selection menu."))
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character context ancestry set")
                             },
                             TextComponent(" "),
                             TextComponent("Confirm").apply {
-                                color = ChatColor.GREEN
+                                color = GREEN
                                 hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to confirm your ancestry selection."))
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character context ancestry set ${ancestry.id.value}")
                             },
@@ -103,13 +103,13 @@ class TtAncestryTraitsCommand : CommandExecutor, TabCompleter {
                     } else {
                         arrayOf(
                             TextComponent("Back").apply {
-                                color = ChatColor.AQUA
+                                color = AQUA
                                 hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to go back to the sub-ancestry selection menu."))
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character context subancestry set")
                             },
                             TextComponent(" "),
                             TextComponent("Confirm").apply {
-                                color = ChatColor.GREEN
+                                color = GREEN
                                 hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to confirm your sub-ancestry selection."))
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character context subancestry set ${subAncestry.id.value}")
                             },

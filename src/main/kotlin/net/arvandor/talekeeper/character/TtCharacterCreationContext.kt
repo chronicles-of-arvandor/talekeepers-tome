@@ -57,7 +57,6 @@ data class TtCharacterCreationContext(
     val weight: Double?,
     val isProfileHidden: Boolean,
     val isNameHidden: Boolean,
-    val isPronounsHidden: Boolean,
     val isAgeHidden: Boolean,
     val isAncestryHidden: Boolean,
     val isDescriptionHidden: Boolean,
@@ -154,13 +153,6 @@ data class TtCharacterCreationContext(
                             color = GREEN
                             hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to add new pronoun set"))
                             clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns add")
-                        },
-                        TextComponent(
-                            if (isPronounsHidden) "(Unhide)" else "(Hide)",
-                        ).apply {
-                            color = YELLOW
-                            hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to ${if (isPronounsHidden) "unhide" else "hide"} your pronouns"))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns ${if (isProfileHidden) "unhide" else "hide"}")
                         },
                     )
                     val ancestryService = Services.INSTANCE.get(TtAncestryService::class.java)

@@ -1,4 +1,4 @@
-package net.arvandor.talekeeper.command.character.context.pronouns
+package net.arvandor.talekeeper.command.character.pronouns
 
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
@@ -25,7 +25,7 @@ import org.bukkit.entity.Player
 import java.text.DecimalFormat
 import java.util.logging.Level
 
-class TtCharacterContextPronounsSetChanceCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+class TtCharacterPronounsSetChanceCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -58,13 +58,13 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
         }
 
         asyncTask(plugin) {
-            var ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your character creation context.")
+            var character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
+                sender.sendMessage("${RED}An error occurred while getting your active character. Please contact an admin.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
-            if (ctx == null) {
-                sender.sendMessage("${RED}You are not currently creating a character. If you have recently made a request to do so, please ensure a staff member has approved it.")
+            if (character == null) {
+                sender.sendMessage("${RED}You do not currently have an active character.")
                 return@asyncTask
             }
 
@@ -74,7 +74,7 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
             }
 
             val pronounSetId = TtPronounSetId(args[0])
-            if (!ctx.pronouns.containsKey(pronounSetId)) {
+            if (!character.pronouns.containsKey(pronounSetId)) {
                 sender.sendMessage("${RED}Invalid pronoun set ID.")
                 return@asyncTask
             }
@@ -92,23 +92,23 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
                     return@asyncTask
                 }
 
-                ctx = characterService.save(
-                    ctx.copy(
-                        pronouns = ctx.pronouns + (pronounSetId to chance),
+                character = characterService.save(
+                    character.copy(
+                        pronouns = character.pronouns + (pronounSetId to chance),
                     ),
                 ).onFailure {
-                    sender.sendMessage("${RED}Failed to save character creation context. Please contact an admin.")
+                    sender.sendMessage("${RED}Failed to save character. Please contact an admin.")
                     return@asyncTask
                 }
             }
 
-            val currentChance = ctx.pronouns[pronounSetId]
+            val currentChance = character.pronouns[pronounSetId]
             if (currentChance == null) {
                 sender.sendMessage("${RED}You are not currently using that pronoun set.")
                 return@asyncTask
             }
 
-            val currentTotalChance = ctx.pronouns.values.sum()
+            val currentTotalChance = character.pronouns.values.sum()
             val decimalFormat = DecimalFormat("#.##")
 
             val currentPercentageChance = (currentChance.toDouble() / currentTotalChance.toDouble()) * 100.0
@@ -119,7 +119,7 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
                             TextComponent("<--").apply {
                                 color = GREEN
                                 hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to reduce the chance of ${pronounSet.name}"))
-                                clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns setchance ${pronounSetId.value} ${currentChance - 1}")
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character pronouns setchance ${pronounSetId.value} ${currentChance - 1}")
                             },
                         )
                     }
@@ -136,7 +136,7 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
                         TextComponent("-->").apply {
                             color = GREEN
                             hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to increase the chance of ${pronounSet.name}"))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns setchance ${pronounSetId.value} ${currentChance + 1}")
+                            clickEvent = ClickEvent(RUN_COMMAND, "/character pronouns setchance ${pronounSetId.value} ${currentChance + 1}")
                         },
                     )
                 }.toTypedArray(),
@@ -146,7 +146,7 @@ class TtCharacterContextPronounsSetChanceCommand(private val plugin: Talekeepers
                 TextComponent("< Back").apply {
                     color = GREEN
                     hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to go back to your profile"))
-                    clickEvent = ClickEvent(RUN_COMMAND, "/character context")
+                    clickEvent = ClickEvent(RUN_COMMAND, "/character card")
                 },
             )
         }

@@ -85,7 +85,6 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             .set(TT_CHARACTER.SATURATION, character.saturation)
             .set(TT_CHARACTER.PROFILE_HIDDEN, character.isProfileHidden)
             .set(TT_CHARACTER.NAME_HIDDEN, character.isNameHidden)
-            .set(TT_CHARACTER.PRONOUNS_HIDDEN, character.isPronounsHidden)
             .set(TT_CHARACTER.AGE_HIDDEN, character.isAgeHidden)
             .set(TT_CHARACTER.ANCESTRY_HIDDEN, character.isAncestryHidden)
             .set(TT_CHARACTER.DESCRIPTION_HIDDEN, character.isDescriptionHidden)
@@ -122,7 +121,6 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             .set(TT_CHARACTER.SATURATION, character.saturation)
             .set(TT_CHARACTER.PROFILE_HIDDEN, character.isProfileHidden)
             .set(TT_CHARACTER.NAME_HIDDEN, character.isNameHidden)
-            .set(TT_CHARACTER.PRONOUNS_HIDDEN, character.isPronounsHidden)
             .set(TT_CHARACTER.AGE_HIDDEN, character.isAgeHidden)
             .set(TT_CHARACTER.ANCESTRY_HIDDEN, character.isAncestryHidden)
             .set(TT_CHARACTER.DESCRIPTION_HIDDEN, character.isDescriptionHidden)
@@ -355,7 +353,6 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         saturation = saturation,
         isProfileHidden = profileHidden,
         isNameHidden = nameHidden,
-        isPronounsHidden = pronounsHidden,
         isAgeHidden = ageHidden,
         isAncestryHidden = ancestryHidden,
         isDescriptionHidden = descriptionHidden,

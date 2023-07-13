@@ -54,7 +54,6 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
                         weight = null,
                         isProfileHidden = false,
                         isNameHidden = false,
-                        isPronounsHidden = false,
                         isAgeHidden = false,
                         isAncestryHidden = false,
                         isDescriptionHidden = false,

@@ -276,7 +276,6 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                             saturation = 5f,
                             isProfileHidden = ctx.isProfileHidden,
                             isNameHidden = ctx.isNameHidden,
-                            isPronounsHidden = ctx.isPronounsHidden,
                             isAgeHidden = ctx.isAgeHidden,
                             isAncestryHidden = ctx.isAncestryHidden,
                             isDescriptionHidden = ctx.isDescriptionHidden,
