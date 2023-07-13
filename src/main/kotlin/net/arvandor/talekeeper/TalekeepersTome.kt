@@ -12,6 +12,7 @@ import net.arvandor.talekeeper.ancestry.TtSubAncestry
 import net.arvandor.talekeeper.background.TtBackground
 import net.arvandor.talekeeper.background.TtBackgroundService
 import net.arvandor.talekeeper.character.TtCharacterCreationContextRepository
+import net.arvandor.talekeeper.character.TtCharacterCreationRequestRepository
 import net.arvandor.talekeeper.character.TtCharacterRepository
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.choice.TtChoice
@@ -76,6 +77,7 @@ import net.arvandor.talekeeper.spell.range.TtSpellRangeDistanceUnlimited
 import net.arvandor.talekeeper.spell.range.TtSphereSpellRange
 import net.arvandor.talekeeper.spell.scaling.TtSpellScalingLevelDice
 import net.arvandor.talekeeper.spell.time.TtSpellTime
+import net.arvandor.talekeeper.staff.TtStaffService
 import net.arvandor.talekeeper.trait.TtCharacterTrait
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
@@ -180,6 +182,7 @@ class TalekeepersTome : JavaPlugin() {
             jooqSettings,
         )
 
+        val characterCreationRequestRepo = TtCharacterCreationRequestRepository(dsl)
         val characterCreationContextRepo = TtCharacterCreationContextRepository(this, dsl)
         val characterRepo = TtCharacterRepository(this, dsl)
         val optionRepo = TtChoiceOptionRepository(dsl)
@@ -190,7 +193,7 @@ class TalekeepersTome : JavaPlugin() {
             Services.INSTANCE[TtAncestryService::class.java] = TtAncestryService(this)
         }
         Services.INSTANCE[TtBackgroundService::class.java] = TtBackgroundService(this)
-        Services.INSTANCE[TtCharacterService::class.java] = TtCharacterService(this, characterRepo, characterCreationContextRepo)
+        Services.INSTANCE[TtCharacterService::class.java] = TtCharacterService(this, dsl, characterRepo, characterCreationContextRepo, characterCreationRequestRepo)
         Services.INSTANCE[TtChoiceService::class.java] = TtChoiceService(this, optionRepo)
         Services.INSTANCE[TtClassService::class.java] = TtClassService(this)
         Services.INSTANCE[TtEffectService::class.java] = TtEffectService(this)
@@ -201,6 +204,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtSpellService::class.java] = TtSpellService(this)
         Services.INSTANCE[TtAbilityService::class.java] = TtAbilityService(this)
         Services.INSTANCE[TtSpawnService::class.java] = TtSpawnService(this)
+        Services.INSTANCE[TtStaffService::class.java] = TtStaffService(this)
 
         server.pluginManager.registerEvents(InventoryClickListener(), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)

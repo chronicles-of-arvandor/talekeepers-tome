@@ -244,7 +244,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                             plugin,
                             id = TtCharacterId.generate(),
                             profileId = ctx.profileId,
-                            minecraftProfileId = ctx.minecraftProfileId,
+                            minecraftProfileId = null,
                             name = ctx.name,
                             pronouns = ctx.pronouns,
                             ancestryId = ctx.ancestryId,

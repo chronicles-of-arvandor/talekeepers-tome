@@ -15,6 +15,7 @@ commands:
   character:
     description: |
       Character management command
+      /character context - Views the character you are currently creating
       /character context name set - Sets the name in the character creation context
       /character context name hide - Hides the name in the character creation context
       /character context name unhide - Shows the name in the character creation context
@@ -41,6 +42,31 @@ commands:
       /character context weight set - Sets the weight in the character creation context
       /character context weight hide - Hides the weight in the character creation context
       /character context weight unhide - Shows the weight in the character creation context
+      /character card (player) - Views your character card, or the character card of another player
+      /character name set - Sets your character's name
+      /character name hide - Hides your character's name
+      /character name unhide - Shows your character's name
+      /character profile hide - Hides your character's profile
+      /character profile unhide - Shows your character's profile
+      /character pronouns add - Adds a pronoun set to your character
+      /character pronouns remove - Removes a pronoun set from your character
+      /character pronouns setchance - Sets the chance of a pronoun set being used by your character
+      /character ancestry hide - Hides your character's ancestry
+      /character ancestry unhide - Shows your character's ancestry
+      /character alignment set - Sets your character's alignment
+      /character description set - Sets your character's description
+      /character description extend - Extends your character's description
+      /character description hide - Hides your character's description
+      /character description unhide - Shows your character's description
+      /character height set - Sets your character's height
+      /character height hide - Hides your character's height
+      /character height unhide - Shows your character's height
+      /character weight set - Sets your character's weight
+      /character weight hide - Hides your character's weight
+      /character weight unhide - Shows your character's weight
+      /character requests - Views new character creation requests
+      /character requests accept - Accepts a new character creation request
+      /character requests decline - Declines a new character creation request
     usage: /<command> [context]
     aliases: [char, c]
   ancestry:
@@ -55,3 +81,7 @@ commands:
       /background view [background] - Views the details of a background
     usage: /<command> [view]
     aliases: [bg]
+permissions:
+  talekeeper.commands.character.requests:
+    description: Allows viewing and accepting or declining new character requests
+    default: op

@@ -245,29 +245,6 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         )
     }
 
-    fun setActive(minecraftProfileId: RPKMinecraftProfileId, characterId: TtCharacterId?) {
-        if (characterId != null) {
-            dsl.transaction { config ->
-                val transactionalDsl = config.dsl()
-
-                transactionalDsl.update(TT_CHARACTER)
-                    .set(TT_CHARACTER.MINECRAFT_PROFILE_ID, null as? Int?)
-                    .where(TT_CHARACTER.MINECRAFT_PROFILE_ID.eq(minecraftProfileId.value))
-                    .execute()
-
-                transactionalDsl.update(TT_CHARACTER)
-                    .set(TT_CHARACTER.MINECRAFT_PROFILE_ID, minecraftProfileId.value)
-                    .where(TT_CHARACTER.ID.eq(characterId.value))
-                    .execute()
-            }
-        } else {
-            dsl.update(TT_CHARACTER)
-                .set(TT_CHARACTER.MINECRAFT_PROFILE_ID, null as? Int?)
-                .where(TT_CHARACTER.MINECRAFT_PROFILE_ID.eq(minecraftProfileId.value))
-                .execute()
-        }
-    }
-
     private fun getPronouns(characterId: TtCharacterId): Map<TtPronounSetId, Int> =
         dsl.selectFrom(TT_CHARACTER_PRONOUNS)
             .where(TT_CHARACTER_PRONOUNS.CHARACTER_ID.eq(characterId.value))
@@ -313,7 +290,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         version = version,
         rpkitId = rpkitId.let(::RPKCharacterId),
         profileId = profileId.let(::RPKProfileId),
-        minecraftProfileId = minecraftProfileId.let(::RPKMinecraftProfileId),
+        minecraftProfileId = minecraftProfileId?.let(::RPKMinecraftProfileId),
         name = name,
         pronouns = pronouns,
         ancestryId = ancestryId.let(::TtAncestryId),

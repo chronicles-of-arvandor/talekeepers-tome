@@ -10,23 +10,26 @@ import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.onFailure
+import dev.forkhandles.result4k.peek
 import dev.forkhandles.result4k.resultFrom
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.effect.TtEffectService
 import net.arvandor.talekeeper.failure.ServiceFailure
 import net.arvandor.talekeeper.failure.ServiceFailureType.GENERAL
 import net.arvandor.talekeeper.failure.toServiceFailure
+import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.scheduler.syncTask
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType.BLINDNESS
-import org.bukkit.potion.PotionEffectType.SLOW
+import org.bukkit.potion.PotionEffectType
 import org.jooq.DSLContext
 
 class TtCharacterService(
     private val plugin: TalekeepersTome,
+    private val dsl: DSLContext,
     private val characterRepo: TtCharacterRepository,
     private val characterCreationContextRepo: TtCharacterCreationContextRepository,
+    private val characterCreationRequestRepo: TtCharacterCreationRequestRepository,
 ) : Service {
 
     override fun getPlugin() = plugin
@@ -61,41 +64,68 @@ class TtCharacterService(
             return it
         }
 
-        resultFrom {
-            characterRepo.setActive(minecraftProfile.id, character?.id)
-        }.mapFailure { it.toServiceFailure() }
-            .onFailure { return it }
-
         syncTask(plugin) {
             BukkitExtensionsKt.toBukkitPlayer(minecraftProfile)?.let { player ->
-                if (oldCharacter != null) {
-                    save(
-                        oldCharacter.copy(
-                            inventoryContents = player.inventory.contents,
-                            location = player.location,
-                            health = player.health,
-                            foodLevel = player.foodLevel,
-                            exhaustion = player.exhaustion,
-                            saturation = player.saturation,
-                        ),
-                    )
+                asyncTask(plugin) {
+                    resultFrom {
+                        dsl.transaction { config ->
+                            val transactionalDsl = config.dsl()
 
-                    if (oldCharacter.isDead) {
-                        player.removePotionEffect(BLINDNESS)
-                        player.removePotionEffect(SLOW)
-                    }
-                }
+                            if (oldCharacter != null) {
+                                resultFrom {
+                                    characterRepo.upsert(
+                                        oldCharacter.copy(
+                                            minecraftProfileId = null,
+                                            inventoryContents = player.inventory.contents,
+                                            location = player.location,
+                                            health = player.health,
+                                            foodLevel = player.foodLevel,
+                                            exhaustion = player.exhaustion,
+                                            saturation = player.saturation,
+                                        ),
+                                        transactionalDsl,
+                                    )
+                                }.mapFailure { it.toServiceFailure() }
+                                    .onFailure {
+                                        throw it.reason.cause
+                                    }
+                            }
 
-                if (character != null) {
-                    player.inventory.contents = character.inventoryContents
-                    player.teleport(character.location)
-                    player.foodLevel = character.foodLevel
-                    player.exhaustion = character.exhaustion
-                    player.saturation = character.saturation
+                            if (character != null) {
+                                resultFrom {
+                                    characterRepo.upsert(
+                                        character.copy(
+                                            minecraftProfileId = minecraftProfile.id,
+                                        ),
+                                    )
+                                }.mapFailure { it.toServiceFailure() }
+                                    .onFailure {
+                                        throw it.reason.cause
+                                    }
+                            }
+                        }
+                    }.peek {
+                        syncTask(plugin) {
+                            if (oldCharacter != null) {
+                                if (oldCharacter.isDead) {
+                                    player.removePotionEffect(PotionEffectType.BLINDNESS)
+                                    player.removePotionEffect(PotionEffectType.SLOW)
+                                }
+                            }
 
-                    if (character.isDead) {
-                        player.addPotionEffect(PotionEffect(BLINDNESS, 1000000, 0))
-                        player.addPotionEffect(PotionEffect(SLOW, 1000000, 255))
+                            if (character != null) {
+                                player.inventory.contents = character.inventoryContents
+                                player.teleport(character.location)
+                                player.foodLevel = character.foodLevel
+                                player.exhaustion = character.exhaustion
+                                player.saturation = character.saturation
+
+                                if (character.isDead) {
+                                    player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 1000000, 0))
+                                    player.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 1000000, 255))
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -112,7 +142,7 @@ class TtCharacterService(
         characterRepo.delete(id)
     }.mapFailure { it.toServiceFailure() }
 
-    fun getCreationContext(id: TtCharacterCreationContextId): Result4k<TtCharacterCreationContext?, ServiceFailure> = resultFrom<TtCharacterCreationContext?> {
+    fun getCreationContext(id: TtCharacterCreationContextId): Result4k<TtCharacterCreationContext?, ServiceFailure> = resultFrom {
         characterCreationContextRepo.get(id)
     }.mapFailure { it.toServiceFailure() }
 
@@ -120,11 +150,27 @@ class TtCharacterService(
         characterCreationContextRepo.get(minecraftProfileId)
     }.mapFailure { it.toServiceFailure() }
 
-    fun save(characterCreationContext: TtCharacterCreationContext): Result4k<TtCharacterCreationContext, ServiceFailure> = resultFrom<TtCharacterCreationContext> {
+    fun save(characterCreationContext: TtCharacterCreationContext): Result4k<TtCharacterCreationContext, ServiceFailure> = resultFrom {
         characterCreationContextRepo.upsert(characterCreationContext)
     }.mapFailure { it.toServiceFailure() }
 
-    fun delete(id: TtCharacterCreationContextId, dsl: DSLContext = plugin.dsl): Result4k<Unit, ServiceFailure> = resultFrom<Unit> {
+    fun delete(id: TtCharacterCreationContextId, dsl: DSLContext = plugin.dsl): Result4k<Unit, ServiceFailure> = resultFrom {
         characterCreationContextRepo.delete(id, dsl)
+    }.mapFailure { it.toServiceFailure() }
+
+    fun getCreationRequest(id: RPKMinecraftProfileId): Result4k<TtCharacterCreationRequest?, ServiceFailure> = resultFrom {
+        characterCreationRequestRepo.getCharacterCreationRequest(id)
+    }.mapFailure { it.toServiceFailure() }
+
+    fun getCreationRequests() = resultFrom {
+        characterCreationRequestRepo.getAll()
+    }.mapFailure { it.toServiceFailure() }
+
+    fun save(characterCreationRequest: TtCharacterCreationRequest): Result4k<TtCharacterCreationRequest, ServiceFailure> = resultFrom {
+        characterCreationRequestRepo.upsert(characterCreationRequest)
+    }.mapFailure { it.toServiceFailure() }
+
+    fun deleteCreationRequest(id: RPKMinecraftProfileId): Result4k<Unit, ServiceFailure> = resultFrom {
+        characterCreationRequestRepo.delete(id)
     }.mapFailure { it.toServiceFailure() }
 }

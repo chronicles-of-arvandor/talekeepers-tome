@@ -139,3 +139,8 @@ create table tt_character_creation_context_ability_score_choice(
     primary key(character_creation_context_id, ability),
     constraint fk_character_creation_context_ability_ctx_id foreign key (character_creation_context_id) references tt_character_creation_context(id) on delete cascade
 );
+
+create table tt_character_creation_request(
+    minecraft_profile_id int not null primary key,
+    request_time datetime not null
+);

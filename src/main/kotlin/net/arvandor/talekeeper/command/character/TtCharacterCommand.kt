@@ -5,11 +5,13 @@ import net.arvandor.talekeeper.command.character.alignment.TtCharacterAlignmentC
 import net.arvandor.talekeeper.command.character.ancestry.TtCharacterAncestryCommand
 import net.arvandor.talekeeper.command.character.card.TtCharacterCardCommand
 import net.arvandor.talekeeper.command.character.context.TtCharacterContextCommand
+import net.arvandor.talekeeper.command.character.create.TtCharacterCreateCommand
 import net.arvandor.talekeeper.command.character.description.TtCharacterDescriptionCommand
 import net.arvandor.talekeeper.command.character.height.TtCharacterHeightCommand
 import net.arvandor.talekeeper.command.character.name.TtCharacterNameCommand
 import net.arvandor.talekeeper.command.character.profile.TtCharacterProfileCommand
 import net.arvandor.talekeeper.command.character.pronouns.TtCharacterPronounsCommand
+import net.arvandor.talekeeper.command.character.requests.TtCharacterRequestsCommand
 import net.arvandor.talekeeper.command.character.weight.TtCharacterWeightCommand
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
@@ -21,6 +23,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
 
     private val contextCommand = TtCharacterContextCommand(plugin)
     private val cardCommand = TtCharacterCardCommand(plugin)
+    private val createCommand = TtCharacterCreateCommand(plugin)
     private val nameCommand = TtCharacterNameCommand(plugin)
     private val profileCommand = TtCharacterProfileCommand(plugin)
     private val pronounsCommand = TtCharacterPronounsCommand(plugin)
@@ -29,9 +32,11 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
     private val descriptionCommand = TtCharacterDescriptionCommand(plugin)
     private val heightCommand = TtCharacterHeightCommand(plugin)
     private val weightCommand = TtCharacterWeightCommand(plugin)
+    private val requestsCommand = TtCharacterRequestsCommand(plugin)
 
     private val contextAliases = listOf("context", "ctx")
     private val cardAliases = listOf("card", "view", "show")
+    private val createAliases = listOf("create", "new")
     private val nameAliases = listOf("name")
     private val profileAliases = listOf("profile")
     private val pronounsAliases = listOf("pronouns")
@@ -40,6 +45,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
     private val descriptionAliases = listOf("description")
     private val heightAliases = listOf("height")
     private val weightAliases = listOf("weight")
+    private val requestsAliases = listOf("requests", "request", "req", "reqs")
 
     private val subcommands = contextAliases +
         cardAliases +
@@ -56,6 +62,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
         return when (args.firstOrNull()?.lowercase()) {
             in contextAliases -> contextCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in cardAliases -> cardCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in createAliases -> createCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in nameAliases -> nameCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in profileAliases -> profileCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in pronounsAliases -> pronounsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
@@ -64,6 +71,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
             in descriptionAliases -> descriptionCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in heightAliases -> heightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in weightAliases -> weightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in requestsAliases -> requestsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character [${subcommands.joinToString("|")}]")
                 true
@@ -91,6 +99,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
                 in descriptionAliases -> descriptionCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in heightAliases -> heightCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in weightAliases -> weightCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in requestsAliases -> requestsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 else -> emptyList()
             }
             else -> emptyList()
