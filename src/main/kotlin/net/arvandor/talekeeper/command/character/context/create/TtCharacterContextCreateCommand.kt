@@ -19,6 +19,7 @@ import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.spawn.TtSpawnService
 import net.arvandor.talekeeper.speed.TtSpeed
 import net.arvandor.talekeeper.speed.TtSpeedUnit
+import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
@@ -306,6 +307,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
             }
 
             sender.sendMessage("${GREEN}Welcome to Talgalen, ${character.name}!")
+            sender.sendMessage("${GRAY}If you wish to view or change your character, use \"/character card\".")
         }
         return true
     }
