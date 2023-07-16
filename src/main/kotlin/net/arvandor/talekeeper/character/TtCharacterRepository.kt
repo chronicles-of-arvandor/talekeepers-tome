@@ -232,6 +232,19 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             tempAbilityScores = getTempAbilityScores(id),
         )
 
+    fun get(rpkitId: RPKCharacterId): TtCharacter? = dsl.selectFrom(TT_CHARACTER)
+        .where(TT_CHARACTER.RPKIT_ID.eq(rpkitId.value))
+        .fetchOne()
+        ?.let {
+            val id = TtCharacterId(it.id)
+            it.toDomain(
+                pronouns = getPronouns(id),
+                classes = getClasses(id),
+                abilityScores = getAbilityScores(id),
+                tempAbilityScores = getTempAbilityScores(id),
+            )
+        }
+
     fun getActive(minecraftProfileId: RPKMinecraftProfileId): TtCharacter? {
         val character = dsl.selectFrom(TT_CHARACTER)
             .where(TT_CHARACTER.MINECRAFT_PROFILE_ID.eq(minecraftProfileId.value))
@@ -243,6 +256,21 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             abilityScores = getAbilityScores(character.id),
             tempAbilityScores = getTempAbilityScores(character.id),
         )
+    }
+
+    fun getAll(profileId: RPKProfileId): List<TtCharacter> {
+        return dsl.selectFrom(TT_CHARACTER)
+            .where(TT_CHARACTER.PROFILE_ID.eq(profileId.value))
+            .fetch()
+            .map {
+                val id = TtCharacterId(it.id)
+                it.toDomain().copy(
+                    pronouns = getPronouns(id),
+                    classes = getClasses(id),
+                    abilityScores = getAbilityScores(id),
+                    tempAbilityScores = getTempAbilityScores(id),
+                )
+            }
     }
 
     private fun getPronouns(characterId: TtCharacterId): Map<TtPronounSetId, Int> =

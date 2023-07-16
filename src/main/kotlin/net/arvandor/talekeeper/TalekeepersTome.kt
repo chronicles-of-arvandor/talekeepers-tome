@@ -1,5 +1,7 @@
 package net.arvandor.talekeeper
 
+import com.rpkit.characters.bukkit.character.RPKCharacterService
+import com.rpkit.characters.bukkit.character.field.RPKCharacterCardFieldService
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.unit.RPKUnitService
 import com.zaxxer.hikari.HikariConfig
@@ -33,8 +35,10 @@ import net.arvandor.talekeeper.feat.TtFeatService
 import net.arvandor.talekeeper.item.TtItemService
 import net.arvandor.talekeeper.language.TtLanguage
 import net.arvandor.talekeeper.language.TtLanguageService
+import net.arvandor.talekeeper.listener.AsyncPlayerPreLoginListener
 import net.arvandor.talekeeper.listener.InventoryClickListener
 import net.arvandor.talekeeper.listener.PlayerJoinListener
+import net.arvandor.talekeeper.listener.PlayerQuitListener
 import net.arvandor.talekeeper.prerequisite.TtAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtBackgroundPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtChoicePrerequisite
@@ -45,6 +49,8 @@ import net.arvandor.talekeeper.prerequisite.TtSubAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtSubClassPrerequisite
 import net.arvandor.talekeeper.pronouns.TtPronounRepository
 import net.arvandor.talekeeper.pronouns.TtPronounService
+import net.arvandor.talekeeper.rpkit.TtRpkCharacterCardFieldService
+import net.arvandor.talekeeper.rpkit.TtRpkCharacterService
 import net.arvandor.talekeeper.source.TtSource
 import net.arvandor.talekeeper.spawn.TtSpawnService
 import net.arvandor.talekeeper.spell.TtSpellService
@@ -206,8 +212,14 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtSpawnService::class.java] = TtSpawnService(this)
         Services.INSTANCE[TtStaffService::class.java] = TtStaffService(this)
 
+        // RPKit services
+        Services.INSTANCE[RPKCharacterService::class.java] = TtRpkCharacterService(this)
+        Services.INSTANCE[RPKCharacterCardFieldService::class.java] = TtRpkCharacterCardFieldService(this)
+
+        server.pluginManager.registerEvents(AsyncPlayerPreLoginListener(), this)
         server.pluginManager.registerEvents(InventoryClickListener(), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
+        server.pluginManager.registerEvents(PlayerQuitListener(), this)
 
         getCommand("character")?.setExecutor(TtCharacterCommand(this))
         getCommand("ancestry")?.setExecutor(TtAncestryCommand())
