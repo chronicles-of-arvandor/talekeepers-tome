@@ -12,6 +12,7 @@ import net.arvandor.talekeeper.character.TtCharacter
 import net.arvandor.talekeeper.character.TtCharacterId
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.choice.option.TtChoiceOption
+import net.arvandor.talekeeper.choice.option.TtChoiceOptionId
 import net.arvandor.talekeeper.choice.option.TtChoiceOptionRepository
 import net.arvandor.talekeeper.failure.ServiceFailure
 import net.arvandor.talekeeper.failure.toServiceFailure
@@ -34,6 +35,10 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
         val choice = choices[choiceId] ?: return@resultFrom null
         val optionId = optionRepository.getChoiceOption(characterId, choiceId)
         return@resultFrom choice.options.singleOrNull { it.id == optionId }
+    }.mapFailure { it.toServiceFailure() }
+
+    fun setChosenOption(characterId: TtCharacterId, choiceId: TtChoiceId, optionId: TtChoiceOptionId): Result4k<Unit, ServiceFailure> = resultFrom {
+        optionRepository.upsert(characterId, choiceId, optionId)
     }.mapFailure { it.toServiceFailure() }
 
     fun getApplicableChoices(characterId: TtCharacterId): Result4k<List<TtChoice>, ServiceFailure> {

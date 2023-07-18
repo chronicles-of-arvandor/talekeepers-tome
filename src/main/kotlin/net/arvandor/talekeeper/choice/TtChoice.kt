@@ -5,7 +5,9 @@ import net.arvandor.talekeeper.choice.option.TtChoiceOption
 import net.arvandor.talekeeper.choice.option.TtChoiceOptionId
 import net.arvandor.talekeeper.prerequisite.TtPrerequisite
 import org.bukkit.configuration.serialization.ConfigurationSerializable
+import org.bukkit.configuration.serialization.SerializableAs
 
+@SerializableAs("Choice")
 data class TtChoice(
     val id: TtChoiceId,
     val text: String,
@@ -15,7 +17,7 @@ data class TtChoice(
 
     fun isApplicableFor(character: TtCharacter) = prerequisites.all { it.isMetBy(character) }
 
-    fun getOption(id: TtChoiceOptionId) = options.single { it.id == id }
+    fun getOption(id: TtChoiceOptionId) = options.singleOrNull { it.id == id }
 
     override fun serialize() = mapOf(
         "id" to id.value,

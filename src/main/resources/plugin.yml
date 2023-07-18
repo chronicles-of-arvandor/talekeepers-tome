@@ -81,6 +81,12 @@ commands:
       /background view [background] - Views the details of a background
     usage: /<command> [view]
     aliases: [bg]
+  choice:
+    description: |
+      Choice management command
+      /choice list - Lists pending choices
+      /choice view [choice id] - Views a choice
+      /choice select [choice id] [option id] - Selects an option for a choice
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests

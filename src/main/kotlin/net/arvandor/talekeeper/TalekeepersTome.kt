@@ -27,6 +27,7 @@ import net.arvandor.talekeeper.clazz.TtSubClass
 import net.arvandor.talekeeper.command.ancestry.TtAncestryCommand
 import net.arvandor.talekeeper.command.background.TtBackgroundCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
+import net.arvandor.talekeeper.command.choice.TtChoiceCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtEffect
 import net.arvandor.talekeeper.effect.TtEffectService
@@ -224,5 +225,6 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("character")?.setExecutor(TtCharacterCommand(this))
         getCommand("ancestry")?.setExecutor(TtAncestryCommand())
         getCommand("background")?.setExecutor(TtBackgroundCommand())
+        getCommand("choice")?.setExecutor(TtChoiceCommand(this))
     }
 }

@@ -49,6 +49,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
 
     private val subcommands = contextAliases +
         cardAliases +
+        createAliases +
         nameAliases +
         profileAliases +
         pronounsAliases +
@@ -56,7 +57,8 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
         alignmentAliases +
         descriptionAliases +
         heightAliases +
-        weightAliases
+        weightAliases +
+        requestsAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         return when (args.firstOrNull()?.lowercase()) {
@@ -91,6 +93,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
             args.size > 1 -> when (args.first().lowercase()) {
                 in contextAliases -> contextCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in cardAliases -> cardCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in createAliases -> createCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in nameAliases -> nameCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in profileAliases -> profileCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in pronounsAliases -> pronounsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
