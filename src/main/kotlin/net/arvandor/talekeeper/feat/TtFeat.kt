@@ -21,7 +21,7 @@ data class TtFeat(
             "name" to name,
             "source" to source,
             "page" to page,
-            "otherSources" to otherSources,
+            "other-sources" to otherSources,
             "prerequisites" to prerequisites,
         )
     }
@@ -34,7 +34,7 @@ data class TtFeat(
                 name = serialized["name"] as String,
                 source = serialized["source"] as String,
                 page = serialized["page"] as Int,
-                otherSources = serialized["otherSources"] as List<TtSource>,
+                otherSources = serialized["other-sources"] as List<TtSource>,
                 prerequisites = serialized["prerequisites"] as List<TtPrerequisite>,
             )
         }
