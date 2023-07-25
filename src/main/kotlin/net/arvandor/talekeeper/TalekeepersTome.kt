@@ -29,8 +29,15 @@ import net.arvandor.talekeeper.command.background.TtBackgroundCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.command.choice.TtChoiceCommand
 import net.arvandor.talekeeper.distance.TtDistance
-import net.arvandor.talekeeper.effect.TtEffect
+import net.arvandor.talekeeper.effect.TtAbilityEffect
+import net.arvandor.talekeeper.effect.TtCharacterTraitEffect
 import net.arvandor.talekeeper.effect.TtEffectService
+import net.arvandor.talekeeper.effect.TtFeatEffect
+import net.arvandor.talekeeper.effect.TtItemProficiencyEffect
+import net.arvandor.talekeeper.effect.TtLanguageEffect
+import net.arvandor.talekeeper.effect.TtSkillProficiencyEffect
+import net.arvandor.talekeeper.effect.TtSpeedEffect
+import net.arvandor.talekeeper.effect.TtSpellEffect
 import net.arvandor.talekeeper.feat.TtFeat
 import net.arvandor.talekeeper.feat.TtFeatService
 import net.arvandor.talekeeper.item.TtItemService
@@ -108,7 +115,14 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtClass::class.java, "Class")
         ConfigurationSerialization.registerClass(TtSubClass::class.java, "SubClass")
         ConfigurationSerialization.registerClass(TtDistance::class.java, "Distance")
-        ConfigurationSerialization.registerClass(TtEffect::class.java, "Effect")
+        ConfigurationSerialization.registerClass(TtAbilityEffect::class.java, "AbilityEffect")
+        ConfigurationSerialization.registerClass(TtCharacterTraitEffect::class.java, "CharacterTraitEffect")
+        ConfigurationSerialization.registerClass(TtFeatEffect::class.java, "FeatEffect")
+        ConfigurationSerialization.registerClass(TtItemProficiencyEffect::class.java, "ItemProficiencyEffect")
+        ConfigurationSerialization.registerClass(TtLanguageEffect::class.java, "LanguageEffect")
+        ConfigurationSerialization.registerClass(TtSkillProficiencyEffect::class.java, "SkillProficiencyEffect")
+        ConfigurationSerialization.registerClass(TtSpeedEffect::class.java, "SpeedEffect")
+        ConfigurationSerialization.registerClass(TtSpellEffect::class.java, "SpellEffect")
         ConfigurationSerialization.registerClass(TtFeat::class.java, "Feat")
         ConfigurationSerialization.registerClass(TtLanguage::class.java, "Language")
         ConfigurationSerialization.registerClass(TtAncestryPrerequisite::class.java, "AncestryPrerequisite")

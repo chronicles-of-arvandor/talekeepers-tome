@@ -3,7 +3,9 @@ package net.arvandor.talekeeper.effect
 import net.arvandor.talekeeper.character.TtCharacter
 import net.arvandor.talekeeper.feat.TtFeatId
 import net.arvandor.talekeeper.prerequisite.TtPrerequisite
+import org.bukkit.configuration.serialization.SerializableAs
 
+@SerializableAs("FeatEffect")
 data class TtFeatEffect(private val feats: List<TtFeatId>, override val prerequisites: List<TtPrerequisite>) : TtEffect {
     override fun invoke(character: TtCharacter) = character.copy(feats = character.feats + feats)
 
