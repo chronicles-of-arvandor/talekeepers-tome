@@ -15,18 +15,28 @@ object TtInstantSpellDuration : TtSpellDuration {
 
 @SerializableAs("TimedSpellDuration")
 data class TtTimedSpellDuration(
-    val duration: TtSpellDuration,
+    val type: TtTimedSpellDurationType,
+    val amount: Int,
     val concentration: Boolean,
 ) : TtSpellDuration {
+    enum class TtTimedSpellDurationType {
+        MINUTE,
+        HOUR,
+        DAY,
+        ROUND,
+    }
+
     override fun serialize() = mapOf(
-        "duration" to duration,
+        "type" to type.name,
+        "amount" to amount,
         "concentration" to concentration,
     )
 
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtTimedSpellDuration(
-            serialized["duration"] as TtSpellDuration,
+            TtTimedSpellDurationType.valueOf(serialized["type"] as String),
+            serialized["amount"] as Int,
             serialized["concentration"] as Boolean,
         )
     }
@@ -43,7 +53,7 @@ data class TtPermanentSpellDuration(
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtPermanentSpellDuration(
-            serialized["ends"] as List<TtPermanentSpellEnd>,
+            (serialized["ends"] as List<String>).map(TtPermanentSpellEnd::valueOf),
         )
     }
 }
