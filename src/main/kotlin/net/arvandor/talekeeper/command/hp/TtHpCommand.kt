@@ -20,11 +20,29 @@ import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import java.util.logging.Level
 
-class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor {
+class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
+
+    private val shareCommand = TtHpShareCommand(plugin)
+
+    private val shareAliases = listOf("share")
+
+    private val subcommands = shareAliases
+
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (args.isNotEmpty()) {
+            return when (args.first().lowercase()) {
+                in shareAliases -> shareCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+                else -> {
+                    sender.sendMessage("${RED}Usage: /hp [${subcommands.joinToString("|")}]")
+                    true
+                }
+            }
+        }
+
         if (sender !is Player) {
             sender.sendMessage("${RED}You must be a player to perform this command.")
             return true
@@ -111,5 +129,22 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor {
             )
         }
         return true
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<out String>,
+    ) = when {
+        args.isEmpty() -> subcommands
+        args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
+        args.size > 1 -> {
+            when (args.first().lowercase()) {
+                in shareAliases -> shareCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                else -> emptyList()
+            }
+        }
+        else -> emptyList()
     }
 }
