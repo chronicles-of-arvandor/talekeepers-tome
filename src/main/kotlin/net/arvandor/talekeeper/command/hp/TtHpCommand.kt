@@ -27,8 +27,12 @@ import java.util.logging.Level
 class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
     private val shareCommand = TtHpShareCommand(plugin)
+    private val increaseCommand = TtHpIncreaseCommand(plugin)
+    private val decreaseCommand = TtHpDecreaseCommand(plugin)
 
     private val shareAliases = listOf("share")
+    private val increaseAliases = listOf("increase", "add", "+")
+    private val decreaseAliases = listOf("decrease", "reduce", "subtract", "-")
 
     private val subcommands = shareAliases
 
@@ -36,6 +40,8 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
         if (args.isNotEmpty()) {
             when (args.first().lowercase()) {
                 in shareAliases -> return shareCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+                in increaseAliases -> return increaseCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+                in decreaseAliases -> return decreaseCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             }
         }
 
@@ -87,14 +93,22 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
             sender.spigot().sendMessage(
                 *buildList {
                     if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
-                        add(
-                            TextComponent("[ - ]").apply {
-                                color = RED
-                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 1."))
-                                clickEvent = ClickEvent(RUN_COMMAND, "/hp reduce")
-                            },
-                        )
-                        add(TextComponent(" "))
+                        if (character.hp + character.tempHp > 0) {
+                            add(
+                                TextComponent("[ - ]").apply {
+                                    color = RED
+                                    hoverEvent = HoverEvent(
+                                        SHOW_TEXT,
+                                        Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 1."),
+                                    )
+                                    clickEvent = ClickEvent(
+                                        RUN_COMMAND,
+                                        if (sender == target) "/hp decrease" else "/hp decrease ${target.name}",
+                                    )
+                                },
+                            )
+                            add(TextComponent(" "))
+                        }
                     }
                     add(
                         TextComponent("${character.hp}").apply {
@@ -126,14 +140,22 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
                         )
                     }
                     if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
-                        add(TextComponent(" "))
-                        add(
-                            TextComponent("[ + ]").apply {
-                                color = GREEN
-                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 1."))
-                                clickEvent = ClickEvent(RUN_COMMAND, "/hp increase")
-                            },
-                        )
+                        if (character.hp < character.maxHp) {
+                            add(TextComponent(" "))
+                            add(
+                                TextComponent("[ + ]").apply {
+                                    color = GREEN
+                                    hoverEvent = HoverEvent(
+                                        SHOW_TEXT,
+                                        Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 1."),
+                                    )
+                                    clickEvent = ClickEvent(
+                                        RUN_COMMAND,
+                                        if (sender == target) "/hp increase" else "/hp increase ${target.name}",
+                                    )
+                                },
+                            )
+                        }
                     }
                 }.toTypedArray(),
             )
@@ -147,11 +169,13 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
         label: String,
         args: Array<out String>,
     ) = when {
-        args.isEmpty() -> subcommands
-        args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
+        args.isEmpty() -> subcommands + plugin.server.onlinePlayers.map(Player::getName)
+        args.size == 1 -> (subcommands + plugin.server.onlinePlayers.map(Player::getName)).filter { it.startsWith(args[0], ignoreCase = true) }
         args.size > 1 -> {
             when (args.first().lowercase()) {
                 in shareAliases -> shareCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in increaseAliases -> increaseCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in decreaseAliases -> decreaseCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 else -> emptyList()
             }
         }
