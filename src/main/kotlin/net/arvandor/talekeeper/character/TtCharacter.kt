@@ -11,6 +11,8 @@ import com.rpkit.players.bukkit.unit.RPKUnitService
 import com.rpkit.players.bukkit.unit.UnitType
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
+import net.arvandor.talekeeper.ability.TtAbility.CONSTITUTION
+import net.arvandor.talekeeper.ability.TtAbilityService
 import net.arvandor.talekeeper.alignment.TtAlignment
 import net.arvandor.talekeeper.ancestry.TtAncestryId
 import net.arvandor.talekeeper.ancestry.TtAncestryService
@@ -20,6 +22,7 @@ import net.arvandor.talekeeper.background.TtBackgroundService
 import net.arvandor.talekeeper.clazz.TtClassId
 import net.arvandor.talekeeper.clazz.TtClassInfo
 import net.arvandor.talekeeper.clazz.TtClassService
+import net.arvandor.talekeeper.experience.TtExperienceService
 import net.arvandor.talekeeper.feat.TtFeatId
 import net.arvandor.talekeeper.item.TtItemId
 import net.arvandor.talekeeper.language.TtLanguageId
@@ -97,6 +100,40 @@ data class TtCharacter(
     val isHeightHidden: Boolean,
     val isWeightHidden: Boolean,
 ) {
+
+    val maxHp: Int
+        get() {
+            val classService = Services.INSTANCE[TtClassService::class.java]
+            val firstClass = classService.getClass(firstClassId)
+            val ancestryService = Services.INSTANCE[TtAncestryService::class.java]
+            val ancestry = ancestryService.getAncestry(ancestryId)
+            val subAncestry = subAncestryId?.let { ancestry?.getSubAncestry(it) }
+            val firstClassHp = firstClass?.baseHp ?: 1
+            val experienceService = Services.INSTANCE[TtExperienceService::class.java]
+            val level = experienceService.getLevelAtExperience(experience)
+            val constitutionHp = getModifier(CONSTITUTION) * level
+            val classHp = classes.map { (classId, classInfo) ->
+                val clazz = classService.getClass(classId)
+                val classLevel = classInfo.level
+                val classHp = clazz?.baseHp ?: 1
+                return@map if (classId == firstClassId) {
+                    (classLevel - 1) * classHp
+                } else {
+                    classLevel * classHp
+                }
+            }.sum()
+            val ancestryHp = subAncestry?.getBonusHp(level)
+                ?: ancestry?.getBonusHp(level)
+                ?: 0
+            return constitutionHp + firstClassHp + classHp + ancestryHp
+        }
+
+    fun getModifier(ability: TtAbility): Int {
+        val abilityService = Services.INSTANCE[TtAbilityService::class.java]
+        val abilityScore = abilityScores[ability] ?: 0
+        val tempAbilityScore = tempAbilityScores[ability] ?: 0
+        return abilityService.getModifier(abilityScore + tempAbilityScore)
+    }
 
     fun display(player: Player) {
         syncTask(plugin) {

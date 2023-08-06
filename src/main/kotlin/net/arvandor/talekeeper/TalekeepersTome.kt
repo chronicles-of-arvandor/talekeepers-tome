@@ -28,6 +28,7 @@ import net.arvandor.talekeeper.command.ancestry.TtAncestryCommand
 import net.arvandor.talekeeper.command.background.TtBackgroundCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.command.choice.TtChoiceCommand
+import net.arvandor.talekeeper.command.hp.TtHpCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtAbilityEffect
 import net.arvandor.talekeeper.effect.TtCharacterTraitEffect
@@ -38,6 +39,7 @@ import net.arvandor.talekeeper.effect.TtLanguageEffect
 import net.arvandor.talekeeper.effect.TtSkillProficiencyEffect
 import net.arvandor.talekeeper.effect.TtSpeedEffect
 import net.arvandor.talekeeper.effect.TtSpellEffect
+import net.arvandor.talekeeper.experience.TtExperienceService
 import net.arvandor.talekeeper.feat.TtFeat
 import net.arvandor.talekeeper.feat.TtFeatService
 import net.arvandor.talekeeper.item.TtItemService
@@ -226,6 +228,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtAbilityService::class.java] = TtAbilityService(this)
         Services.INSTANCE[TtSpawnService::class.java] = TtSpawnService(this)
         Services.INSTANCE[TtStaffService::class.java] = TtStaffService(this)
+        Services.INSTANCE[TtExperienceService::class.java] = TtExperienceService(this)
 
         // RPKit services
         Services.INSTANCE[RPKCharacterService::class.java] = TtRpkCharacterService(this)
@@ -240,5 +243,6 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("ancestry")?.setExecutor(TtAncestryCommand())
         getCommand("background")?.setExecutor(TtBackgroundCommand())
         getCommand("choice")?.setExecutor(TtChoiceCommand(this))
+        getCommand("hp")?.setExecutor(TtHpCommand(this))
     }
 }

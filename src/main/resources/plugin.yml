@@ -87,6 +87,16 @@ commands:
       /choice list - Lists pending choices
       /choice view [choice id] - Views a choice
       /choice select [choice id] [option id] - Selects an option for a choice
+  hp:
+    description: |
+      Hit Points command
+      /hp - View your HP
+      /hp decrease - Decrease your HP
+      /hp increase - Increase your HP
+      /hp share - Display your HP to nearby players
+      /hp [player] - View another player's HP
+      /hp decrease [player] - Decrease another player's HP
+      /hp increase [player] - Increase another player's HP
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests

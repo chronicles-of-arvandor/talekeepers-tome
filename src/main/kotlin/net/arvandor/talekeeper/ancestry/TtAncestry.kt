@@ -7,6 +7,9 @@ import com.rpkit.players.bukkit.unit.WeightUnit
 import net.arvandor.talekeeper.distance.TtDistance
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.SerializableAs
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 @SerializableAs("Ancestry")
 data class TtAncestry(
@@ -22,13 +25,15 @@ data class TtAncestry(
     val minimumWeight: Double,
     val maximumWeight: Double,
     val traits: List<TtAncestryTrait>,
+    val bonusHpPerLevel: Double?,
     val skullTexture: String,
 ) : ConfigurationSerializable {
 
     fun getSubAncestry(id: TtSubAncestryId) = subAncestries.singleOrNull { it.id == id }
     fun getSubAncestry(name: String) = subAncestries.singleOrNull { it.name.equals(name, ignoreCase = true) }
+    fun getBonusHp(level: Int): Int = if (bonusHpPerLevel != null) max(1, floor(bonusHpPerLevel * level).roundToInt()) else 0
 
-    override fun serialize(): Map<String, Any> {
+    override fun serialize(): Map<String, Any?> {
         val unitService = Services.INSTANCE[RPKUnitService::class.java]
         return mapOf(
             "id" to id.value,
@@ -43,13 +48,14 @@ data class TtAncestry(
             "minimum-weight" to unitService.format(minimumWeight * WeightUnit.POUNDS.scaleFactor, WeightUnit.POUNDS),
             "maximum-weight" to unitService.format(maximumWeight * WeightUnit.POUNDS.scaleFactor, WeightUnit.POUNDS),
             "traits" to traits,
+            "bonus-hp-per-level" to bonusHpPerLevel,
             "skull-texture" to skullTexture,
         )
     }
 
     companion object {
         @JvmStatic
-        fun deserialize(serialized: Map<String, Any>) = TtAncestry(
+        fun deserialize(serialized: Map<String, Any?>) = TtAncestry(
             (serialized["id"] as String).let(::TtAncestryId),
             serialized["name"] as String,
             serialized["name-plural"] as String,
@@ -62,6 +68,7 @@ data class TtAncestry(
             WeightUnit.POUNDS.parse(serialized["minimum-weight"] as String),
             WeightUnit.POUNDS.parse(serialized["maximum-weight"] as String),
             serialized["traits"] as List<TtAncestryTrait>,
+            serialized["bonus-hp-per-level"] as? Double,
             serialized["skull-texture"] as String,
         )
     }

@@ -50,6 +50,7 @@ internal val aasimar = TtAncestry(
                     "Starting at 3rd level, you can use your action to unleash the divine energy within yourself, causing your eyes to glimmer and two luminous, incorporeal wings to sprout from your back. Your transformation lasts for 1 minute or until you end it as a bonus action. During it, you have a flying speed of 30 feet, and once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra radiant damage equals your level. Once you use this trait, you can't use it again until you finish a long rest.",
                 ),
             ),
+            null,
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNkOWUzOTA4NGE2YjM1NGZkZWRiMDRjOGM4Mjg4MTk1NjlhNTJhOTBiOWZkZWI2NGFiMDkxOWIwMDU3OTFkMSJ9fX0=",
         ),
         TtSubAncestry(
@@ -92,6 +93,7 @@ internal val aasimar = TtAncestry(
                     "Starting at 3rd level, you can use your action to unleash the divine energy within yourself, causing a searing light to radiate from you, pour out of your eyes and mouth, and threaten to char you. Your transformation lasts for 1 minute or until you end it as a bonus action. During it, you shed bright light in a 10-foot radius and dim light for an additional 10 feet, and at the end of each of your turns, you and each creature within 10 feet of you take radiant damage equal to half your level (rounded up). In addition, once on each of your turns, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra radiant damage equals your level. Once you use this trait, you can't use it again until you finish a long rest.",
                 ),
             ),
+            null,
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNkOWUzOTA4NGE2YjM1NGZkZWRiMDRjOGM4Mjg4MTk1NjlhNTJhOTBiOWZkZWI2NGFiMDkxOWIwMDU3OTFkMSJ9fX0=",
         ),
         TtSubAncestry(
@@ -134,6 +136,7 @@ internal val aasimar = TtAncestry(
                     "Starting at 3rd level, you can use your action to unleash the divine energy within yourself, causing your eyes to turn into pools of darkness and two skeletal, ghostly, flightless wings to sprout from your back. The instant you transform, other creatures within 10 feet of you that can see you must each succeed on a Charisma saving throw (DC 8 + your proficiency bonus + your Charisma modifier) or become frightened of you until the end of your next turn. Your transformation lasts for 1 minute or until you end it as a bonus action. During it, once on each of your turns, you can deal extra necrotic damage to one target when you deal damage to it with an attack or a spell. The extra necrotic damage equals your level. Once you use this trait, you can't use it again until you finish a long rest.",
                 ),
             ),
+            null,
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNkOWUzOTA4NGE2YjM1NGZkZWRiMDRjOGM4Mjg4MTk1NjlhNTJhOTBiOWZkZWI2NGFiMDkxOWIwMDU3OTFkMSJ9fX0=",
         ),
     ),
@@ -182,6 +185,7 @@ internal val aasimar = TtAncestry(
             "You can speak, read and write Common and one other language that you and your DM agree is appropriate for your character.",
         ),
     ),
+    null,
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNkOWUzOTA4NGE2YjM1NGZkZWRiMDRjOGM4Mjg4MTk1NjlhNTJhOTBiOWZkZWI2NGFiMDkxOWIwMDU3OTFkMSJ9fX0=",
 )
 
@@ -226,6 +230,7 @@ internal val gnome = TtAncestry(
                     "Through sounds and gestures, you can communicate simple ideas with Small or smaller beasts. Forest gnomes love animals and often keep squirrels, badgers, rabbits, moles, woodpeckers, and other creatures as beloved pets.",
                 ),
             ),
+            null,
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDkzNmQ3OWU0ZmRhODU5ZDYwOGM4NTNjMTBlZDQyNzYxYjkzNzk5MjBiMDBiMTU1NDMzYzgyOTNmOTFiM2U2ZiJ9fX0=",
         ),
         TtSubAncestry(
@@ -276,6 +281,7 @@ internal val gnome = TtAncestry(
                     "When opened, this music box plays a single song at a moderate volume. The box stops playing when it reaches the song's end or when it is closed.",
                 ),
             ),
+            null,
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDkzNmQ3OWU0ZmRhODU5ZDYwOGM4NTNjMTBlZDQyNzYxYjkzNzk5MjBiMDBiMTU1NDMzYzgyOTNmOTFiM2U2ZiJ9fX0=",
         ),
         TtSubAncestry(
@@ -314,6 +320,7 @@ internal val gnome = TtAncestry(
                     "You have advantage on Dexterity (stealth) checks to hide in rocky terrain.",
                 ),
             ),
+            null,
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDkzNmQ3OWU0ZmRhODU5ZDYwOGM4NTNjMTBlZDQyNzYxYjkzNzk5MjBiMDBiMTU1NDMzYzgyOTNmOTFiM2U2ZiJ9fX0=",
         ),
     ),
@@ -342,5 +349,6 @@ internal val gnome = TtAncestry(
             "You can speak, read, and write Common and Gnomish. The Gnomish language, which uses the Dwarvish script, is renowned for its technical treatises and its catalogs of knowledge about the natural world.",
         ),
     ),
+    null,
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDkzNmQ3OWU0ZmRhODU5ZDYwOGM4NTNjMTBlZDQyNzYxYjkzNzk5MjBiMDBiMTU1NDMzYzgyOTNmOTFiM2U2ZiJ9fX0=",
 )
