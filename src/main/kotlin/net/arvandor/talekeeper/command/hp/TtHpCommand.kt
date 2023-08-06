@@ -34,18 +34,24 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (args.isNotEmpty()) {
-            return when (args.first().lowercase()) {
-                in shareAliases -> shareCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
-                else -> {
-                    sender.sendMessage("${RED}Usage: /hp [${subcommands.joinToString("|")}]")
-                    true
-                }
+            when (args.first().lowercase()) {
+                in shareAliases -> return shareCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             }
         }
 
-        if (sender !is Player) {
-            sender.sendMessage("${RED}You must be a player to perform this command.")
-            return true
+        var target: Player? = null
+        if (args.isNotEmpty()) {
+            if (sender.hasPermission("talekeeper.commands.hp.view.other")) {
+                target = plugin.server.getPlayer(args.first())
+            }
+        }
+        if (target == null) {
+            if (sender !is Player) {
+                sender.sendMessage("${RED}You must specify a player if using this command from console.")
+                return true
+            } else {
+                target = sender
+            }
         }
 
         val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
@@ -61,33 +67,35 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
         }
 
         asyncTask(plugin) {
-            val minecraftProfile = minecraftProfileService.getMinecraftProfile(sender).join()
+            val minecraftProfile = minecraftProfileService.getMinecraftProfile(target).join()
             if (minecraftProfile == null) {
-                sender.sendMessage("${RED}You do not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
+                sender.sendMessage("${RED}${if (sender == target) "You do" else "${target.name} does"} not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
                 return@asyncTask
             }
 
             val character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your active character.")
+                sender.sendMessage("${RED}An error occurred while getting ${if (sender == target) "your" else "${target.name}'s"} active character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
             if (character == null) {
-                sender.sendMessage("${RED}You do not currently have an active character.")
+                sender.sendMessage("${RED}${if (sender == target) "You do" else "${target.name} does"} do not currently have an active character.")
                 return@asyncTask
             }
 
             sender.sendMessage("${GREEN}HP")
             sender.spigot().sendMessage(
                 *buildList {
-                    add(
-                        TextComponent("[ - ]").apply {
-                            color = RED
-                            hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to decrease your HP by 1."))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/hp reduce")
-                        },
-                    )
-                    add(TextComponent(" "))
+                    if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
+                        add(
+                            TextComponent("[ - ]").apply {
+                                color = RED
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 1."))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/hp reduce")
+                            },
+                        )
+                        add(TextComponent(" "))
+                    }
                     add(
                         TextComponent("${character.hp}").apply {
                             color = YELLOW
@@ -117,14 +125,16 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
                             },
                         )
                     }
-                    add(TextComponent(" "))
-                    add(
-                        TextComponent("[ + ]").apply {
-                            color = GREEN
-                            hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to increase your HP by 1."))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/hp increase")
-                        },
-                    )
+                    if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
+                        add(TextComponent(" "))
+                        add(
+                            TextComponent("[ + ]").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 1."))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/hp increase")
+                            },
+                        )
+                    }
                 }.toTypedArray(),
             )
         }
