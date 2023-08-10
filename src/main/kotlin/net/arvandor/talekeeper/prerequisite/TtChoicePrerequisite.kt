@@ -11,7 +11,12 @@ import org.bukkit.configuration.serialization.SerializableAs
 @SerializableAs("ChoicePrerequisite")
 data class TtChoicePrerequisite(val choiceId: TtChoiceId, val optionId: TtChoiceOptionId) : TtPrerequisite {
     override val name: String
-        get() = "Choice made: ${Services.INSTANCE.get(TtChoiceService::class.java)}"
+        get() {
+            val choiceService = Services.INSTANCE.get(TtChoiceService::class.java)
+            val choice = choiceService.getChoice(choiceId)
+            val option = choice?.getOption(optionId)
+            return "Choice made: ${choice?.text ?: "Unknown"}: ${option?.text ?: "Unknown"}"
+        }
 
     override fun isMetBy(character: TtCharacter): Boolean {
         val choiceService = Services.INSTANCE.get(TtChoiceService::class.java)

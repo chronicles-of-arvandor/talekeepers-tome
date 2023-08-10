@@ -82,6 +82,22 @@ class TtChoiceSelectCommand(private val plugin: TalekeepersTome) : CommandExecut
                 return@asyncTask
             }
 
+            val unmetChoicePrerequisites = choice.prerequisites.filter { !it.isMetBy(character) }
+            if (unmetChoicePrerequisites.isNotEmpty()) {
+                sender.sendMessage("${RED}You do not meet the following prerequisites for this choice:")
+                unmetChoicePrerequisites.forEach { prerequisite ->
+                    sender.sendMessage("$RED• ${prerequisite.name}")
+                }
+            }
+
+            val unmetOptionPrerequisites = option.prerequisites.filter { !it.isMetBy(character) }
+            if (unmetOptionPrerequisites.isNotEmpty()) {
+                sender.sendMessage("${RED}You do not meet the following prerequisites for this option:")
+                unmetOptionPrerequisites.forEach { prerequisite ->
+                    sender.sendMessage("$RED• ${prerequisite.name}")
+                }
+            }
+
             choiceService.setChosenOption(character.id, choice.id, option.id).onFailure {
                 sender.sendMessage("${RED}An error occurred while setting your option.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)

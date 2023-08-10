@@ -106,15 +106,40 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
                             color = GRAY
                         },
                     ),
-                    choice.options.map { option ->
-                        arrayOf(
-                            TextComponent(option.text).apply {
-                                color = WHITE
-                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to select this option."))
-                                clickEvent = ClickEvent(RUN_COMMAND, "/choice select ${choice.id.value} ${option.id.value}")
-                            },
-                        )
-                    },
+                    choice.options
+                        .filter { option ->
+                            option.prerequisites.all { it.isMetBy(character) }
+                        }
+                        .map { option ->
+                            arrayOf(
+                                TextComponent(option.text).apply {
+                                    color = WHITE
+                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to select this option."))
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice select ${choice.id.value} ${option.id.value}")
+                                },
+                            )
+                        } +
+                        choice.options.filter { option ->
+                            option.prerequisites.any { !it.isMetBy(character) }
+                        }.map { option ->
+                            arrayOf(
+                                TextComponent(option.text).apply {
+                                    color = RED
+                                    val unmetOptionPrerequisites = option.prerequisites.filter { !it.isMetBy(character) }
+                                    hoverEvent = HoverEvent(
+                                        SHOW_TEXT,
+                                        Text(
+                                            arrayOf(
+                                                TextComponent(
+                                                    "You do not meet the following prerequisites for this option:\n" +
+                                                        unmetOptionPrerequisites.joinToString("\n") { "• ${it.name}" },
+                                                ).apply { color = RED },
+                                            ),
+                                        ),
+                                    )
+                                },
+                            )
+                        },
                     "$GREEN< Previous",
                     "Click here to view the previous page",
                     "${GREEN}Next >",
