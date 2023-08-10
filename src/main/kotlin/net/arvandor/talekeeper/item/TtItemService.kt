@@ -9,7 +9,7 @@ import net.kingdommc.darkages.numinoustreasury.item.NuminousItemType
 class TtItemService(private val plugin: TalekeepersTome) : Service {
     override fun getPlugin() = plugin
 
-    fun getItemType(id: TtItemId): NuminousItemType {
+    fun getItemType(id: TtItemId): NuminousItemType? {
         val numinousItemService = Services.INSTANCE.get(NuminousItemService::class.java)
         return numinousItemService.getItemTypeById(id.value)
     }

@@ -56,6 +56,7 @@ import net.arvandor.talekeeper.prerequisite.TtBackgroundPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtChoicePrerequisite
 import net.arvandor.talekeeper.prerequisite.TtClassPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtFeatPrerequisite
+import net.arvandor.talekeeper.prerequisite.TtItemProficiencyPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtLevelPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtNotPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtOrPrerequisite
@@ -141,6 +142,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtChoicePrerequisite::class.java, "ChoicePrerequisite")
         ConfigurationSerialization.registerClass(TtClassPrerequisite::class.java, "ClassPrerequisite")
         ConfigurationSerialization.registerClass(TtFeatPrerequisite::class.java, "FeatPrerequisite")
+        ConfigurationSerialization.registerClass(TtItemProficiencyPrerequisite::class.java, "ItemProficiencyPrerequisite")
         ConfigurationSerialization.registerClass(TtLevelPrerequisite::class.java, "LevelPrerequisite")
         ConfigurationSerialization.registerClass(TtNotPrerequisite::class.java, "NotPrerequisite")
         ConfigurationSerialization.registerClass(TtOrPrerequisite::class.java, "OrPrerequisite")
