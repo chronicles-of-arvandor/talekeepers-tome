@@ -50,11 +50,14 @@ import net.arvandor.talekeeper.listener.InventoryClickListener
 import net.arvandor.talekeeper.listener.PlayerJoinListener
 import net.arvandor.talekeeper.listener.PlayerQuitListener
 import net.arvandor.talekeeper.prerequisite.TtAncestryPrerequisite
+import net.arvandor.talekeeper.prerequisite.TtAndPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtBackgroundPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtChoicePrerequisite
 import net.arvandor.talekeeper.prerequisite.TtClassPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtFeatPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtLevelPrerequisite
+import net.arvandor.talekeeper.prerequisite.TtNotPrerequisite
+import net.arvandor.talekeeper.prerequisite.TtOrPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtSubAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtSubClassPrerequisite
 import net.arvandor.talekeeper.pronouns.TtPronounRepository
@@ -128,11 +131,14 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtFeat::class.java, "Feat")
         ConfigurationSerialization.registerClass(TtLanguage::class.java, "Language")
         ConfigurationSerialization.registerClass(TtAncestryPrerequisite::class.java, "AncestryPrerequisite")
+        ConfigurationSerialization.registerClass(TtAndPrerequisite::class.java, "AndPrerequisite")
         ConfigurationSerialization.registerClass(TtBackgroundPrerequisite::class.java, "BackgroundPrerequisite")
         ConfigurationSerialization.registerClass(TtChoicePrerequisite::class.java, "ChoicePrerequisite")
         ConfigurationSerialization.registerClass(TtClassPrerequisite::class.java, "ClassPrerequisite")
         ConfigurationSerialization.registerClass(TtFeatPrerequisite::class.java, "FeatPrerequisite")
         ConfigurationSerialization.registerClass(TtLevelPrerequisite::class.java, "LevelPrerequisite")
+        ConfigurationSerialization.registerClass(TtNotPrerequisite::class.java, "NotPrerequisite")
+        ConfigurationSerialization.registerClass(TtOrPrerequisite::class.java, "OrPrerequisite")
         ConfigurationSerialization.registerClass(TtSubAncestryPrerequisite::class.java, "SubAncestryPrerequisite")
         ConfigurationSerialization.registerClass(TtSubClassPrerequisite::class.java, "SubClassPrerequisite")
         ConfigurationSerialization.registerClass(TtSource::class.java, "Source")
