@@ -59,6 +59,7 @@ import net.arvandor.talekeeper.prerequisite.TtFeatPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtLevelPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtNotPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtOrPrerequisite
+import net.arvandor.talekeeper.prerequisite.TtSpellPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtSubAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtSubClassPrerequisite
 import net.arvandor.talekeeper.pronouns.TtPronounRepository
@@ -141,6 +142,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtLevelPrerequisite::class.java, "LevelPrerequisite")
         ConfigurationSerialization.registerClass(TtNotPrerequisite::class.java, "NotPrerequisite")
         ConfigurationSerialization.registerClass(TtOrPrerequisite::class.java, "OrPrerequisite")
+        ConfigurationSerialization.registerClass(TtSpellPrerequisite::class.java, "SpellPrerequisite")
         ConfigurationSerialization.registerClass(TtSubAncestryPrerequisite::class.java, "SubAncestryPrerequisite")
         ConfigurationSerialization.registerClass(TtSubClassPrerequisite::class.java, "SubClassPrerequisite")
         ConfigurationSerialization.registerClass(TtSource::class.java, "Source")
