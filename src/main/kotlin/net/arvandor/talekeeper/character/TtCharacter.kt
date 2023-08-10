@@ -78,6 +78,7 @@ data class TtCharacter(
     val spells: List<TtSpellId>,
     val skillProficiencies: List<TtSkill>,
     val itemProficiencies: List<TtItemId>,
+    val savingThrowProficiencies: List<TtAbility>,
     val speed: TtSpeed,
     val languages: List<TtLanguageId>,
     val traits: List<TtCharacterTrait>,

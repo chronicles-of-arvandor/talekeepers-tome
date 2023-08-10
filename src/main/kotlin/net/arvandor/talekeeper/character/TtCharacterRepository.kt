@@ -336,6 +336,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         spells = emptyList(),
         skillProficiencies = emptyList(),
         itemProficiencies = emptyList(),
+        savingThrowProficiencies = emptyList(),
         speed = TtSpeed(0, FEET),
         languages = emptyList(),
         traits = emptyList(),

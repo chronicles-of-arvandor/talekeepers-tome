@@ -200,6 +200,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                     spells = emptyList(),
                     skillProficiencies = emptyList(),
                     itemProficiencies = emptyList(),
+                    savingThrowProficiencies = emptyList(),
                     speed = TtSpeed(0, FEET),
                     languages = emptyList(),
                     traits = emptyList(),

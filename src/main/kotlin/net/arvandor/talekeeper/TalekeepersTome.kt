@@ -36,6 +36,7 @@ import net.arvandor.talekeeper.effect.TtEffectService
 import net.arvandor.talekeeper.effect.TtFeatEffect
 import net.arvandor.talekeeper.effect.TtItemProficiencyEffect
 import net.arvandor.talekeeper.effect.TtLanguageEffect
+import net.arvandor.talekeeper.effect.TtSavingThrowProficiencyEffect
 import net.arvandor.talekeeper.effect.TtSkillProficiencyEffect
 import net.arvandor.talekeeper.effect.TtSpeedEffect
 import net.arvandor.talekeeper.effect.TtSpellEffect
@@ -125,6 +126,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtFeatEffect::class.java, "FeatEffect")
         ConfigurationSerialization.registerClass(TtItemProficiencyEffect::class.java, "ItemProficiencyEffect")
         ConfigurationSerialization.registerClass(TtLanguageEffect::class.java, "LanguageEffect")
+        ConfigurationSerialization.registerClass(TtSavingThrowProficiencyEffect::class.java, "SavingThrowProficiencyEffect")
         ConfigurationSerialization.registerClass(TtSkillProficiencyEffect::class.java, "SkillProficiencyEffect")
         ConfigurationSerialization.registerClass(TtSpeedEffect::class.java, "SpeedEffect")
         ConfigurationSerialization.registerClass(TtSpellEffect::class.java, "SpellEffect")

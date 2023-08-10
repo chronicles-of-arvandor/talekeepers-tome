@@ -276,6 +276,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                             spells = emptyList(),
                             skillProficiencies = emptyList(),
                             itemProficiencies = emptyList(),
+                            savingThrowProficiencies = emptyList(),
                             speed = TtSpeed(0, TtSpeedUnit.FEET),
                             languages = emptyList(),
                             traits = emptyList(),
