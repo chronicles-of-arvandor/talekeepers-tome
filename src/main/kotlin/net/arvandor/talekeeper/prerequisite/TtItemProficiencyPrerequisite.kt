@@ -5,7 +5,7 @@ import net.arvandor.talekeeper.character.TtCharacter
 import net.arvandor.talekeeper.item.TtItemId
 import net.arvandor.talekeeper.item.TtItemService
 
-class TtItemProficiencyPrerequisite(
+data class TtItemProficiencyPrerequisite(
     val itemIds: List<TtItemId>,
 ) : TtPrerequisite {
     override val name: String
