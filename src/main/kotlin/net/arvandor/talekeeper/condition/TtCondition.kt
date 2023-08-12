@@ -5,6 +5,7 @@ enum class TtCondition {
     BLINDED,
     CHARMED,
     DEAFENED,
+    EXHAUSTION,
     FRIGHTENED,
     GRAPPLED,
     INCAPACITATED,

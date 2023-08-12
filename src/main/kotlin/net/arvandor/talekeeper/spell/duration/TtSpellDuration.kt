@@ -37,7 +37,7 @@ data class TtTimedSpellDuration(
         fun deserialize(serialized: Map<String, Any>) = TtTimedSpellDuration(
             TtTimedSpellDurationType.valueOf(serialized["type"] as String),
             serialized["amount"] as Int,
-            serialized["concentration"] as Boolean,
+            serialized["concentration"] as? Boolean ?: false,
         )
     }
 }

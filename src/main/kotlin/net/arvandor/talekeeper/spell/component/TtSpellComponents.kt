@@ -21,8 +21,8 @@ data class TtSpellComponentsWithNoMaterial(
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtSpellComponentsWithNoMaterial(
-            serialized["verbal"] as Boolean,
-            serialized["somatic"] as Boolean,
+            serialized["verbal"] as? Boolean ?: false,
+            serialized["somatic"] as? Boolean ?: false,
         )
     }
 }
@@ -42,8 +42,8 @@ data class TtSpellComponentsWithStringMaterial(
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtSpellComponentsWithStringMaterial(
-            serialized["verbal"] as Boolean,
-            serialized["somatic"] as Boolean,
+            serialized["verbal"] as? Boolean ?: false,
+            serialized["somatic"] as? Boolean ?: false,
             serialized["material"] as String,
         )
     }
@@ -64,8 +64,8 @@ data class TtSpellComponentsWithObjectMaterial(
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtSpellComponentsWithObjectMaterial(
-            serialized["verbal"] as Boolean,
-            serialized["somatic"] as Boolean,
+            serialized["verbal"] as? Boolean ?: false,
+            serialized["somatic"] as? Boolean ?: false,
             serialized["material"] as TtMaterialSpellComponent,
         )
     }

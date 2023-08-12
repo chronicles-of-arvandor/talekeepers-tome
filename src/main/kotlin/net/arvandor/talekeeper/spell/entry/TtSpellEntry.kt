@@ -39,7 +39,7 @@ data class TtEntriesSpellEntry(
 
 @SerializableAs("TableSpellEntry")
 data class TtTableSpellEntry(
-    val caption: String,
+    val caption: String?,
     val colLabels: List<String>,
     val colStyles: List<String>,
     val rows: List<List<String>>,
@@ -54,7 +54,7 @@ data class TtTableSpellEntry(
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtTableSpellEntry(
-            serialized["caption"] as String,
+            serialized["caption"] as? String,
             serialized["col-labels"] as List<String>,
             serialized["col-styles"] as List<String>,
             serialized["rows"] as List<List<String>>,
@@ -74,6 +74,31 @@ data class TtListSpellEntry(
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtListSpellEntry(
             serialized["items"] as List<String>,
+        )
+    }
+}
+
+@SerializableAs("InsetSpellEntry")
+data class TtInsetSpellEntry(
+    val source: String,
+    val page: Int,
+    val name: String,
+    val entries: List<String>,
+) : TtSpellEntry {
+    override fun serialize() = mapOf(
+        "source" to source,
+        "page" to page,
+        "name" to name,
+        "entries" to entries,
+    )
+
+    companion object {
+        @JvmStatic
+        fun deserialize(serialized: Map<String, Any>) = TtInsetSpellEntry(
+            serialized["source"] as String,
+            serialized["page"] as Int,
+            serialized["name"] as String,
+            serialized["entries"] as List<String>,
         )
     }
 }

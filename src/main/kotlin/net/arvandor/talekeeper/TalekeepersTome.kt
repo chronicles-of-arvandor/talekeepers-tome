@@ -72,6 +72,7 @@ import net.arvandor.talekeeper.rpkit.TtRpkCharacterCardFieldService
 import net.arvandor.talekeeper.rpkit.TtRpkCharacterService
 import net.arvandor.talekeeper.source.TtSource
 import net.arvandor.talekeeper.spawn.TtSpawnService
+import net.arvandor.talekeeper.spell.TtSpell
 import net.arvandor.talekeeper.spell.TtSpellService
 import net.arvandor.talekeeper.spell.component.TtMaterialSpellComponent
 import net.arvandor.talekeeper.spell.component.TtSpellComponentsWithNoMaterial
@@ -82,6 +83,7 @@ import net.arvandor.talekeeper.spell.duration.TtPermanentSpellDuration
 import net.arvandor.talekeeper.spell.duration.TtSpecialSpellDuration
 import net.arvandor.talekeeper.spell.duration.TtTimedSpellDuration
 import net.arvandor.talekeeper.spell.entry.TtEntriesSpellEntry
+import net.arvandor.talekeeper.spell.entry.TtInsetSpellEntry
 import net.arvandor.talekeeper.spell.entry.TtListSpellEntry
 import net.arvandor.talekeeper.spell.entry.TtStringSpellEntry
 import net.arvandor.talekeeper.spell.entry.TtTableSpellEntry
@@ -166,6 +168,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtEntriesSpellEntry::class.java, "EntriesSpellEntry")
         ConfigurationSerialization.registerClass(TtTableSpellEntry::class.java, "TableSpellEntry")
         ConfigurationSerialization.registerClass(TtListSpellEntry::class.java, "ListSpellEntry")
+        ConfigurationSerialization.registerClass(TtInsetSpellEntry::class.java, "InsetSpellEntry")
         ConfigurationSerialization.registerClass(TtSpellMeta::class.java, "SpellMeta")
         ConfigurationSerialization.registerClass(TtPointSpellRange::class.java, "PointSpellRange")
         ConfigurationSerialization.registerClass(TtRadiusSpellRange::class.java, "RadiusSpellRange")
@@ -183,6 +186,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtSpellRangeDistanceUnlimited::class.java, "SpellRangeDistanceUnlimited")
         ConfigurationSerialization.registerClass(TtSpellScalingLevelDice::class.java, "SpellScalingLevelDice")
         ConfigurationSerialization.registerClass(TtSpellTime::class.java, "SpellTime")
+        ConfigurationSerialization.registerClass(TtSpell::class.java, "Spell")
         ConfigurationSerialization.registerClass(TtCharacterTrait::class.java, "CharacterTrait")
 
         saveDefaultConfig()
