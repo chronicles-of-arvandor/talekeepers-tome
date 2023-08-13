@@ -50,6 +50,7 @@ import net.arvandor.talekeeper.listener.AsyncPlayerPreLoginListener
 import net.arvandor.talekeeper.listener.InventoryClickListener
 import net.arvandor.talekeeper.listener.PlayerJoinListener
 import net.arvandor.talekeeper.listener.PlayerQuitListener
+import net.arvandor.talekeeper.prerequisite.TtAbilityPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtAndPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtBackgroundPrerequisite
@@ -139,6 +140,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtSpellEffect::class.java, "SpellEffect")
         ConfigurationSerialization.registerClass(TtFeat::class.java, "Feat")
         ConfigurationSerialization.registerClass(TtLanguage::class.java, "Language")
+        ConfigurationSerialization.registerClass(TtAbilityPrerequisite::class.java, "AbilityPrerequisite")
         ConfigurationSerialization.registerClass(TtAncestryPrerequisite::class.java, "AncestryPrerequisite")
         ConfigurationSerialization.registerClass(TtAndPrerequisite::class.java, "AndPrerequisite")
         ConfigurationSerialization.registerClass(TtBackgroundPrerequisite::class.java, "BackgroundPrerequisite")
