@@ -1,6 +1,5 @@
 package net.arvandor.talekeeper.feat
 
-import net.arvandor.talekeeper.prerequisite.TtPrerequisite
 import net.arvandor.talekeeper.source.TtSource
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.SerializableAs
@@ -12,7 +11,6 @@ data class TtFeat(
     val source: String,
     val page: Int,
     val otherSources: List<TtSource>,
-    val prerequisites: List<TtPrerequisite>,
 
 ) : ConfigurationSerializable {
     override fun serialize(): MutableMap<String, Any> {
@@ -22,7 +20,6 @@ data class TtFeat(
             "source" to source,
             "page" to page,
             "other-sources" to otherSources,
-            "prerequisites" to prerequisites,
         )
     }
 
@@ -35,7 +32,6 @@ data class TtFeat(
                 source = serialized["source"] as String,
                 page = serialized["page"] as Int,
                 otherSources = serialized["other-sources"] as List<TtSource>,
-                prerequisites = serialized["prerequisites"] as List<TtPrerequisite>,
             )
         }
     }
