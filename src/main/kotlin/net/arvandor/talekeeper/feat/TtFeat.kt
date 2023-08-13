@@ -17,7 +17,7 @@ data class TtFeat(
 ) : ConfigurationSerializable {
     override fun serialize(): MutableMap<String, Any> {
         return mutableMapOf(
-            "id" to id,
+            "id" to id.value,
             "name" to name,
             "source" to source,
             "page" to page,
@@ -30,7 +30,7 @@ data class TtFeat(
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>): TtFeat {
             return TtFeat(
-                id = serialized["id"] as TtFeatId,
+                id = (serialized["id"] as String).let(::TtFeatId),
                 name = serialized["name"] as String,
                 source = serialized["source"] as String,
                 page = serialized["page"] as Int,
