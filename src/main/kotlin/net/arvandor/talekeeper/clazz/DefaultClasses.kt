@@ -13,6 +13,7 @@ val fighter = TtClass(
             "Battle Master",
         ),
     ),
+    3,
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzVhOTBiMmE1N2ExOTAzZDk5ZmRjOWFmNjhhYzJhNmI2YzUyNjVmMTMxNWRmY2ViMDM5ZDVlMWRiZTE2NmNlYSJ9fX0=",
     10,
 )
@@ -54,6 +55,7 @@ val wizard = TtClass(
             "School of Transmutation",
         ),
     ),
+    2,
     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2JmYzE3ZWQ5MjhhZGZhZmZmYmY5ZjkxNTg5ZjBkNWI3YWIyMTZmNzRjMGQ3MjE0ZjI5ZTY5NDM4ZTYwOTdiMCJ9fX0=",
     6,
 )

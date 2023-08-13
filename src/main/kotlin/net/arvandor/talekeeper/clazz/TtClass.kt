@@ -8,6 +8,7 @@ data class TtClass(
     val id: TtClassId,
     val name: String,
     val subClasses: List<TtSubClass>,
+    val subClassSelectionLevel: Int,
     val skullTexture: String,
     val baseHp: Int,
 ) : ConfigurationSerializable {
@@ -18,6 +19,7 @@ data class TtClass(
         "id" to id.value,
         "name" to name,
         "sub-classes" to subClasses,
+        "sub-class-selection-level" to subClassSelectionLevel,
         "skull-texture" to skullTexture,
         "base-hp" to baseHp,
     )
@@ -28,6 +30,7 @@ data class TtClass(
             TtClassId(serialized["id"] as String),
             serialized["name"] as String,
             serialized["sub-classes"] as List<TtSubClass>,
+            serialized["sub-class-selection-level"] as Int,
             serialized["skull-texture"] as String,
             serialized["base-hp"] as Int,
         )
