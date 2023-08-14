@@ -11,7 +11,8 @@ data class TtFeat(
     val source: String,
     val page: Int,
     val otherSources: List<TtSource>,
-
+    val entries: List<TtFeatEntry>,
+    val srd: Boolean,
 ) : ConfigurationSerializable {
     override fun serialize(): MutableMap<String, Any> {
         return mutableMapOf(
@@ -20,6 +21,8 @@ data class TtFeat(
             "source" to source,
             "page" to page,
             "other-sources" to otherSources,
+            "entries" to entries,
+            "srd" to srd,
         )
     }
 
@@ -32,6 +35,8 @@ data class TtFeat(
                 source = serialized["source"] as String,
                 page = serialized["page"] as Int,
                 otherSources = serialized["other-sources"] as List<TtSource>,
+                entries = serialized["entries"] as List<TtFeatEntry>,
+                srd = serialized["srd"] as? Boolean ?: false,
             )
         }
     }

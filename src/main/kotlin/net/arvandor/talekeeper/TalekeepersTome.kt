@@ -42,7 +42,12 @@ import net.arvandor.talekeeper.effect.TtSpeedEffect
 import net.arvandor.talekeeper.effect.TtSpellEffect
 import net.arvandor.talekeeper.experience.TtExperienceService
 import net.arvandor.talekeeper.feat.TtFeat
+import net.arvandor.talekeeper.feat.TtFeatEntriesEntry
+import net.arvandor.talekeeper.feat.TtFeatInsetEntry
+import net.arvandor.talekeeper.feat.TtFeatListEntry
 import net.arvandor.talekeeper.feat.TtFeatService
+import net.arvandor.talekeeper.feat.TtFeatStringEntry
+import net.arvandor.talekeeper.feat.TtFeatTableEntry
 import net.arvandor.talekeeper.item.TtItemService
 import net.arvandor.talekeeper.language.TtLanguage
 import net.arvandor.talekeeper.language.TtLanguageService
@@ -138,6 +143,11 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtSkillProficiencyEffect::class.java, "SkillProficiencyEffect")
         ConfigurationSerialization.registerClass(TtSpeedEffect::class.java, "SpeedEffect")
         ConfigurationSerialization.registerClass(TtSpellEffect::class.java, "SpellEffect")
+        ConfigurationSerialization.registerClass(TtFeatStringEntry::class.java, "FeatStringEntry")
+        ConfigurationSerialization.registerClass(TtFeatListEntry::class.java, "FeatListEntry")
+        ConfigurationSerialization.registerClass(TtFeatTableEntry::class.java, "FeatTableEntry")
+        ConfigurationSerialization.registerClass(TtFeatEntriesEntry::class.java, "FeatEntriesEntry")
+        ConfigurationSerialization.registerClass(TtFeatInsetEntry::class.java, "FeatInsetEntry")
         ConfigurationSerialization.registerClass(TtFeat::class.java, "Feat")
         ConfigurationSerialization.registerClass(TtLanguage::class.java, "Language")
         ConfigurationSerialization.registerClass(TtAbilityPrerequisite::class.java, "AbilityPrerequisite")
