@@ -87,7 +87,7 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
                 return@asyncTask
             }
 
-            val chosenOption = choiceService.getChosenOption(character.id, choice.id).onFailure {
+            val chosenOption = choiceService.getChosenOption(character, choice.id).onFailure {
                 sender.sendMessage("${RED}An error occurred while getting your chosen option.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

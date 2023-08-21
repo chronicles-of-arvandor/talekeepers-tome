@@ -24,8 +24,8 @@ class TtEffectService(private val plugin: TalekeepersTome) : Service {
             val effectIterator = effects.iterator()
             while (effectIterator.hasNext()) {
                 val effect = effectIterator.next()
-                if (effect.prerequisites.all { it.isMetBy(character) }) {
-                    updatedCharacter = effect(character)
+                if (effect.prerequisites.all { it.isMetBy(updatedCharacter) }) {
+                    updatedCharacter = effect(updatedCharacter)
                     effectIterator.remove()
                 }
             }

@@ -3,14 +3,19 @@ package net.arvandor.talekeeper.character
 import com.rpkit.characters.bukkit.character.RPKCharacterId
 import com.rpkit.core.bukkit.extension.ItemStacksKt.toByteArray
 import com.rpkit.core.bukkit.extension.ItemStacksKt.toItemStackArray
+import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.RPKProfileId
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
+import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
 import net.arvandor.talekeeper.alignment.TtAlignment
 import net.arvandor.talekeeper.ancestry.TtAncestryId
 import net.arvandor.talekeeper.ancestry.TtSubAncestryId
 import net.arvandor.talekeeper.background.TtBackgroundId
+import net.arvandor.talekeeper.choice.TtChoiceId
+import net.arvandor.talekeeper.choice.TtChoiceService
+import net.arvandor.talekeeper.choice.option.TtChoiceOptionId
 import net.arvandor.talekeeper.clazz.TtClassId
 import net.arvandor.talekeeper.clazz.TtClassInfo
 import net.arvandor.talekeeper.clazz.TtSubClassId
@@ -230,6 +235,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             classes = getClasses(id),
             abilityScores = getAbilityScores(id),
             tempAbilityScores = getTempAbilityScores(id),
+            choiceOptions = getChoiceOptions(id),
         )
 
     fun get(rpkitId: RPKCharacterId): TtCharacter? = dsl.selectFrom(TT_CHARACTER)
@@ -242,6 +248,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
                 classes = getClasses(id),
                 abilityScores = getAbilityScores(id),
                 tempAbilityScores = getTempAbilityScores(id),
+                choiceOptions = getChoiceOptions(id),
             )
         }
 
@@ -255,6 +262,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             classes = getClasses(character.id),
             abilityScores = getAbilityScores(character.id),
             tempAbilityScores = getTempAbilityScores(character.id),
+            choiceOptions = getChoiceOptions(character.id),
         )
     }
 
@@ -269,6 +277,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
                     classes = getClasses(id),
                     abilityScores = getAbilityScores(id),
                     tempAbilityScores = getTempAbilityScores(id),
+                    choiceOptions = getChoiceOptions(id),
                 )
             }
     }
@@ -307,11 +316,17 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
                 result.ability.let(TtAbility::valueOf) to result.score
             }.toMap()
 
+    private fun getChoiceOptions(characterId: TtCharacterId): Map<TtChoiceId, TtChoiceOptionId> =
+        Services.INSTANCE[TtChoiceService::class.java].getChosenOptions(characterId).onFailure {
+            throw it.reason.cause
+        }
+
     private fun TtCharacterRecord.toDomain(
         pronouns: Map<TtPronounSetId, Int> = emptyMap(),
         classes: Map<TtClassId, TtClassInfo> = emptyMap(),
         abilityScores: Map<TtAbility, Int> = emptyMap(),
         tempAbilityScores: Map<TtAbility, Int> = emptyMap(),
+        choiceOptions: Map<TtChoiceId, TtChoiceOptionId> = emptyMap(),
     ) = TtCharacter(
         plugin,
         id = id.let(::TtCharacterId),
@@ -364,5 +379,6 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         isDescriptionHidden = descriptionHidden,
         isHeightHidden = heightHidden,
         isWeightHidden = weightHidden,
+        choiceOptions = choiceOptions,
     )
 }

@@ -1,7 +1,10 @@
 package net.arvandor.talekeeper.ancestry
 
 import com.rpkit.core.service.Service
+import dev.forkhandles.result4k.onFailure
+import dev.forkhandles.result4k.resultFrom
 import net.arvandor.talekeeper.TalekeepersTome
+import net.arvandor.talekeeper.failure.ConfigLoadException
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
@@ -9,18 +12,10 @@ class TtAncestryService(private val plugin: TalekeepersTome) : Service {
 
     override fun getPlugin() = plugin
 
-    private val defaultAncestries = listOf(
-        aasimar,
-        gnome,
-    )
-
     init {
         val ancestryFolder = File(plugin.dataFolder, "ancestries")
         if (!ancestryFolder.exists()) {
             ancestryFolder.mkdirs()
-            defaultAncestries.forEach { ancestry ->
-                saveAncestry(ancestry, File(ancestryFolder, "${ancestry.name}.yml"))
-            }
         }
     }
 
@@ -35,8 +30,12 @@ class TtAncestryService(private val plugin: TalekeepersTome) : Service {
     fun getAll() = ancestries.values.toList().sortedBy { it.name }
 
     private fun loadAncestry(file: File): TtAncestry {
-        val config = YamlConfiguration.loadConfiguration(file)
-        return config.getObject("ancestry", TtAncestry::class.java)!!
+        return resultFrom {
+            val config = YamlConfiguration.loadConfiguration(file)
+            config.getObject("ancestry", TtAncestry::class.java)!!
+        }.onFailure { failure ->
+            throw ConfigLoadException("Failed to load ancestry from ${file.name}", failure.reason)
+        }
     }
 
     private fun saveAncestry(ancestry: TtAncestry, file: File) {

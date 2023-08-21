@@ -7,6 +7,14 @@ import org.jooq.DSLContext
 
 class TtChoiceOptionRepository(private val dsl: DSLContext) {
 
+    fun getChoiceOptions(characterId: TtCharacterId): Map<TtChoiceId, TtChoiceOptionId> =
+        dsl.selectFrom(TT_CHARACTER_CHOICE_OPTION)
+            .where(TT_CHARACTER_CHOICE_OPTION.CHARACTER_ID.eq(characterId.value))
+            .fetch()
+            .map { result ->
+                TtChoiceId(result.choiceId) to TtChoiceOptionId(result.optionId)
+            }.toMap()
+
     fun getChoiceOption(characterId: TtCharacterId, choiceId: TtChoiceId): TtChoiceOptionId? =
         dsl.selectFrom(TT_CHARACTER_CHOICE_OPTION)
             .where(TT_CHARACTER_CHOICE_OPTION.CHARACTER_ID.eq(characterId.value))

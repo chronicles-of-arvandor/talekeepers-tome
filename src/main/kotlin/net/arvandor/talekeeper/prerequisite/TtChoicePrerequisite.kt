@@ -20,7 +20,7 @@ data class TtChoicePrerequisite(val choiceId: TtChoiceId, val optionId: TtChoice
 
     override fun isMetBy(character: TtCharacter): Boolean {
         val choiceService = Services.INSTANCE.get(TtChoiceService::class.java)
-        val option = choiceService.getChosenOption(character.id, choiceId).onFailure {
+        val option = choiceService.getChosenOption(character, choiceId).onFailure {
             return false
         }
         return option?.id == optionId

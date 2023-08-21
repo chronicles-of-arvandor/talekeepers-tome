@@ -14,6 +14,7 @@ import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.choice.option.TtChoiceOption
 import net.arvandor.talekeeper.choice.option.TtChoiceOptionId
 import net.arvandor.talekeeper.choice.option.TtChoiceOptionRepository
+import net.arvandor.talekeeper.failure.ConfigLoadException
 import net.arvandor.talekeeper.failure.ServiceFailure
 import net.arvandor.talekeeper.failure.toServiceFailure
 import org.bukkit.configuration.file.YamlConfiguration
@@ -31,9 +32,13 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
 
     fun getChoice(id: TtChoiceId): TtChoice? = choices[id]
 
-    fun getChosenOption(characterId: TtCharacterId, choiceId: TtChoiceId): Result4k<TtChoiceOption?, ServiceFailure> = resultFrom {
+    fun getChosenOptions(characterId: TtCharacterId): Result4k<Map<TtChoiceId, TtChoiceOptionId>, ServiceFailure> = resultFrom {
+        optionRepository.getChoiceOptions(characterId)
+    }.mapFailure { it.toServiceFailure() }
+
+    fun getChosenOption(character: TtCharacter, choiceId: TtChoiceId): Result4k<TtChoiceOption?, ServiceFailure> = resultFrom {
         val choice = choices[choiceId] ?: return@resultFrom null
-        val optionId = optionRepository.getChoiceOption(characterId, choiceId)
+        val optionId = character.choiceOptions[choiceId]
         return@resultFrom choice.options.singleOrNull { it.id == optionId }
     }.mapFailure { it.toServiceFailure() }
 
@@ -54,7 +59,7 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
 
     fun getPendingChoices(character: TtCharacter): List<TtChoice> {
         return getApplicableChoices(character).filter { choice ->
-            getChosenOption(character.id, choice.id).onFailure {
+            getChosenOption(character, choice.id).onFailure {
                 plugin.logger.log(SEVERE, "Failed to get chosen option for character ${character.id} and choice ${choice.id}", it.reason.cause)
                 return@filter false
             } == null
@@ -62,7 +67,11 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
     }
 
     private fun loadChoice(file: File): TtChoice {
-        val config = YamlConfiguration.loadConfiguration(file)
-        return config.getObject("choice", TtChoice::class.java)!!
+        return resultFrom {
+            val config = YamlConfiguration.loadConfiguration(file)
+            config.getObject("choice", TtChoice::class.java)!!
+        }.onFailure { failure ->
+            throw ConfigLoadException("Failed to load choice from ${file.name}", failure.reason)
+        }
     }
 }

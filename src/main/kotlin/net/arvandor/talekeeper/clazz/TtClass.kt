@@ -11,9 +11,12 @@ data class TtClass(
     val subClassSelectionLevel: Int,
     val skullTexture: String,
     val baseHp: Int,
+    val features: Map<Int, List<TtClassFeature>>,
 ) : ConfigurationSerializable {
 
-    fun getSubClass(id: TtSubClassId) = subClasses.single { it.id == id }
+    fun getSubClass(id: TtSubClassId) = subClasses.firstOrNull { it.id == id }
+
+    fun getSubClass(name: String) = subClasses.firstOrNull { it.name == name }
 
     override fun serialize() = mapOf(
         "id" to id.value,
@@ -22,6 +25,7 @@ data class TtClass(
         "sub-class-selection-level" to subClassSelectionLevel,
         "skull-texture" to skullTexture,
         "base-hp" to baseHp,
+        "features" to features.mapKeys { (level, _) -> level.toString() },
     )
 
     companion object {
@@ -33,6 +37,9 @@ data class TtClass(
             serialized["sub-class-selection-level"] as Int,
             serialized["skull-texture"] as String,
             serialized["base-hp"] as Int,
+            (serialized["features"] as? Map<String, List<TtClassFeature>>)
+                ?.mapKeys { (level, _) -> level.toInt() }
+                ?: emptyMap(),
         )
     }
 }

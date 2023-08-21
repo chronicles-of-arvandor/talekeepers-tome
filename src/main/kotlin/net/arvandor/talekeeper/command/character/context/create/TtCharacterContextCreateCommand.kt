@@ -297,6 +297,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                             isDescriptionHidden = ctx.isDescriptionHidden,
                             isHeightHidden = ctx.isHeightHidden,
                             isWeightHidden = ctx.isWeightHidden,
+                            choiceOptions = emptyMap(),
                         ),
                         transactionalDsl,
                     ).onFailure {

@@ -76,9 +76,18 @@ class TtCharacterService(
         return Success(effectService.applyEffects(character))
     }
 
-    fun getActiveCharacter(minecraftProfileId: RPKMinecraftProfileId): Result4k<TtCharacter?, ServiceFailure> = resultFrom {
-        characterRepo.getActive(minecraftProfileId)
-    }.mapFailure { it.toServiceFailure() }
+    fun getActiveCharacter(minecraftProfileId: RPKMinecraftProfileId): Result4k<TtCharacter?, ServiceFailure> {
+        val character = resultFrom {
+            characterRepo.getActive(minecraftProfileId)
+        }.mapFailure { it.toServiceFailure() }
+            .onFailure { return it }
+            ?: return Success(null)
+
+        val effectService = Services.INSTANCE[TtEffectService::class.java]
+            ?: return Failure(ServiceFailure(GENERAL, "Effect service not found", RuntimeException("Effect service not found")))
+
+        return Success(effectService.applyEffects(character))
+    }
 
     fun getCharacters(profileId: RPKProfileId): Result4k<List<TtCharacter>, ServiceFailure> = resultFrom {
         characterRepo.getAll(profileId)

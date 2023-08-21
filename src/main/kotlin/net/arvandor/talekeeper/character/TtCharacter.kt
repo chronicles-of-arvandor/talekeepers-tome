@@ -19,6 +19,8 @@ import net.arvandor.talekeeper.ancestry.TtAncestryService
 import net.arvandor.talekeeper.ancestry.TtSubAncestryId
 import net.arvandor.talekeeper.background.TtBackgroundId
 import net.arvandor.talekeeper.background.TtBackgroundService
+import net.arvandor.talekeeper.choice.TtChoiceId
+import net.arvandor.talekeeper.choice.option.TtChoiceOptionId
 import net.arvandor.talekeeper.clazz.TtClassId
 import net.arvandor.talekeeper.clazz.TtClassInfo
 import net.arvandor.talekeeper.clazz.TtClassService
@@ -100,6 +102,7 @@ data class TtCharacter(
     val isDescriptionHidden: Boolean,
     val isHeightHidden: Boolean,
     val isWeightHidden: Boolean,
+    val choiceOptions: Map<TtChoiceId, TtChoiceOptionId>,
 ) {
 
     val maxHp: Int

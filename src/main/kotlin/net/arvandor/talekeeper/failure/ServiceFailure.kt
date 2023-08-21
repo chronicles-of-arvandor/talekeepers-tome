@@ -27,7 +27,7 @@ fun Exception.toServiceFailure() = ServiceFailure(
     this,
 )
 
-fun Exception.toServiceFailureType() = when (this) {
-    is OptimisticLockingFailureException -> CONFLICT
+fun Exception.toServiceFailureType() = when {
+    this is OptimisticLockingFailureException || cause is OptimisticLockingFailureException -> CONFLICT
     else -> GENERAL
 }

@@ -221,6 +221,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                     isDescriptionHidden = isDescriptionHidden ?: false,
                     isHeightHidden = isHeightHidden ?: false,
                     isWeightHidden = isWeightHidden ?: false,
+                    choiceOptions = emptyMap(),
                 ),
             ).onFailure {
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)

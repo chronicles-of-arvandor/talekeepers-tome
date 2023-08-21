@@ -22,12 +22,15 @@ import net.arvandor.talekeeper.choice.TtChoiceService
 import net.arvandor.talekeeper.choice.option.TtChoiceOption
 import net.arvandor.talekeeper.choice.option.TtChoiceOptionRepository
 import net.arvandor.talekeeper.clazz.TtClass
+import net.arvandor.talekeeper.clazz.TtClassFeature
 import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.clazz.TtSubClass
 import net.arvandor.talekeeper.command.ancestry.TtAncestryCommand
 import net.arvandor.talekeeper.command.background.TtBackgroundCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.command.choice.TtChoiceCommand
+import net.arvandor.talekeeper.command.clazz.TtClassCommand
+import net.arvandor.talekeeper.command.experience.TtExperienceCommand
 import net.arvandor.talekeeper.command.hp.TtHpCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtAbilityEffect
@@ -131,6 +134,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtBackground::class.java, "Background")
         ConfigurationSerialization.registerClass(TtChoice::class.java, "Choice")
         ConfigurationSerialization.registerClass(TtChoiceOption::class.java, "ChoiceOption")
+        ConfigurationSerialization.registerClass(TtClassFeature::class.java, "ClassFeature")
         ConfigurationSerialization.registerClass(TtClass::class.java, "Class")
         ConfigurationSerialization.registerClass(TtSubClass::class.java, "SubClass")
         ConfigurationSerialization.registerClass(TtDistance::class.java, "Distance")
@@ -278,5 +282,7 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("background")?.setExecutor(TtBackgroundCommand())
         getCommand("choice")?.setExecutor(TtChoiceCommand(this))
         getCommand("hp")?.setExecutor(TtHpCommand(this))
+        getCommand("experience")?.setExecutor(TtExperienceCommand(this))
+        getCommand("class")?.setExecutor(TtClassCommand(this))
     }
 }

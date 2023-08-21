@@ -67,6 +67,7 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
             }
 
             val choices = choiceService.getPendingChoices(character)
+                .sortedBy { choice -> choice.text }
             if (choices.isEmpty()) {
                 sender.sendMessage("${GREEN}You have no pending choices.")
                 return@asyncTask
