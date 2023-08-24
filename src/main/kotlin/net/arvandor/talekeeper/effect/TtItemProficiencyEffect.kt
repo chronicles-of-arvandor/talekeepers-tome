@@ -15,13 +15,13 @@ data class TtItemProficiencyEffect(
     )
 
     override fun serialize() = mapOf(
-        "items" to items,
+        "items" to items.map(TtItemId::value),
     )
 
     companion object {
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtItemProficiencyEffect(
-            serialized["items"] as List<TtItemId>,
+            (serialized["items"] as List<String>).map(::TtItemId),
             serialized["prerequisites"] as List<TtPrerequisite>,
         )
     }
