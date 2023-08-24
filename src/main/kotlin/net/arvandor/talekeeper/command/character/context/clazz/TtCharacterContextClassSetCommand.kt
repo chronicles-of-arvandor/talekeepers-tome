@@ -78,7 +78,7 @@ class TtCharacterContextClassSetCommand(private val plugin: TalekeepersTome) : C
 
         val clazz = classService.getClass(TtClassId(args[0]))
         if (clazz == null) {
-            sender.sendMessage("${RED}No ancestry found with ID ${args[0]}")
+            sender.sendMessage("${RED}No class found with ID ${args[0]}")
             return true
         }
 

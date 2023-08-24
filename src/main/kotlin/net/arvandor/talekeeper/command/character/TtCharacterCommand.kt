@@ -13,6 +13,7 @@ import net.arvandor.talekeeper.command.character.name.TtCharacterNameCommand
 import net.arvandor.talekeeper.command.character.profile.TtCharacterProfileCommand
 import net.arvandor.talekeeper.command.character.pronouns.TtCharacterPronounsCommand
 import net.arvandor.talekeeper.command.character.requests.TtCharacterRequestsCommand
+import net.arvandor.talekeeper.command.character.subclass.TtCharacterSubClassCommand
 import net.arvandor.talekeeper.command.character.weight.TtCharacterWeightCommand
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
@@ -33,6 +34,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
     private val descriptionCommand = TtCharacterDescriptionCommand(plugin)
     private val heightCommand = TtCharacterHeightCommand(plugin)
     private val weightCommand = TtCharacterWeightCommand(plugin)
+    private val subclassCommand = TtCharacterSubClassCommand(plugin)
     private val levelUpCommand = TtCharacterLevelUpCommand(plugin)
     private val requestsCommand = TtCharacterRequestsCommand(plugin)
 
@@ -47,6 +49,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
     private val descriptionAliases = listOf("description")
     private val heightAliases = listOf("height")
     private val weightAliases = listOf("weight")
+    private val subclassAliases = listOf("subclass")
     private val levelUpAliases = listOf("levelup")
     private val requestsAliases = listOf("requests", "request", "req", "reqs")
 
@@ -61,6 +64,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
         descriptionAliases +
         heightAliases +
         weightAliases +
+        subclassAliases +
         levelUpAliases +
         requestsAliases
 
@@ -77,6 +81,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
             in descriptionAliases -> descriptionCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in heightAliases -> heightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in weightAliases -> weightCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in subclassAliases -> subclassCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in levelUpAliases -> levelUpCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in requestsAliases -> requestsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
@@ -107,6 +112,7 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
                 in descriptionAliases -> descriptionCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in heightAliases -> heightCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in weightAliases -> weightCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in subclassAliases -> subclassCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in levelUpAliases -> levelUpCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in requestsAliases -> requestsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 else -> emptyList()

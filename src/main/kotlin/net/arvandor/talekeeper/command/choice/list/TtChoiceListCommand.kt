@@ -7,10 +7,12 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.choice.TtChoiceService
+import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
+import net.md_5.bungee.api.ChatColor.YELLOW
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
 import net.md_5.bungee.api.chat.HoverEvent
@@ -43,6 +45,12 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
             return true
         }
 
+        val classService = Services.INSTANCE[TtClassService::class.java]
+        if (classService == null) {
+            sender.sendMessage("${RED}No class service was found. Please contact an admin.")
+            return true
+        }
+
         val choiceService = Services.INSTANCE[TtChoiceService::class.java]
         if (choiceService == null) {
             sender.sendMessage("${RED}No choice service was found. Please contact an admin.")
@@ -66,6 +74,12 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                 return@asyncTask
             }
 
+            val classes = character.classes.mapKeys { (classId, _) -> classService.getClass(classId) }
+            val classesPendingSubclassSelection = classes.filter { (clazz, classInfo) ->
+                if (clazz == null) return@filter false
+                classInfo.subclassId == null && classInfo.level >= clazz.subClassSelectionLevel
+            }.keys.filterNotNull()
+
             val choices = choiceService.getPendingChoices(character)
                 .sortedBy { choice -> choice.text }
             if (choices.isEmpty()) {
@@ -81,12 +95,27 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                         color = GRAY
                     },
                 ),
-                choices.map { choice ->
-                    arrayOf(
-                        TextComponent(choice.text).apply {
-                            color = GREEN
-                            hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view this choice."))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}")
+                buildList {
+                    addAll(
+                        classesPendingSubclassSelection.map { clazz ->
+                            arrayOf(
+                                TextComponent("${clazz.name}: Sub-class").apply {
+                                    color = YELLOW
+                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view the sub-class selection for ${clazz.name}."))
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/character subclass set ${clazz.id.value}")
+                                },
+                            )
+                        },
+                    )
+                    addAll(
+                        choices.map { choice ->
+                            arrayOf(
+                                TextComponent(choice.text).apply {
+                                    color = GREEN
+                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view this choice."))
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}")
+                                },
+                            )
                         },
                     )
                 },

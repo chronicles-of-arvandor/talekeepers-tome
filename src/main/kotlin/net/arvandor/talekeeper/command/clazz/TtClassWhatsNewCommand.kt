@@ -16,16 +16,9 @@ import net.arvandor.talekeeper.experience.TtExperienceService
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.ChatColor.GRAY
-import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
 import net.md_5.bungee.api.ChatColor.WHITE
 import net.md_5.bungee.api.ChatColor.YELLOW
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
-import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -138,16 +131,7 @@ class TtClassWhatsNewCommand(private val plugin: TalekeepersTome) : CommandExecu
                     return@asyncTask
                 }
 
-                val pendingChoices = choiceService.getPendingChoices(character)
-                if (pendingChoices.isNotEmpty()) {
-                    sender.spigot().sendMessage(
-                        TextComponent("You have ${pendingChoices.size} pending choice${if (pendingChoices.size == 1) "" else "s"}. Click here to view.").apply {
-                            color = GREEN
-                            hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view your pending choices."))
-                            clickEvent = ClickEvent(RUN_COMMAND, "/choice list")
-                        },
-                    )
-                }
+                choiceService.displayPendingChoices(sender, character)
             }
         }
         return true
@@ -161,25 +145,29 @@ class TtClassWhatsNewCommand(private val plugin: TalekeepersTome) : CommandExecu
     ): List<String> {
         val classService = Services.INSTANCE[TtClassService::class.java]
         val experienceService = Services.INSTANCE[TtExperienceService::class.java]
+        val unquotedArgs = args.unquote()
         return when {
-            args.isEmpty() -> classService.getAll().map(TtClass::name)
-            args.size == 1 -> classService.getAll().map(TtClass::name).filter { it.startsWith(args[0], ignoreCase = true) }
-            args.size == 2 -> (classService.getClass(TtClassId(args[0])) ?: classService.getClass(args[0]))
+            unquotedArgs.isEmpty() -> classService.getAll().map(TtClass::name)
+            unquotedArgs.size == 1 -> classService.getAll().map(TtClass::name)
+                .filter { it.startsWith(unquotedArgs[0], ignoreCase = true) }
+                .map { if (it.contains(" ")) "\"$it\"" else it }
+            unquotedArgs.size == 2 -> (classService.getClass(TtClassId(unquotedArgs[0])) ?: classService.getClass(unquotedArgs[0]))
                 ?.subClasses
                 ?.map { it.name }
-                ?.filter { it.startsWith(args[1], ignoreCase = true) }
+                ?.filter { it.startsWith(unquotedArgs[1], ignoreCase = true) }
+                ?.map { if (it.contains(" ")) "\"$it\"" else it }
                 ?: emptyList()
-            args.size == 3 -> (1..experienceService.getMaxLevel()).map { it.toString() }.filter { it.startsWith(args[2], ignoreCase = true) }
-            args.size == 4 -> {
-                val clazz = classService.getClass(TtClassId(args[0])) ?: classService.getClass(args[0]) ?: return emptyList()
-                val subClass = if (args[1] == "none") {
+            unquotedArgs.size == 3 -> (1..experienceService.getMaxLevel()).map { it.toString() }.filter { it.startsWith(unquotedArgs[2], ignoreCase = true) }
+            unquotedArgs.size == 4 -> {
+                val clazz = classService.getClass(TtClassId(unquotedArgs[0])) ?: classService.getClass(unquotedArgs[0]) ?: return emptyList()
+                val subClass = if (unquotedArgs[1] == "none") {
                     null
                 } else {
-                    clazz.getSubClass(TtSubClassId(args[1])) ?: clazz.getSubClass(args[1])
+                    clazz.getSubClass(TtSubClassId(unquotedArgs[1])) ?: clazz.getSubClass(unquotedArgs[1])
                 }
-                val level = args[2].toIntOrNull() ?: return emptyList()
+                val level = unquotedArgs[2].toIntOrNull() ?: return emptyList()
                 val features = (clazz.features[level] ?: emptyList()) + (subClass?.features?.get(level) ?: emptyList())
-                (1..features.size / 2).map(Int::toString).filter { it.startsWith(args[3], ignoreCase = true) }
+                (1..features.size / 2).map(Int::toString).filter { it.startsWith(unquotedArgs[3], ignoreCase = true) }
             }
             else -> emptyList()
         }

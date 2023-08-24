@@ -111,6 +111,11 @@ commands:
       Class management command
       /class whatsnew [class] [subclass|none] [level] - View new class features for a class at a given level
     usage: /<command> [whatsnew]
+  subclass:
+    description: |
+      Sub-class management command
+      /subclass features [class] [subclass] - View sub-class features
+    usage: /<command> [features]
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests

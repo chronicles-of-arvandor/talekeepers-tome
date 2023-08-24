@@ -130,6 +130,20 @@ class TtCharacterLevelUpCommand(private val plugin: TalekeepersTome) : CommandEx
                                 clickEvent = ClickEvent(RUN_COMMAND, "/class whatsnew ${clazz.id.value} ${classInfo.subclassId?.value ?: "none"} ${classInfo.level}")
                             },
                         )
+                        if (classInfo.level >= clazz.subClassSelectionLevel && classInfo.subclassId != null) {
+                            add(
+                                TextComponent(" / ").apply {
+                                    color = GRAY
+                                },
+                            )
+                            add(
+                                TextComponent("Choose sub-class").apply {
+                                    color = GREEN
+                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to choose a sub-class."))
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/character subclass set ${clazz.id.value}")
+                                },
+                            )
+                        }
                         if (pendingChoices.isNotEmpty()) {
                             add(
                                 TextComponent(" / ").apply {

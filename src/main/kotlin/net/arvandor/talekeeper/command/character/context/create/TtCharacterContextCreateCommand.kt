@@ -23,13 +23,6 @@ import net.arvandor.talekeeper.speed.TtSpeedUnit
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
-import net.md_5.bungee.api.ChatColor.YELLOW
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
-import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -325,19 +318,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
             sender.sendMessage("${GREEN}Welcome to Talgalen, ${character.name}!")
             sender.sendMessage("${GRAY}If you wish to view or change your character, use \"/character card\".")
 
-            val choices = choiceService.getPendingChoices(character)
-            if (choices.isNotEmpty()) {
-                sender.spigot().sendMessage(
-                    TextComponent("[!] ").apply {
-                        color = GRAY
-                    },
-                    TextComponent("You have ${choices.size} pending choices. Click here to view them.").apply {
-                        color = YELLOW
-                        hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view your pending choices."))
-                        clickEvent = ClickEvent(RUN_COMMAND, "/choice list")
-                    },
-                )
-            }
+            choiceService.displayPendingChoices(sender, character)
         }
         return true
     }

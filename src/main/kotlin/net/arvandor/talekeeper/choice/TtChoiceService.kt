@@ -17,7 +17,15 @@ import net.arvandor.talekeeper.choice.option.TtChoiceOptionRepository
 import net.arvandor.talekeeper.failure.ConfigLoadException
 import net.arvandor.talekeeper.failure.ServiceFailure
 import net.arvandor.talekeeper.failure.toServiceFailure
+import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
+import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Player
 import java.io.File
 import java.util.logging.Level.SEVERE
 
@@ -63,6 +71,22 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
                 plugin.logger.log(SEVERE, "Failed to get chosen option for character ${character.id} and choice ${choice.id}", it.reason.cause)
                 return@filter false
             } == null
+        }
+    }
+
+    internal fun displayPendingChoices(player: Player, character: TtCharacter) {
+        val choices = getPendingChoices(character)
+        if (choices.isNotEmpty()) {
+            player.spigot().sendMessage(
+                TextComponent("[!] ").apply {
+                    color = ChatColor.GRAY
+                },
+                TextComponent("You have ${choices.size} pending choice${if (choices.size == 1) "" else "s"}. Click here to view them.").apply {
+                    color = ChatColor.YELLOW
+                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view your pending choices."))
+                    clickEvent = ClickEvent(RUN_COMMAND, "/choice list")
+                },
+            )
         }
     }
 
