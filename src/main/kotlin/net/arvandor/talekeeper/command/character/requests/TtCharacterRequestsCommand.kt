@@ -34,7 +34,7 @@ class TtCharacterRequestsCommand(private val plugin: TalekeepersTome) : CommandE
     private val subcommands = acceptAliases + declineAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("talekeeper.command.character.requests")) {
+        if (!sender.hasPermission("talekeeper.commands.character.requests")) {
             sender.sendMessage("${RED}You do not have permission to use this command.")
             return true
         }
