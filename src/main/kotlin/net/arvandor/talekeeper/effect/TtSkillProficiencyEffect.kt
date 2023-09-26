@@ -16,6 +16,7 @@ data class TtSkillProficiencyEffect(
 
     override fun serialize() = mapOf(
         "skills" to skills.map(TtSkill::name),
+        "prerequisites" to prerequisites,
     )
 
     companion object {

@@ -187,28 +187,28 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
             if (subAncestry == null) {
                 if (ctx.height > ancestry.maximumHeight) {
                     sender.sendMessage(
-                        "${RED}${ancestry.namePlural} are at most ${unitService.format(ancestry.maximumHeight, preferredHeightUnit)} tall.",
+                        "${RED}${ancestry.namePlural} are at most ${unitService.format(preferredHeightUnit.scaleFactor * ancestry.maximumHeight, preferredHeightUnit)} tall.",
                     )
                     return@asyncTask
                 }
 
                 if (ctx.height < ancestry.minimumHeight) {
                     sender.sendMessage(
-                        "${RED}${ancestry.namePlural} are at least ${unitService.format(ancestry.minimumHeight, preferredHeightUnit)} tall.",
+                        "${RED}${ancestry.namePlural} are at least ${unitService.format(preferredHeightUnit.scaleFactor * ancestry.minimumHeight, preferredHeightUnit)} tall.",
                     )
                     return@asyncTask
                 }
 
                 if (ctx.weight > ancestry.maximumWeight) {
                     sender.sendMessage(
-                        "${RED}${ancestry.namePlural} weigh at most ${unitService.format(ancestry.maximumWeight, preferredWeightUnit)}.",
+                        "${RED}${ancestry.namePlural} weigh at most ${unitService.format(preferredWeightUnit.scaleFactor * ancestry.maximumWeight, preferredWeightUnit)}.",
                     )
                     return@asyncTask
                 }
 
                 if (ctx.weight < ancestry.minimumWeight) {
                     sender.sendMessage(
-                        "${RED}${ancestry.namePlural} weigh at least ${unitService.format(ancestry.minimumWeight, preferredWeightUnit)}.",
+                        "${RED}${ancestry.namePlural} weigh at least ${unitService.format(preferredWeightUnit.scaleFactor * ancestry.minimumWeight, preferredWeightUnit)}.",
                     )
                     return@asyncTask
                 }
