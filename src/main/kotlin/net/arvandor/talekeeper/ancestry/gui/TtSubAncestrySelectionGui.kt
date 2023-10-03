@@ -19,7 +19,7 @@ class TtSubAncestrySelectionGui(plugin: TalekeepersTome, private val ancestry: T
                     subAncestry.skullTexture,
                 )
 
-                onClick = onSelectSubAncestry@{ player ->
+                onClick = onSelectSubAncestry@{ player, _ ->
                     player.closeInventory()
 
                     player.performCommand("ancestry traits ${ancestry.id.value} ${subAncestry.id.value} --set")

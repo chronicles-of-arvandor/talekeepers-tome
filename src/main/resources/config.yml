@@ -94,3 +94,5 @@ staff:
   - 185a0f65-514f-41f7-b17b-7f97ab9026b4
   - 05d66af5-db31-4099-9c14-6510d3b306a7
   - c66e0cfc-0596-4de0-bf94-e2d60db5a5c6
+rolls:
+  radius: 16

@@ -26,7 +26,7 @@ class TtClassSelectionGui(plugin: TalekeepersTome, classes: List<TtClass>) : Inv
                     clazz.skullTexture,
                 )
 
-                onClick = onSelectClass@{ player ->
+                onClick = onSelectClass@{ player, _ ->
                     player.closeInventory()
 
                     val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]

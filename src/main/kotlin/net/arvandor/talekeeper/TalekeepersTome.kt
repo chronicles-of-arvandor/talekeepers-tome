@@ -32,6 +32,7 @@ import net.arvandor.talekeeper.command.choice.TtChoiceCommand
 import net.arvandor.talekeeper.command.clazz.TtClassCommand
 import net.arvandor.talekeeper.command.experience.TtExperienceCommand
 import net.arvandor.talekeeper.command.hp.TtHpCommand
+import net.arvandor.talekeeper.command.skills.TtSkillsCommand
 import net.arvandor.talekeeper.command.subclass.TtSubClassCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtAbilityEffect
@@ -41,6 +42,7 @@ import net.arvandor.talekeeper.effect.TtFeatEffect
 import net.arvandor.talekeeper.effect.TtItemProficiencyEffect
 import net.arvandor.talekeeper.effect.TtLanguageEffect
 import net.arvandor.talekeeper.effect.TtSavingThrowProficiencyEffect
+import net.arvandor.talekeeper.effect.TtSkillExpertiseEffect
 import net.arvandor.talekeeper.effect.TtSkillProficiencyEffect
 import net.arvandor.talekeeper.effect.TtSpeedEffect
 import net.arvandor.talekeeper.effect.TtSpellEffect
@@ -146,6 +148,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtLanguageEffect::class.java, "LanguageEffect")
         ConfigurationSerialization.registerClass(TtSavingThrowProficiencyEffect::class.java, "SavingThrowProficiencyEffect")
         ConfigurationSerialization.registerClass(TtSkillProficiencyEffect::class.java, "SkillProficiencyEffect")
+        ConfigurationSerialization.registerClass(TtSkillExpertiseEffect::class.java, "SkillExpertiseEffect")
         ConfigurationSerialization.registerClass(TtSpeedEffect::class.java, "SpeedEffect")
         ConfigurationSerialization.registerClass(TtSpellEffect::class.java, "SpellEffect")
         ConfigurationSerialization.registerClass(TtFeatStringEntry::class.java, "FeatStringEntry")
@@ -286,5 +289,6 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("experience")?.setExecutor(TtExperienceCommand(this))
         getCommand("class")?.setExecutor(TtClassCommand(this))
         getCommand("subclass")?.setExecutor(TtSubClassCommand(this))
+        getCommand("skills")?.setExecutor(TtSkillsCommand(this))
     }
 }

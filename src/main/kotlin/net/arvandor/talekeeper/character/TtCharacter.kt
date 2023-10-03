@@ -79,6 +79,9 @@ data class TtCharacter(
     val feats: List<TtFeatId>,
     val spells: List<TtSpellId>,
     val skillProficiencies: List<TtSkill>,
+    val skillExpertise: List<TtSkill>,
+    val jackOfAllTrades: Boolean,
+    val initiativeBonus: Int,
     val itemProficiencies: List<TtItemId>,
     val savingThrowProficiencies: List<TtAbility>,
     val speed: TtSpeed,
@@ -130,6 +133,20 @@ data class TtCharacter(
                 ?: ancestry?.getBonusHp(level)
                 ?: 0
             return constitutionHp + firstClassHp + classHp + ancestryHp
+        }
+
+    val proficiencyBonus: Int
+        get() {
+            val experienceService = Services.INSTANCE[TtExperienceService::class.java]
+            val level = experienceService.getLevelAtExperience(experience)
+            return when (level) {
+                1, 2, 3, 4 -> 2
+                5, 6, 7, 8 -> 3
+                9, 10, 11, 12 -> 4
+                13, 14, 15, 16 -> 5
+                17, 18, 19, 20 -> 6
+                else -> 0
+            }
         }
 
     fun getModifier(ability: TtAbility): Int {
