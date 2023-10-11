@@ -122,6 +122,9 @@ commands:
   spell:
     description: Display a spell's details
     usage: /<command> [spell] (page)
+  spells:
+    description: Display a list of spells
+    usage: /<command> (page)
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
