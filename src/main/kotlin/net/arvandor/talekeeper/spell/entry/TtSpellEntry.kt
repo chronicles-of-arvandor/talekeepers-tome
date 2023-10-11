@@ -6,8 +6,7 @@ import org.bukkit.configuration.serialization.SerializableAs
 sealed interface TtSpellEntry : ConfigurationSerializable
 
 @SerializableAs("StringSpellEntry")
-@JvmInline
-value class TtStringSpellEntry(val value: String) : TtSpellEntry {
+data class TtStringSpellEntry(val value: String) : TtSpellEntry {
     override fun serialize() = mapOf("value" to value)
 
     companion object {

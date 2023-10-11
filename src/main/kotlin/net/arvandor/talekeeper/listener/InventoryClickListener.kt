@@ -23,6 +23,6 @@ class InventoryClickListener : Listener {
 
         val slot = event.slot
         val icon = holder.page.icons[slot] ?: return
-        icon.onClick(holder, whoClicked)
+        icon.onClick(holder, whoClicked, event.click)
     }
 }

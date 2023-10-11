@@ -32,7 +32,7 @@ class TtSubClassSelectionGui(plugin: TalekeepersTome, clazz: TtClass) : Inventor
                     }
                 }
 
-                onClick = onSelectSubClass@{ player ->
+                onClick = onSelectSubClass@{ player, _ ->
                     player.closeInventory()
 
                     player.performCommand("subclass features ${clazz.id.value} ${subClass.id.value} --set")

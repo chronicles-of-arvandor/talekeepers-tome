@@ -25,7 +25,7 @@ class TtAncestrySelectionGui(plugin: TalekeepersTome, private val ancestries: Li
                     ancestry.skullTexture,
                 )
 
-                onClick = { player ->
+                onClick = { player, _ ->
                     player.closeInventory()
 
                     player.performCommand("ancestry traits ${ancestry.id.value} --set")

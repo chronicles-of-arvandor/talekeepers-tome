@@ -5,6 +5,7 @@ import org.bukkit.Material
 import org.bukkit.Material.PLAYER_HEAD
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -12,7 +13,7 @@ import org.bukkit.inventory.meta.SkullMeta
 @InventoryGuiDsl
 class InventoryGuiIcon {
     var item: ItemStack? = null
-    var onClick: InventoryGui.(Player) -> Unit = {}
+    var onClick: InventoryGui.(Player, ClickType) -> Unit = { _, _ -> }
 
     fun skull(name: String, lore: List<String>, player: OfflinePlayer, init: (ItemStack.() -> Unit)? = null) =
         item(PLAYER_HEAD, name, lore) {
@@ -37,7 +38,7 @@ class InventoryGuiIcon {
         }
     }
 
-    fun item(material: Material, name: String, lore: List<String>, init: (ItemStack.() -> Unit)? = null) =
+    fun item(material: Material, name: String, lore: List<String> = emptyList(), init: (ItemStack.() -> Unit)? = null) =
         item(material) {
             init?.invoke(this)
             itemMeta = itemMeta?.apply {

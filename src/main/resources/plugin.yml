@@ -116,6 +116,15 @@ commands:
       Sub-class management command
       /subclass features [class] [subclass] - View sub-class features
     usage: /<command> [features]
+  skills:
+    description: Display the skills GUI
+    usage: /<command> (player)
+  spell:
+    description: Display a spell's details
+    usage: /<command> [spell] (page)
+  spells:
+    description: Display a list of spells
+    usage: /<command> (page)
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
@@ -134,4 +143,7 @@ permissions:
     default: op
   talekeeper.commands.experience.view.other:
     description: Allows viewing experience of other players
+    default: op
+  talekeeper.commands.skills.other:
+    description: Allows viewing other players' skills
     default: op

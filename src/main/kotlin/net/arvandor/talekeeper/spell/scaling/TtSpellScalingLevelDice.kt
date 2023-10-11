@@ -17,7 +17,7 @@ data class TtSpellScalingLevelDice(
         @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtSpellScalingLevelDice(
             serialized["label"] as String,
-            serialized["scaling"] as Map<Int, String>,
+            (serialized["scaling"] as Map<String, String>).mapKeys { (key, _) -> key.toInt() },
         )
     }
 }

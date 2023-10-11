@@ -5,18 +5,26 @@ import dev.forkhandles.result4k.onFailure
 import dev.forkhandles.result4k.resultFrom
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.failure.ConfigLoadException
+import net.arvandor.talekeeper.util.levenshtein
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
 class TtSpellService(private val plugin: TalekeepersTome) : Service {
     override fun getPlugin() = plugin
 
-    private val spells = File(plugin.dataFolder, "spells").listFiles()
+    val spells = File(plugin.dataFolder, "spells").listFiles()
         ?.map(::loadSpell)
-        ?.associateBy(TtSpell::id)
-        ?: emptyMap()
+        ?: emptyList()
 
-    fun getSpell(id: TtSpellId): TtSpell? = spells[id]
+    private val spellsById = spells.associateBy(TtSpell::id)
+
+    fun getSpell(id: TtSpellId): TtSpell? = spellsById[id]
+    fun getSpell(name: String): TtSpell? = spells.associateWith { spell -> spell.name.levenshtein(name) }
+        .toList()
+        .sortedBy { (_, levenshtein) -> levenshtein }
+        .takeWhile { (_, levenshtein) -> levenshtein <= 10 }
+        .map { (spell, _) -> spell }
+        .firstOrNull()
 
     private fun loadSpell(file: File): TtSpell {
         return resultFrom {
