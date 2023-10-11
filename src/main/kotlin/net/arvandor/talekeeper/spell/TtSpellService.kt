@@ -29,9 +29,7 @@ class TtSpellService(private val plugin: TalekeepersTome) : Service {
     private fun loadSpell(file: File): TtSpell {
         return resultFrom {
             val config = YamlConfiguration.loadConfiguration(file)
-            val spell = config.getObject("spell", TtSpell::class.java)!!
-            plugin.logger.info(spell.toString())
-            spell
+            config.getObject("spell", TtSpell::class.java)!!
         }.onFailure { failure ->
             throw ConfigLoadException("Failed to load spell from ${file.name}", failure.reason)
         }
