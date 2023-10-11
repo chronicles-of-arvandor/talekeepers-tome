@@ -33,6 +33,7 @@ import net.arvandor.talekeeper.command.clazz.TtClassCommand
 import net.arvandor.talekeeper.command.experience.TtExperienceCommand
 import net.arvandor.talekeeper.command.hp.TtHpCommand
 import net.arvandor.talekeeper.command.skills.TtSkillsCommand
+import net.arvandor.talekeeper.command.spell.TtSpellCommand
 import net.arvandor.talekeeper.command.subclass.TtSubClassCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtAbilityEffect
@@ -290,5 +291,6 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("class")?.setExecutor(TtClassCommand(this))
         getCommand("subclass")?.setExecutor(TtSubClassCommand(this))
         getCommand("skills")?.setExecutor(TtSkillsCommand(this))
+        getCommand("spell")?.setExecutor(TtSpellCommand(this))
     }
 }

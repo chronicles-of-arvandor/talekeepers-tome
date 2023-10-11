@@ -119,6 +119,9 @@ commands:
   skills:
     description: Display the skills GUI
     usage: /<command> (player)
+  spell:
+    description: Display a spell's details
+    usage: /<command> [spell] (page)
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
