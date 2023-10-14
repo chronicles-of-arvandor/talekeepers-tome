@@ -59,6 +59,8 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
                         isDescriptionHidden = false,
                         isHeightHidden = false,
                         isWeightHidden = false,
+                        birthdayYear = null,
+                        birthdayDay = null,
                     ),
                 ).onFailure { failure ->
                     plugin.logger.log(SEVERE, "Failed to save character creation context", failure.reason.cause)

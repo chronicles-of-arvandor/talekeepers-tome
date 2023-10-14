@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.SkullMeta
 @InventoryGuiDsl
 class InventoryGuiIcon {
     var item: ItemStack? = null
-    var onClick: InventoryGui.(Player, ClickType) -> Unit = { _, _ -> }
+    var onClick: InventoryGui.(Player, ClickType) -> Boolean = { _, _ -> true }
 
     fun skull(name: String, lore: List<String>, player: OfflinePlayer, init: (ItemStack.() -> Unit)? = null) =
         item(PLAYER_HEAD, name, lore) {

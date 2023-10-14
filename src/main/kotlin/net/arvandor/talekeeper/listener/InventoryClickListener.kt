@@ -23,6 +23,11 @@ class InventoryClickListener : Listener {
 
         val slot = event.slot
         val icon = holder.page.icons[slot] ?: return
-        icon.onClick(holder, whoClicked, event.click)
+        val keepOpen = icon.onClick(holder, whoClicked, event.click)
+        if (!keepOpen) {
+            whoClicked.closeInventory()
+        } else {
+            event.view.title = holder.title
+        }
     }
 }

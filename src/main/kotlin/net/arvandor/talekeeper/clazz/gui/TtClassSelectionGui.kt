@@ -27,24 +27,22 @@ class TtClassSelectionGui(plugin: TalekeepersTome, classes: List<TtClass>) : Inv
                 )
 
                 onClick = onSelectClass@{ player, _ ->
-                    player.closeInventory()
-
                     val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
                     if (minecraftProfileService == null) {
                         player.sendMessage("${ChatColor.RED}No Minecraft profile service was found. Please contact an admin.")
-                        return@onSelectClass
+                        return@onSelectClass false
                     }
 
                     val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(player)
                     if (minecraftProfile == null) {
                         player.sendMessage("${ChatColor.RED}You do not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
-                        return@onSelectClass
+                        return@onSelectClass false
                     }
 
                     val characterService = Services.INSTANCE[TtCharacterService::class.java]
                     if (characterService == null) {
                         player.sendMessage("${ChatColor.RED}No character service was found. Please contact an admin.")
-                        return@onSelectClass
+                        return@onSelectClass false
                     }
 
                     asyncTask(plugin) {
@@ -82,6 +80,7 @@ class TtClassSelectionGui(plugin: TalekeepersTome, classes: List<TtClass>) : Inv
 
                         updatedCtx.display(player)
                     }
+                    false
                 }
             }
         }

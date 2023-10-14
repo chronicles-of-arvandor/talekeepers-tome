@@ -77,8 +77,6 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
                 item = iconFor(skill, character)
 
                 onClick = { player, clickType ->
-                    player.closeInventory()
-
                     val rollRadius = plugin.config.getInt("rolls.radius")
                     val radiusSquared = rollRadius * rollRadius
                     player.world.players.filter { it.location.distanceSquared(player.location) <= radiusSquared }.forEach {
@@ -91,6 +89,8 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
                             player.performCommand("roll d20+${calculateModifier(character, skill)}")
                         }
                     }
+
+                    false
                 }
             }
         }
@@ -99,8 +99,6 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
                 item = iconFor(ability, character)
 
                 onClick = { player, clickType ->
-                    player.closeInventory()
-
                     val rollRadius = plugin.config.getInt("rolls.radius")
                     val radiusSquared = rollRadius * rollRadius
                     player.world.players.filter { it.location.distanceSquared(player.location) <= radiusSquared }.forEach {
@@ -113,6 +111,8 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
                             player.performCommand("roll d20+${calculateModifier(character, ability)}")
                         }
                     }
+
+                    false
                 }
             }
         }
@@ -135,8 +135,6 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
             )
 
             onClick = { player, clickType ->
-                player.closeInventory()
-
                 val rollRadius = plugin.config.getInt("rolls.radius")
                 val radiusSquared = rollRadius * rollRadius
                 player.world.players.filter { it.location.distanceSquared(player.location) <= radiusSquared }.forEach {
@@ -149,6 +147,8 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
                         player.performCommand("roll d20+$initiativeModifier")
                     }
                 }
+
+                false
             }
         }
     },

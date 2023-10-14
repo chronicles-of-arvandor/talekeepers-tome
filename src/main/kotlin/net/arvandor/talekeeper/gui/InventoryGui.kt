@@ -3,7 +3,7 @@ package net.arvandor.talekeeper.gui
 import net.arvandor.talekeeper.TalekeepersTome
 import org.bukkit.inventory.InventoryHolder
 
-abstract class InventoryGui(plugin: TalekeepersTome, title: String, initialPage: InventoryGuiPage, size: Int = 27) : InventoryHolder {
+abstract class InventoryGui(plugin: TalekeepersTome, var title: String, initialPage: InventoryGuiPage, size: Int = 27) : InventoryHolder {
 
     private val inventory = plugin.server.createInventory(this, size, title)
 

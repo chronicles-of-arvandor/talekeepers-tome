@@ -7,6 +7,8 @@ import com.rpkit.players.bukkit.unit.RPKUnitService
 import com.rpkit.players.bukkit.unit.UnitType
 import dev.forkhandles.result4k.onFailure
 import dev.forkhandles.result4k.resultFrom
+import net.arvandor.magistersmonths.MagistersMonths
+import net.arvandor.magistersmonths.datetime.MmDateTime
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
 import net.arvandor.talekeeper.ability.TtAbilityService
@@ -28,6 +30,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.time.Instant
 import java.util.logging.Level.SEVERE
 
 class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
@@ -113,6 +116,11 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
 
             if (ctx.name.isBlank()) {
                 sender.sendMessage("${RED}You must set your name.")
+                return@asyncTask
+            }
+
+            if (ctx.birthdayDay == null || ctx.birthdayYear == null) {
+                sender.sendMessage("${RED}You must set your birthday.")
                 return@asyncTask
             }
 
@@ -212,6 +220,27 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                     )
                     return@asyncTask
                 }
+
+                val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
+                val calendar = magistersMonths?.calendar
+                if (calendar != null) {
+                    val birthday = MmDateTime(calendar.epochInGameTime, ctx.birthdayYear, ctx.birthdayDay, 0, 0, 0)
+                    val currentDate = calendar.toMmDateTime(Instant.now())
+                    val age = currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
+                    if (age < ancestry.minimumAge) {
+                        sender.sendMessage(
+                            "${RED}${ancestry.namePlural} must be at least ${ancestry.minimumAge} years old.",
+                        )
+                        return@asyncTask
+                    }
+
+                    if (age > ancestry.maximumAge) {
+                        sender.sendMessage(
+                            "${RED}${ancestry.namePlural} must be at most ${ancestry.maximumAge} years old.",
+                        )
+                        return@asyncTask
+                    }
+                }
             } else {
                 if (ctx.height > subAncestry.maximumHeight) {
                     sender.sendMessage(
@@ -240,6 +269,27 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                     )
                     return@asyncTask
                 }
+
+                val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
+                val calendar = magistersMonths?.calendar
+                if (calendar != null) {
+                    val birthday = MmDateTime(calendar.epochInGameTime, ctx.birthdayYear, ctx.birthdayDay, 0, 0, 0)
+                    val currentDate = calendar.toMmDateTime(Instant.now())
+                    val age = currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
+                    if (age < subAncestry.minimumAge) {
+                        sender.sendMessage(
+                            "${RED}${ancestry.namePlural} must be at least ${ancestry.minimumAge} years old.",
+                        )
+                        return@asyncTask
+                    }
+
+                    if (age > subAncestry.maximumAge) {
+                        sender.sendMessage(
+                            "${RED}${ancestry.namePlural} must be at most ${ancestry.maximumAge} years old.",
+                        )
+                        return@asyncTask
+                    }
+                }
             }
 
             val character = resultFrom {
@@ -254,6 +304,8 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                             minecraftProfileId = null,
                             name = ctx.name,
                             pronouns = ctx.pronouns,
+                            birthdayYear = ctx.birthdayYear,
+                            birthdayDay = ctx.birthdayDay,
                             ancestryId = ctx.ancestryId,
                             subAncestryId = ctx.subAncestryId,
                             firstClassId = ctx.firstClassId,
