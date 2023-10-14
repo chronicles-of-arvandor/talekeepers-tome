@@ -10,6 +10,8 @@ import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.RPKProfile
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfile
 import dev.forkhandles.result4k.onFailure
+import net.arvandor.magistersmonths.MagistersMonths
+import net.arvandor.magistersmonths.datetime.MmDuration
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility.CHARISMA
 import net.arvandor.talekeeper.ability.TtAbility.CONSTITUTION
@@ -26,6 +28,7 @@ import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.speed.TtSpeed
 import net.arvandor.talekeeper.speed.TtSpeedUnit.FEET
 import org.bukkit.inventory.ItemStack
+import java.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.logging.Level.SEVERE
 
@@ -166,6 +169,18 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
         val characterService = Services.INSTANCE[TtCharacterService::class.java]
         val classService = Services.INSTANCE[TtClassService::class.java]
         val backgroundService = Services.INSTANCE[TtBackgroundService::class.java]
+        val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
+        val calendar = magistersMonths?.calendar
+        val birthdayYear: Int
+        val birthdayDay: Int
+        if (calendar != null) {
+            val birthday = calendar.toMmDateTime(Instant.now()).plus(MmDuration(-((age?.toLong() ?: 18L) * 365L * 24L * 60L * 60L)))
+            birthdayYear = birthday.year
+            birthdayDay = birthday.dayOfYear
+        } else {
+            birthdayYear = 1320
+            birthdayDay = 1
+        }
         return CompletableFuture.supplyAsync {
             val clazz = classService.getAll().first()
             val classId = clazz.id
@@ -224,6 +239,8 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                     isDescriptionHidden = isDescriptionHidden ?: false,
                     isHeightHidden = isHeightHidden ?: false,
                     isWeightHidden = isWeightHidden ?: false,
+                    birthdayYear = birthdayYear,
+                    birthdayDay = birthdayDay,
                     choiceOptions = emptyMap(),
                 ),
             ).onFailure {

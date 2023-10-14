@@ -120,6 +120,8 @@ class TtCharacterRequestsAcceptCommand(private val plugin: TalekeepersTome) : Co
                     isDescriptionHidden = false,
                     isHeightHidden = false,
                     isWeightHidden = false,
+                    birthdayDay = null,
+                    birthdayYear = null,
                 ),
             )
 

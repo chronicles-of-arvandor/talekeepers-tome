@@ -63,6 +63,8 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
             .set(TT_CHARACTER_CREATION_CONTEXT.DESCRIPTION_HIDDEN, ctx.isDescriptionHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.HEIGHT_HIDDEN, ctx.isHeightHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.WEIGHT_HIDDEN, ctx.isWeightHidden)
+            .set(TT_CHARACTER_CREATION_CONTEXT.BIRTHDAY_YEAR, ctx.birthdayYear)
+            .set(TT_CHARACTER_CREATION_CONTEXT.BIRTHDAY_DAY, ctx.birthdayDay)
             .onConflict(TT_CHARACTER_CREATION_CONTEXT.ID).doUpdate()
             .set(TT_CHARACTER_CREATION_CONTEXT.ID, ctx.id.value)
             .set(TT_CHARACTER_CREATION_CONTEXT.PROFILE_ID, ctx.profileId.value)
@@ -84,6 +86,8 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
             .set(TT_CHARACTER_CREATION_CONTEXT.DESCRIPTION_HIDDEN, ctx.isDescriptionHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.HEIGHT_HIDDEN, ctx.isHeightHidden)
             .set(TT_CHARACTER_CREATION_CONTEXT.WEIGHT_HIDDEN, ctx.isWeightHidden)
+            .set(TT_CHARACTER_CREATION_CONTEXT.BIRTHDAY_YEAR, ctx.birthdayYear)
+            .set(TT_CHARACTER_CREATION_CONTEXT.BIRTHDAY_DAY, ctx.birthdayDay)
             .set(TT_CHARACTER_CREATION_CONTEXT.VERSION, ctx.version + 1)
             .where(TT_CHARACTER_CREATION_CONTEXT.ID.eq(ctx.id.value))
             .and(TT_CHARACTER_CREATION_CONTEXT.VERSION.eq(ctx.version))
@@ -239,5 +243,7 @@ class TtCharacterCreationContextRepository(private val plugin: TalekeepersTome, 
         descriptionHidden,
         heightHidden,
         weightHidden,
+        birthdayYear,
+        birthdayDay,
     )
 }

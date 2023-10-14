@@ -6,6 +6,7 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.command.character.context.abilities.TtCharacterContextAbilitiesCommand
+import net.arvandor.talekeeper.command.character.context.age.TtCharacterContextAgeCommand
 import net.arvandor.talekeeper.command.character.context.alignment.TtCharacterContextAlignmentCommand
 import net.arvandor.talekeeper.command.character.context.ancestry.TtCharacterContextAncestryCommand
 import net.arvandor.talekeeper.command.character.context.background.TtCharacterContextBackgroundCommand
@@ -32,6 +33,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     private val nameCommand = TtCharacterContextNameCommand(plugin)
     private val profileCommand = TtCharacterContextProfileCommand(plugin)
     private val pronounsCommand = TtCharacterContextPronounsCommand(plugin)
+    private val ageCommand = TtCharacterContextAgeCommand(plugin)
     private val ancestryCommand = TtCharacterContextAncestryCommand(plugin)
     private val subAncestryCommand = TtCharacterContextSubAncestryCommand(plugin)
     private val classCommand = TtCharacterContextClassCommand(plugin)
@@ -46,6 +48,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     private val nameAliases = listOf("name")
     private val profileAliases = listOf("profile")
     private val pronounsAliases = listOf("pronouns")
+    private val ageAliases = listOf("age", "birthday")
     private val ancestryAliases = listOf("ancestry", "race", "species")
     private val subAncestryAliases = listOf("subancestry", "subrace", "subspecies")
     private val classAliases = listOf("class")
@@ -59,6 +62,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
     private val subcommands = nameAliases +
         profileAliases +
         pronounsAliases +
+        ageAliases +
         ancestryAliases +
         subAncestryAliases +
         classAliases +
@@ -75,6 +79,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in nameAliases -> nameCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in profileAliases -> profileCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in pronounsAliases -> pronounsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in ageAliases -> ageCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in ancestryAliases -> ancestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in subAncestryAliases -> subAncestryCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in classAliases -> classCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
@@ -143,6 +148,7 @@ class TtCharacterContextCommand(private val plugin: TalekeepersTome) : CommandEx
             in nameAliases -> nameCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in profileAliases -> profileCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in pronounsAliases -> pronounsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in ageAliases -> ageCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in ancestryAliases -> ancestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in subAncestryAliases -> subAncestryCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in classAliases -> classCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())

@@ -11,6 +11,7 @@ depend:
   - rpk-stat-lib-bukkit
   - rpk-language-lib-bukkit
   - numinous-treasury
+  - magisters-months
 commands:
   character:
     description: |

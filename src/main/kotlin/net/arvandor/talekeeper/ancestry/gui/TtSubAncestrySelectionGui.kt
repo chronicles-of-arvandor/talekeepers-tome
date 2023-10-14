@@ -20,9 +20,9 @@ class TtSubAncestrySelectionGui(plugin: TalekeepersTome, private val ancestry: T
                 )
 
                 onClick = onSelectSubAncestry@{ player, _ ->
-                    player.closeInventory()
-
                     player.performCommand("ancestry traits ${ancestry.id.value} ${subAncestry.id.value} --set")
+
+                    false
                 }
             }
         }

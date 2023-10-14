@@ -6,6 +6,8 @@ import com.rpkit.players.bukkit.profile.RPKProfileService
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
 import com.rpkit.players.bukkit.unit.RPKUnitService
 import com.rpkit.players.bukkit.unit.UnitType
+import net.arvandor.magistersmonths.MagistersMonths
+import net.arvandor.magistersmonths.datetime.MmDateTime
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
 import net.arvandor.talekeeper.alignment.TtAlignment
@@ -34,6 +36,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.entity.Player
 import java.text.DecimalFormat
+import java.time.Instant
 import java.util.concurrent.CompletableFuture
 
 data class TtCharacterCreationContext(
@@ -62,9 +65,13 @@ data class TtCharacterCreationContext(
     val isDescriptionHidden: Boolean,
     val isHeightHidden: Boolean,
     val isWeightHidden: Boolean,
+    val birthdayYear: Int?,
+    val birthdayDay: Int?,
 ) {
     fun display(player: Player) {
         syncTask(plugin) {
+            val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
+            val calendar = magistersMonths?.calendar
             val unitService = Services.INSTANCE.get(RPKUnitService::class.java)
             val profileService = Services.INSTANCE.get(RPKProfileService::class.java)
             asyncTask(plugin) {
@@ -155,6 +162,50 @@ data class TtCharacterCreationContext(
                             clickEvent = ClickEvent(RUN_COMMAND, "/character context pronouns add")
                         },
                     )
+                    if (calendar != null) {
+                        val birthday = if (birthdayYear != null && birthdayDay != null) {
+                            MmDateTime(calendar.epochInGameTime, birthdayYear, birthdayDay, 0, 0, 0)
+                        } else {
+                            null
+                        }
+                        val month = if (birthday != null) calendar.getMonthAt(birthday.dayOfYear) else null
+                        val dayOfMonth =
+                            if (month != null && birthday != null) (birthday.dayOfYear - calendar.getMonthAt(birthday.dayOfYear).startDay) + 1 else 0
+                        val currentDate = calendar.toMmDateTime(Instant.now())
+                        val age = if (birthday != null) {
+                            currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
+                        } else {
+                            null
+                        }
+                        player.spigot().sendMessage(
+                            TextComponent("Age: ").apply {
+                                color = WHITE
+                            },
+                            TextComponent(
+                                if (birthday != null) {
+                                    "$age (Birthday: ${if (month != null) "$dayOfMonth ${month.name}" else birthday.dayOfYear.toString()} ${birthday.year}) "
+                                } else {
+                                    "unset "
+                                },
+                            ).apply {
+                                color = GRAY
+                            },
+                            TextComponent("(Edit) ").apply {
+                                color = GREEN
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to edit your birthday"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character context age set")
+                            },
+                            TextComponent(
+                                if (isAgeHidden) "(Unhide)" else "(Hide)",
+                            ).apply {
+                                color = YELLOW
+                                hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to ${if (isAgeHidden) "unhide" else "hide"} your age"))
+                                clickEvent = ClickEvent(RUN_COMMAND, "/character context age ${if (isAgeHidden) "unhide" else "hide"}")
+                            },
+                        )
+                    } else {
+                        player.sendMessage("${RED}Failed to find Magister's Months plugin. Birthday cannot be displayed.")
+                    }
                     val ancestryService = Services.INSTANCE.get(TtAncestryService::class.java)
                     val ancestry = ancestryId?.let { ancestryService.getAncestry(it) }
                     player.spigot().sendMessage(

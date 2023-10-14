@@ -9,6 +9,8 @@ import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
 import com.rpkit.players.bukkit.unit.RPKUnitService
 import com.rpkit.players.bukkit.unit.UnitType
+import net.arvandor.magistersmonths.MagistersMonths
+import net.arvandor.magistersmonths.datetime.MmDateTime
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.ability.TtAbility
 import net.arvandor.talekeeper.ability.TtAbility.CONSTITUTION
@@ -51,6 +53,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.text.DecimalFormat
+import java.time.Instant
 import java.util.concurrent.CompletableFuture
 
 data class TtCharacter(
@@ -63,6 +66,8 @@ data class TtCharacter(
     val minecraftProfileId: RPKMinecraftProfileId?,
     val name: String,
     val pronouns: Map<TtPronounSetId, Int>,
+    val birthdayYear: Int,
+    val birthdayDay: Int,
     // d&d
     val ancestryId: TtAncestryId,
     val subAncestryId: TtSubAncestryId?,
@@ -107,6 +112,16 @@ data class TtCharacter(
     val isWeightHidden: Boolean,
     val choiceOptions: Map<TtChoiceId, TtChoiceOptionId>,
 ) {
+
+    val age: Int
+        get() {
+            val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths ?: return 0
+            val calendar = magistersMonths.calendar
+            val birthday = MmDateTime(calendar.epochInGameTime, birthdayYear, birthdayDay, 0, 0, 0)
+
+            val currentDate = calendar.toMmDateTime(Instant.now())
+            return currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
+        }
 
     val maxHp: Int
         get() {
@@ -335,6 +350,59 @@ data class TtCharacter(
                                 clickEvent = ClickEvent(RUN_COMMAND, "/character pronouns add")
                             },
                         )
+                    }
+                    val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
+                    val calendar = magistersMonths?.calendar
+                    if (calendar != null) {
+                        player.spigot().sendMessage(
+                            *buildList {
+                                add(
+                                    TextComponent("Age: ").apply {
+                                        color = WHITE
+                                    },
+                                )
+                                if (isAgeHidden && !isOwner) {
+                                    add(
+                                        TextComponent("Hidden").apply {
+                                            color = RED
+                                        },
+                                    )
+                                } else {
+                                    val birthday = MmDateTime(calendar.epochInGameTime, birthdayYear, birthdayDay, 0, 0, 0)
+                                    val month = calendar.getMonthAt(birthday.dayOfYear)
+                                    val dayOfMonth =
+                                        if (month != null) {
+                                            (birthday.dayOfYear - calendar.getMonthAt(birthday.dayOfYear).startDay) + 1
+                                        } else {
+                                            0
+                                        }
+                                    add(
+                                        TextComponent("$age (Birthday: ${if (month != null) "$dayOfMonth ${month.name}" else birthday.dayOfYear.toString()} ${birthday.year}) ").apply {
+                                            color = GRAY
+                                        },
+                                    )
+                                }
+                                if (isOwner) {
+                                    add(
+                                        TextComponent(
+                                            if (isAgeHidden) "(Unhide)" else "(Hide)",
+                                        ).apply {
+                                            color = YELLOW
+                                            hoverEvent = HoverEvent(
+                                                SHOW_TEXT,
+                                                Text("Click here to ${if (isAgeHidden) "unhide" else "hide"} your age"),
+                                            )
+                                            clickEvent = ClickEvent(
+                                                RUN_COMMAND,
+                                                "/character age ${if (isAgeHidden) "unhide" else "hide"}",
+                                            )
+                                        },
+                                    )
+                                }
+                            }.toTypedArray(),
+                        )
+                    } else {
+                        player.sendMessage("${RED}Magister's Months is not installed. Age cannot be displayed.")
                     }
                     val ancestryService = Services.INSTANCE.get(TtAncestryService::class.java)
                     val ancestry = ancestryId.let { ancestryService.getAncestry(it) }
