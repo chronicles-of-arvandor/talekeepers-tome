@@ -224,7 +224,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                 val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
                 val calendar = magistersMonths?.calendar
                 if (calendar != null) {
-                    val birthday = MmDateTime(calendar.epochInGameTime, ctx.birthdayYear, ctx.birthdayDay, 0, 0, 0)
+                    val birthday = MmDateTime(calendar, ctx.birthdayYear, ctx.birthdayDay, 0, 0, 0)
                     val currentDate = calendar.toMmDateTime(Instant.now())
                     val age = currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
                     if (age < ancestry.minimumAge) {
@@ -273,7 +273,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                 val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths
                 val calendar = magistersMonths?.calendar
                 if (calendar != null) {
-                    val birthday = MmDateTime(calendar.epochInGameTime, ctx.birthdayYear, ctx.birthdayDay, 0, 0, 0)
+                    val birthday = MmDateTime(calendar, ctx.birthdayYear, ctx.birthdayDay, 0, 0, 0)
                     val currentDate = calendar.toMmDateTime(Instant.now())
                     val age = currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
                     if (age < subAncestry.minimumAge) {
