@@ -117,7 +117,7 @@ data class TtCharacter(
         get() {
             val magistersMonths = plugin.server.pluginManager.getPlugin("magisters-months") as? MagistersMonths ?: return 0
             val calendar = magistersMonths.calendar
-            val birthday = MmDateTime(calendar.epochInGameTime, birthdayYear, birthdayDay, 0, 0, 0)
+            val birthday = MmDateTime(calendar, birthdayYear, birthdayDay, 0, 0, 0)
 
             val currentDate = calendar.toMmDateTime(Instant.now())
             return currentDate.year - birthday.year - if (currentDate.dayOfYear < birthday.dayOfYear) 1 else 0
@@ -368,7 +368,7 @@ data class TtCharacter(
                                         },
                                     )
                                 } else {
-                                    val birthday = MmDateTime(calendar.epochInGameTime, birthdayYear, birthdayDay, 0, 0, 0)
+                                    val birthday = MmDateTime(calendar, birthdayYear, birthdayDay, 0, 0, 0)
                                     val month = calendar.getMonthAt(birthday.dayOfYear)
                                     val dayOfMonth =
                                         if (month != null) {

@@ -164,7 +164,7 @@ data class TtCharacterCreationContext(
                     )
                     if (calendar != null) {
                         val birthday = if (birthdayYear != null && birthdayDay != null) {
-                            MmDateTime(calendar.epochInGameTime, birthdayYear, birthdayDay, 0, 0, 0)
+                            MmDateTime(calendar, birthdayYear, birthdayDay, 0, 0, 0)
                         } else {
                             null
                         }
