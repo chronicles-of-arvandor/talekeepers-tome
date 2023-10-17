@@ -40,6 +40,7 @@ import org.bukkit.Material.CLOCK
 import org.bukkit.Material.COMPASS
 import org.bukkit.Material.DIAMOND_SWORD
 import org.bukkit.Material.ENDER_EYE
+import org.bukkit.Material.EXPERIENCE_BOTTLE
 import org.bukkit.Material.GOLD_INGOT
 import org.bukkit.Material.JACK_O_LANTERN
 import org.bukkit.Material.LADDER
@@ -115,6 +116,16 @@ class TtSkillProficiencyGui(plugin: TalekeepersTome, private val character: TtCh
                     false
                 }
             }
+        }
+
+        icon(25) {
+            item = item(
+                EXPERIENCE_BOTTLE,
+                "${ChatColor.of("#7d6fb1")}Proficiency bonus",
+                listOf(
+                    "${ChatColor.of("#b7c495")}Bonus: ${ChatColor.of("#5a8c3e")}${character.proficiencyBonus}",
+                ),
+            )
         }
 
         icon(26) {
