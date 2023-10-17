@@ -259,7 +259,11 @@ private fun InventoryGuiIcon.iconFor(skill: TtSkill, character: TtCharacter): It
             MUSIC_DISC_CAT,
             displayName,
             lore,
-        )
+        ) {
+            itemMeta = itemMeta?.apply {
+                addItemFlags(HIDE_POTION_EFFECTS)
+            }
+        }
 
         PERSUASION -> item(
             JACK_O_LANTERN,
