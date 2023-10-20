@@ -9,14 +9,17 @@ import org.bukkit.command.TabCompleter
 
 class TtClassCommand(plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
 
+    private val featuresCommand = TtClassFeaturesCommand(plugin)
     private val whatsNewCommand = TtClassWhatsNewCommand(plugin)
 
+    private val featuresAliases = listOf("features")
     private val whatsNewAliases = listOf("whatsnew")
 
-    private val subcommands = whatsNewAliases
+    private val subcommands = featuresAliases + whatsNewAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>) =
         when (args.firstOrNull()?.lowercase()) {
+            in featuresAliases -> featuresCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in whatsNewAliases -> whatsNewCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /class [${subcommands.joinToString("|")}]")
@@ -33,6 +36,7 @@ class TtClassCommand(plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
         args.isEmpty() -> subcommands
         args.size == 1 -> subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
         args.size > 1 -> when (args.first().lowercase()) {
+            in featuresAliases -> featuresCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in whatsNewAliases -> whatsNewCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }

@@ -110,8 +110,9 @@ commands:
   class:
     description: |
       Class management command
+      /class features [class] (subclass|none) - View all class features
       /class whatsnew [class] [subclass|none] [level] - View new class features for a class at a given level
-    usage: /<command> [whatsnew]
+    usage: /<command> [features|whatsnew]
   subclass:
     description: |
       Sub-class management command
