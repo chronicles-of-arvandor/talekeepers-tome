@@ -10,7 +10,12 @@ data class TtAbilityEffect(
     private val abilities: Map<TtAbility, Int>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
-    override fun invoke(character: TtCharacter) = character.copy(abilityScores = character.abilityScores + abilities)
+    override fun invoke(character: TtCharacter) = character.copy(
+        abilityScores = character.abilityScores
+            .mapValues { (ability, score) ->
+                score + (abilities[ability] ?: 0)
+            },
+    )
 
     override fun serialize() = mapOf(
         "abilities" to abilities.mapKeys { it.key.name },
