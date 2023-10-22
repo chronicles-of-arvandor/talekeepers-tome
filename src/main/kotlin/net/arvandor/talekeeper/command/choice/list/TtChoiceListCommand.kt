@@ -12,6 +12,7 @@ import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
+import net.md_5.bungee.api.ChatColor.WHITE
 import net.md_5.bungee.api.ChatColor.YELLOW
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
@@ -86,10 +87,12 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                 classInfo.subclassId == null && classInfo.level >= clazz.subClassSelectionLevel
             }.keys.filterNotNull()
 
-            val choices = choiceService.getPendingChoices(character)
+            val pendingChoices = choiceService.getPendingChoices(character)
                 .sortedBy { choice -> choice.text }
-            if (choices.isEmpty() && classesPendingSubclassSelection.isEmpty()) {
-                sender.sendMessage("${GREEN}You have no pending choices.")
+            val completedChoices = choiceService.getCompletedChoices(character)
+                .sortedBy { choice -> choice.text }
+            if (pendingChoices.isEmpty() && classesPendingSubclassSelection.isEmpty() && completedChoices.isEmpty()) {
+                sender.sendMessage("${GREEN}You have no applicable choices.")
                 return@asyncTask
             }
 
@@ -132,12 +135,28 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                         },
                     )
                     addAll(
-                        choices.map { choice ->
+                        pendingChoices.map { choice ->
                             arrayOf(
                                 TextComponent(choice.text).apply {
                                     color = GREEN
                                     hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view this choice."))
                                     clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}${if (target != sender) " ${target.name}" else ""}")
+                                },
+                            )
+                        },
+                    )
+                    addAll(
+                        completedChoices.mapNotNull { choice ->
+                            val optionId = character.choiceOptions[choice.id] ?: return@mapNotNull null
+                            val chosenOption = choice.options.singleOrNull { it.id == optionId } ?: return@mapNotNull null
+                            arrayOf(
+                                TextComponent(choice.text).apply {
+                                    color = WHITE
+                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view this choice."))
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}${if (target != sender) " ${target.name}" else ""}")
+                                },
+                                TextComponent(" (${chosenOption.text})").apply {
+                                    color = GRAY
                                 },
                             )
                         },
