@@ -6,8 +6,10 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.scheduler.asyncTask
+import net.arvandor.talekeeper.scheduler.syncTask
+import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.ChatColor.AQUA
-import net.md_5.bungee.api.ChatColor.GRAY
+import net.md_5.bungee.api.ChatColor.DARK_GREEN
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
 import net.md_5.bungee.api.ChatColor.YELLOW
@@ -29,12 +31,17 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
     private val shareCommand = TtHpShareCommand(plugin)
     private val increaseCommand = TtHpIncreaseCommand(plugin)
     private val decreaseCommand = TtHpDecreaseCommand(plugin)
+    private val resetCommand = TtHpResetCommand(plugin)
 
     private val shareAliases = listOf("share")
     private val increaseAliases = listOf("increase", "add", "+")
     private val decreaseAliases = listOf("decrease", "reduce", "subtract", "-")
+    private val resetAliases = listOf("reset")
 
-    private val subcommands = shareAliases
+    private val subcommands = shareAliases +
+        increaseAliases +
+        decreaseAliases +
+        resetAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (args.isNotEmpty()) {
@@ -42,6 +49,7 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
                 in shareAliases -> return shareCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
                 in increaseAliases -> return increaseCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
                 in decreaseAliases -> return decreaseCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+                in resetAliases -> return resetCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             }
         }
 
@@ -89,76 +97,176 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
                 return@asyncTask
             }
 
-            sender.sendMessage("${GREEN}HP")
-            sender.spigot().sendMessage(
-                *buildList {
-                    if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
-                        if (character.hp + character.tempHp > 0) {
+            syncTask(plugin) {
+                sender.spigot().sendMessage(
+                    *buildList {
+                        add(
+                            TextComponent("HP: ").apply {
+                                color = GREEN
+                            },
+                        )
+                        add(
+                            TextComponent("${character.hp}").apply {
+                                color = YELLOW
+                            },
+                        )
+                        if (character.tempHp > 0) {
                             add(
-                                TextComponent("[ - ]").apply {
-                                    color = RED
+                                TextComponent("(+${character.tempHp})").apply {
+                                    color = AQUA
+                                },
+                            )
+                        }
+                        add(
+                            TextComponent(" / ").apply {
+                                color = ChatColor.GRAY
+                            },
+                        )
+                        add(
+                            TextComponent("${character.maxHp}").apply {
+                                color = YELLOW
+                            },
+                        )
+                        if (character.tempHp > 0) {
+                            add(
+                                TextComponent("(+${character.tempHp})").apply {
+                                    color = AQUA
+                                },
+                            )
+                        }
+                    }.toTypedArray(),
+                )
+                sender.spigot().sendMessage(
+                    *buildList {
+                        if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
+                            if (character.hp + character.tempHp > 0) {
+                                add(
+                                    TextComponent("[ -50 ]").apply {
+                                        color = RED
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 50."),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            if (sender == target) "/hp decrease 50" else "/hp decrease ${target.name} 50",
+                                        )
+                                    },
+                                )
+                                add(TextComponent(" "))
+                                add(
+                                    TextComponent("[ -10 ]").apply {
+                                        color = RED
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 10."),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            if (sender == target) "/hp decrease 10" else "/hp decrease ${target.name} 10",
+                                        )
+                                    },
+                                )
+                                add(TextComponent(" "))
+                                add(
+                                    TextComponent("[ -1 ]").apply {
+                                        color = RED
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 1."),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            if (sender == target) "/hp decrease" else "/hp decrease ${target.name}",
+                                        )
+                                    },
+                                )
+                                add(TextComponent(" "))
+                            }
+                        }
+                        if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
+                            if (character.hp < character.maxHp) {
+                                add(
+                                    TextComponent("[ +1 ]").apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 1."),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            if (sender == target) "/hp increase" else "/hp increase ${target.name}",
+                                        )
+                                    },
+                                )
+                                add(TextComponent(" "))
+                                add(
+                                    TextComponent("[ +10 ]").apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 10."),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            if (sender == target) "/hp increase 10" else "/hp increase ${target.name} 10",
+                                        )
+                                    },
+                                )
+                                add(TextComponent(" "))
+                                add(
+                                    TextComponent("[ +50 ]").apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 50."),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            if (sender == target) "/hp increase 50" else "/hp increase ${target.name} 50",
+                                        )
+                                    },
+                                )
+                            }
+                        }
+                    }.toTypedArray(),
+                )
+                sender.spigot().sendMessage(
+                    *buildList {
+                        if (target == sender || sender.hasPermission("talekeeper.commands.hp.share.other")) {
+                            add(
+                                TextComponent("[ Share ]").apply {
+                                    color = YELLOW
                                     hoverEvent = HoverEvent(
                                         SHOW_TEXT,
-                                        Text("Click here to decrease ${if (sender == target) "your" else "${character.name}'s"} HP by 1."),
+                                        Text("Click here to share ${if (sender == target) "your" else "${character.name}'s"} HP with the party."),
                                     )
                                     clickEvent = ClickEvent(
                                         RUN_COMMAND,
-                                        if (sender == target) "/hp decrease" else "/hp decrease ${target.name}",
+                                        if (sender == target) "/hp share" else "/hp share ${target.name}",
                                     )
                                 },
                             )
                             add(TextComponent(" "))
                         }
-                    }
-                    add(
-                        TextComponent("${character.hp}").apply {
-                            color = YELLOW
-                        },
-                    )
-                    if (character.tempHp > 0) {
-                        add(
-                            TextComponent("(+${character.tempHp})").apply {
-                                color = AQUA
-                            },
-                        )
-                    }
-                    add(
-                        TextComponent(" / ").apply {
-                            color = GRAY
-                        },
-                    )
-                    add(
-                        TextComponent("${character.maxHp}").apply {
-                            color = YELLOW
-                        },
-                    )
-                    if (character.tempHp > 0) {
-                        add(
-                            TextComponent("(+${character.tempHp})").apply {
-                                color = AQUA
-                            },
-                        )
-                    }
-                    if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
-                        if (character.hp < character.maxHp) {
-                            add(TextComponent(" "))
+                        if (target == sender || sender.hasPermission("talekeeper.commands.hp.set.other")) {
                             add(
-                                TextComponent("[ + ]").apply {
-                                    color = GREEN
+                                TextComponent("[ Reset ]").apply {
+                                    color = DARK_GREEN
                                     hoverEvent = HoverEvent(
                                         SHOW_TEXT,
-                                        Text("Click here to increase ${if (sender == target) "your" else "${character.name}'s"} HP by 1."),
+                                        Text("Click here to reset ${if (sender == target) "your" else "${character.name}'s"} HP to full."),
                                     )
                                     clickEvent = ClickEvent(
                                         RUN_COMMAND,
-                                        if (sender == target) "/hp increase" else "/hp increase ${target.name}",
+                                        if (sender == target) "/hp reset" else "/hp reset ${target.name}",
                                     )
                                 },
                             )
                         }
-                    }
-                }.toTypedArray(),
-            )
+                    }.toTypedArray(),
+                )
+            }
         }
         return true
     }
@@ -176,6 +284,7 @@ class TtHpCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCom
                 in shareAliases -> shareCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in increaseAliases -> increaseCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in decreaseAliases -> decreaseCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in resetAliases -> resetCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 else -> emptyList()
             }
         }
