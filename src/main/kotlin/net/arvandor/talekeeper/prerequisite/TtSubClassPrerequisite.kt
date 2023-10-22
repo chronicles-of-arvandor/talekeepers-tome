@@ -10,8 +10,13 @@ import org.bukkit.configuration.serialization.SerializableAs
 @SerializableAs("SubClassPrerequisite")
 class TtSubClassPrerequisite(val classId: TtClassId, val subclassId: TtSubClassId, val level: Int) : TtPrerequisite {
 
-    override val name
-        get() = "Subclass: Lv$level ${Services.INSTANCE.get(TtClassService::class.java).getClass(classId)?.getSubClass(subclassId)?.name}"
+    override val name: String
+        get() {
+            val classService = Services.INSTANCE.get(TtClassService::class.java)
+            val clazz = classService.getClass(classId)
+            val subClass = clazz?.getSubClass(subclassId)
+            return "Subclass: Lv$level ${clazz?.name ?: "Unknown"} (${subClass?.name ?: "Unknown"})"
+        }
 
     override fun isMetBy(character: TtCharacter): Boolean {
         val classInfo = character.classes[classId] ?: return false

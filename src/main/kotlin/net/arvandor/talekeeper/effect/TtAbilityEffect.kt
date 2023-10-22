@@ -10,6 +10,9 @@ data class TtAbilityEffect(
     private val abilities: Map<TtAbility, Int>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Ability: ${abilities.map { "${it.value} ${it.key.displayName}" }.joinToString(", ")}"
+
     override fun invoke(character: TtCharacter) = character.copy(
         abilityScoreBonuses = TtAbility.values()
             .associateWith { ability ->

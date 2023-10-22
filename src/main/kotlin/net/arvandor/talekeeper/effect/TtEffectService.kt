@@ -37,6 +37,28 @@ class TtEffectService(private val plugin: TalekeepersTome) : Service {
         return updatedCharacter
     }
 
+    fun getApplicableEffects(character: TtCharacter): List<TtEffect> {
+        var updatedCharacter = character
+        val effects = effects.toMutableList()
+        val appliedEffects = mutableListOf<TtEffect>()
+        var effectsSize: Int
+        // We need to do multiple passes here because applying an effect may meet the prerequisites of another effect
+        do {
+            effectsSize = effects.size
+            val effectIterator = effects.iterator()
+            while (effectIterator.hasNext()) {
+                val effect = effectIterator.next()
+                if (effect.prerequisites.all { it.isMetBy(updatedCharacter) }) {
+                    updatedCharacter = effect(updatedCharacter)
+                    appliedEffects.add(effect)
+                    effectIterator.remove()
+                }
+            }
+        } while (effects.size < effectsSize)
+
+        return appliedEffects
+    }
+
     private fun loadEffect(file: File): TtEffect {
         return resultFrom {
             val config = YamlConfiguration.loadConfiguration(file)

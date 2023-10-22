@@ -30,6 +30,7 @@ import net.arvandor.talekeeper.command.background.TtBackgroundCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.command.choice.TtChoiceCommand
 import net.arvandor.talekeeper.command.clazz.TtClassCommand
+import net.arvandor.talekeeper.command.effects.TtEffectsCommand
 import net.arvandor.talekeeper.command.experience.TtExperienceCommand
 import net.arvandor.talekeeper.command.hp.TtHpCommand
 import net.arvandor.talekeeper.command.skills.TtSkillsCommand
@@ -294,6 +295,7 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("background")?.setExecutor(TtBackgroundCommand())
         getCommand("choice")?.setExecutor(TtChoiceCommand(this))
         getCommand("hp")?.setExecutor(TtHpCommand(this))
+        getCommand("effects")?.setExecutor(TtEffectsCommand(this))
         getCommand("experience")?.setExecutor(TtExperienceCommand(this))
         getCommand("class")?.setExecutor(TtClassCommand(this))
         getCommand("subclass")?.setExecutor(TtSubClassCommand(this))

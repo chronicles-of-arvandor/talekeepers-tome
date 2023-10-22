@@ -9,6 +9,9 @@ data class TtInitiativeBonusEffect(
     private val bonus: Int,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Initiative bonus: $bonus"
+
     override fun invoke(character: TtCharacter): TtCharacter {
         return character.copy(initiativeBonus = character.initiativeBonus + bonus)
     }

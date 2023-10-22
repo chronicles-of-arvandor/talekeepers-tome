@@ -10,6 +10,9 @@ class TtSkillExpertiseEffect(
     private val skills: List<TtSkill>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Skill expertise: ${skills.joinToString(", ") { it.name }}"
+
     override fun invoke(character: TtCharacter): TtCharacter {
         return character.copy(skillExpertise = character.skillExpertise + skills)
     }
