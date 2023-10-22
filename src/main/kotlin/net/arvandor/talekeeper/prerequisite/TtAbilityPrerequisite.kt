@@ -13,7 +13,7 @@ data class TtAbilityPrerequisite(
         get() = "Ability score: $score ${ability.displayName}"
 
     override fun isMetBy(character: TtCharacter): Boolean {
-        return (character.abilityScores[ability] ?: 0) >= score
+        return (character.baseAbilityScores[ability] ?: 0) + (character.abilityScoreBonuses[ability] ?: 0) >= score
     }
 
     override fun serialize() = mapOf(

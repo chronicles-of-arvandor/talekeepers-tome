@@ -11,9 +11,9 @@ data class TtAbilityEffect(
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
     override fun invoke(character: TtCharacter) = character.copy(
-        abilityScores = character.abilityScores
-            .mapValues { (ability, score) ->
-                score + (abilities[ability] ?: 0)
+        abilityScoreBonuses = TtAbility.values()
+            .associateWith { ability ->
+                (character.abilityScoreBonuses[ability] ?: 0) + (abilities[ability] ?: 0)
             },
     )
 

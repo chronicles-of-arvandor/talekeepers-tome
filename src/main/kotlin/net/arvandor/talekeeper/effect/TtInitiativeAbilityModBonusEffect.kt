@@ -20,6 +20,7 @@ data class TtInitiativeAbilityModBonusEffect(
     )
 
     companion object {
+        @JvmStatic
         fun deserialize(serialized: Map<String, Any>) = TtInitiativeAbilityModBonusEffect(
             (serialized["ability"] as String).let(TtAbility::valueOf),
             serialized["prerequisites"] as List<TtPrerequisite>,
