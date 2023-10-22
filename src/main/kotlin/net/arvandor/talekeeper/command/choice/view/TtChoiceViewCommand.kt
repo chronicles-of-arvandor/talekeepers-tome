@@ -33,6 +33,12 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
             return true
         }
 
+        val target = if (sender.hasPermission("talekeeper.commands.choice.view.other") && args.size > 1) {
+            plugin.server.getPlayer(args[1]) ?: sender
+        } else {
+            sender
+        }
+
         val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
         if (minecraftProfileService == null) {
             sender.sendMessage("${RED}No Minecraft profile service was found. Please contact an admin.")
@@ -65,30 +71,30 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
         }
 
         asyncTask(plugin) {
-            val minecraftProfile = minecraftProfileService.getMinecraftProfile(sender).join()
+            val minecraftProfile = minecraftProfileService.getMinecraftProfile(target).join()
             if (minecraftProfile == null) {
-                sender.sendMessage("${RED}You do not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
+                sender.sendMessage("${RED}${if (target == sender) "You do" else "${target.name} does"} not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
                 return@asyncTask
             }
 
             val character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your active character.")
+                sender.sendMessage("${RED}An error occurred while getting ${if (target == sender) "your" else "${minecraftProfile.name}'s"} active character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
 
             if (character == null) {
-                sender.sendMessage("${RED}You do not currently have an active character.")
+                sender.sendMessage("${RED}${if (target == sender) "You do" else "${minecraftProfile.name} does"} not currently have an active character.")
                 return@asyncTask
             }
 
             if (!choice.isApplicableFor(character)) {
-                sender.sendMessage("${RED}This choice is not applicable to you right now.")
+                sender.sendMessage("${RED}This choice is not applicable to ${if (target == sender) "you" else character.name} right now.")
                 return@asyncTask
             }
 
             val chosenOption = choiceService.getChosenOption(character, choice.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your chosen option.")
+                sender.sendMessage("${RED}An error occurred while getting ${if (target == sender) "your" else "${character.name}'s"} chosen option.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
@@ -114,8 +120,13 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
                             arrayOf(
                                 TextComponent(option.text).apply {
                                     color = WHITE
-                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to select this option."))
-                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice select ${choice.id.value} ${option.id.value}")
+                                    if (target == sender) {
+                                        hoverEvent = HoverEvent(SHOW_TEXT, Text("Click to select this option."))
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/choice select ${choice.id.value} ${option.id.value}",
+                                        )
+                                    }
                                 },
                             )
                         } +
@@ -131,7 +142,7 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
                                         Text(
                                             arrayOf(
                                                 TextComponent(
-                                                    "You do not meet the following prerequisites for this option:\n" +
+                                                    "${if (target == sender) "You do" else "${character.name} does"} not meet the following prerequisites for this option:\n" +
                                                         unmetOptionPrerequisites.joinToString("\n") { "• ${it.name}" },
                                                 ).apply { color = RED },
                                             ),
@@ -146,7 +157,7 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
                     "Click here to view the next page",
                     { pageNumber -> "Page $pageNumber" },
                     10,
-                    { pageNumber -> "/choice view ${choice.id.value} $pageNumber" },
+                    { pageNumber -> "/choice view ${choice.id.value} ${if (target != sender) "${target.name} " else ""}$pageNumber" },
                 )
 
                 if (!view.isPageValid(page)) {

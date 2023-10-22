@@ -139,6 +139,12 @@ permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
     default: op
+  talekeeper.commands.character.choice.list.other:
+    description: Allows viewing other players' pending choices
+    default: op
+  talekeeper.commands.character.choice.view.other:
+    description: Allows viewing other players' choices
+    default: op
   talekeeper.commands.hp.view.other:
     description: Allows viewing other players' HP
     default: op
