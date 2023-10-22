@@ -1,8 +1,11 @@
 package net.arvandor.talekeeper.effect
 
 import com.rpkit.core.service.Service
+import dev.forkhandles.result4k.onFailure
+import dev.forkhandles.result4k.resultFrom
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacter
+import net.arvandor.talekeeper.failure.ConfigLoadException
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
@@ -35,7 +38,11 @@ class TtEffectService(private val plugin: TalekeepersTome) : Service {
     }
 
     private fun loadEffect(file: File): TtEffect {
-        val config = YamlConfiguration.loadConfiguration(file)
-        return config.getSerializable("effect", TtEffect::class.java)!!
+        return resultFrom {
+            val config = YamlConfiguration.loadConfiguration(file)
+            config.getSerializable("effect", TtEffect::class.java)!!
+        }.onFailure { failure ->
+            throw ConfigLoadException("Failed to load ancestry from ${file.name}", failure.reason)
+        }
     }
 }
