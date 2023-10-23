@@ -12,6 +12,7 @@ import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.GRAY
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
+import net.md_5.bungee.api.ChatColor.WHITE
 import net.md_5.bungee.api.ChatColor.YELLOW
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
@@ -31,6 +32,12 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
         if (sender !is Player) {
             sender.sendMessage("${RED}You must be a player to perform this command.")
             return true
+        }
+
+        val target = if (sender.hasPermission("talekeeper.commands.choice.list.other") && args.isNotEmpty()) {
+            plugin.server.getPlayer(args[0]) ?: sender
+        } else {
+            sender
         }
 
         val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
@@ -58,19 +65,19 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
         }
 
         asyncTask(plugin) {
-            val minecraftProfile = minecraftProfileService.getMinecraftProfile(sender).join()
+            val minecraftProfile = minecraftProfileService.getMinecraftProfile(target).join()
             if (minecraftProfile == null) {
-                sender.sendMessage("${RED}You do not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
+                sender.sendMessage("${RED}${if (target == sender) "You do" else "${target.name} does"} not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
                 return@asyncTask
             }
 
             val character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your active character.")
+                sender.sendMessage("${RED}An error occurred while getting ${if (target == sender) "your" else "${minecraftProfile.name}'s"} active character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
             if (character == null) {
-                sender.sendMessage("${RED}You do not currently have an active character.")
+                sender.sendMessage("${RED}${if (target == sender) "You do" else "${minecraftProfile.name} does"} not currently have an active character.")
                 return@asyncTask
             }
 
@@ -80,14 +87,28 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                 classInfo.subclassId == null && classInfo.level >= clazz.subClassSelectionLevel
             }.keys.filterNotNull()
 
-            val choices = choiceService.getPendingChoices(character)
+            val pendingChoices = choiceService.getPendingChoices(character)
                 .sortedBy { choice -> choice.text }
-            if (choices.isEmpty()) {
-                sender.sendMessage("${GREEN}You have no pending choices.")
+            val completedChoices = choiceService.getCompletedChoices(character)
+                .sortedBy { choice -> choice.text }
+            if (pendingChoices.isEmpty() && classesPendingSubclassSelection.isEmpty() && completedChoices.isEmpty()) {
+                sender.sendMessage("${GREEN}You have no applicable choices.")
                 return@asyncTask
             }
 
-            val page = args.firstOrNull()?.toIntOrNull() ?: 1
+            val page = if (target == sender) {
+                if (args.isNotEmpty()) {
+                    args[0].toIntOrNull()
+                } else {
+                    1
+                }
+            } else {
+                if (args.size > 1) {
+                    args[1].toIntOrNull()
+                } else {
+                    1
+                }
+            } ?: 1
 
             val view = PaginatedView.fromChatComponents(
                 arrayOf(
@@ -101,19 +122,41 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                             arrayOf(
                                 TextComponent("${clazz.name}: Sub-class").apply {
                                     color = YELLOW
-                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view the sub-class selection for ${clazz.name}."))
-                                    clickEvent = ClickEvent(RUN_COMMAND, "/character subclass set ${clazz.id.value}")
+                                    if (target == sender) {
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to view the sub-class selection for ${clazz.name}."),
+                                        )
+                                        clickEvent =
+                                            ClickEvent(RUN_COMMAND, "/character subclass set ${clazz.id.value}")
+                                    }
                                 },
                             )
                         },
                     )
                     addAll(
-                        choices.map { choice ->
+                        pendingChoices.map { choice ->
                             arrayOf(
                                 TextComponent(choice.text).apply {
                                     color = GREEN
                                     hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view this choice."))
-                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}")
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}${if (target != sender) " ${target.name}" else ""}")
+                                },
+                            )
+                        },
+                    )
+                    addAll(
+                        completedChoices.mapNotNull { choice ->
+                            val optionId = character.choiceOptions[choice.id] ?: return@mapNotNull null
+                            val chosenOption = choice.options.singleOrNull { it.id == optionId } ?: return@mapNotNull null
+                            arrayOf(
+                                TextComponent(choice.text).apply {
+                                    color = WHITE
+                                    hoverEvent = HoverEvent(SHOW_TEXT, Text("Click here to view this choice."))
+                                    clickEvent = ClickEvent(RUN_COMMAND, "/choice view ${choice.id.value}${if (target != sender) " ${target.name}" else ""}")
+                                },
+                                TextComponent(" (${chosenOption.text})").apply {
+                                    color = GRAY
                                 },
                             )
                         },
@@ -125,7 +168,7 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
                 "Click here to view the next page",
                 { pageNumber -> "Page $pageNumber" },
                 10,
-                { pageNumber -> "/choice list $pageNumber" },
+                { pageNumber -> "/choice list ${if (target != sender) "${target.name} " else ""}$pageNumber" },
             )
 
             if (!view.isPageValid(page)) {
@@ -143,5 +186,11 @@ class TtChoiceListCommand(private val plugin: TalekeepersTome) : CommandExecutor
         command: Command,
         label: String,
         args: Array<out String>,
-    ) = emptyList<String>()
+    ) = when {
+        args.isEmpty() -> plugin.server.onlinePlayers.map { it.name } + (1..100).map(Int::toString)
+        args.size == 1 -> (plugin.server.onlinePlayers.map { it.name } + (1..100).map(Int::toString))
+            .filter { it.startsWith(args[0], true) }
+        args.size == 2 -> (1..100).map(Int::toString).filter { it.startsWith(args[1], true) }
+        else -> emptyList()
+    }
 }

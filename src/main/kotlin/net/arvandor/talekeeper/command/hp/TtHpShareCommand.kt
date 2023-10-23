@@ -28,6 +28,16 @@ class TtHpShareCommand(private val plugin: TalekeepersTome) : CommandExecutor, T
             return true
         }
 
+        var target: Player? = null
+        if (args.isNotEmpty()) {
+            if (sender.hasPermission("talekeeper.commands.hp.share.other")) {
+                target = plugin.server.getPlayer(args.first())
+            }
+        }
+        if (target == null) {
+            target = sender
+        }
+
         val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
         if (minecraftProfileService == null) {
             sender.sendMessage("${RED}No Minecraft profile service was found. Please contact an admin.")
@@ -43,7 +53,7 @@ class TtHpShareCommand(private val plugin: TalekeepersTome) : CommandExecutor, T
         val nearbyPlayers = sender.world.players.filter { player -> player.location.distanceSquared(sender.location) <= 40 * 40 }
 
         asyncTask(plugin) {
-            val minecraftProfile = minecraftProfileService.getMinecraftProfile(sender).join()
+            val minecraftProfile = minecraftProfileService.getMinecraftProfile(target).join()
             if (minecraftProfile == null) {
                 sender.sendMessage("${RED}You do not have a Minecraft profile. Please try relogging, or contact an admin if the error persists.")
                 return@asyncTask

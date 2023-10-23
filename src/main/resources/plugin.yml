@@ -95,10 +95,18 @@ commands:
       /hp decrease - Decrease your HP
       /hp increase - Increase your HP
       /hp share - Display your HP to nearby players
+      /hp reset - Reset your HP to max
       /hp [player] - View another player's HP
       /hp decrease [player] - Decrease another player's HP
       /hp increase [player] - Increase another player's HP
-    usage: /<command> [decrease|increase|share]
+      /hp share [player] - Display another player's HP to nearby players
+      /hp reset [player] - Reset another player's HP to max
+    usage: /<command> [decrease|increase|share|reset]
+  effects:
+    description: |
+      List applicable effects on a character
+      /effects [player] (page) - List applicable effects on a character
+    usage: /<command> [player] (page)
   experience:
     description: |
       Experience command
@@ -131,11 +139,23 @@ permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
     default: op
+  talekeeper.commands.character.choice.list.other:
+    description: Allows viewing other players' pending choices
+    default: op
+  talekeeper.commands.character.choice.view.other:
+    description: Allows viewing other players' choices
+    default: op
   talekeeper.commands.hp.view.other:
     description: Allows viewing other players' HP
     default: op
   talekeeper.commands.hp.set.other:
     description: Allows setting other players' HP
+    default: op
+  talekeeper.commands.hp.share.other:
+    description: Allows sharing other players' HP
+    default: op
+  talekeeper.commands.effects:
+    description: Allows viewing applicable effects on a character
     default: op
   talekeeper.commands.experience.set:
     description: Allows setting experience

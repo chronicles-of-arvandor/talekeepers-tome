@@ -45,13 +45,13 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             deleteClasses(transactionalDsl, character.id)
             val newClasses = character.classes.map { (clazz, info) -> upsertClass(transactionalDsl, character.id, clazz, info) }.toMap()
             deleteAbilityScores(transactionalDsl, character.id)
-            val newAbilityScores = character.abilityScores.map { (ability, score) -> upsertAbilityScore(transactionalDsl, character.id, ability, score) }.toMap()
+            val newAbilityScores = character.baseAbilityScores.map { (ability, score) -> upsertAbilityScore(transactionalDsl, character.id, ability, score) }.toMap()
             deleteTempAbilityScores(transactionalDsl, character.id)
             val newTempAbilityScores = character.tempAbilityScores.map { (ability, score) -> upsertTempAbilityScore(transactionalDsl, character.id, ability, score) }.toMap()
             return@transactionResult newState.copy(
                 pronouns = newPronouns,
                 classes = newClasses,
-                abilityScores = newAbilityScores,
+                baseAbilityScores = newAbilityScores,
                 tempAbilityScores = newTempAbilityScores,
             )
         }
@@ -264,7 +264,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         return character?.copy(
             pronouns = getPronouns(character.id),
             classes = getClasses(character.id),
-            abilityScores = getAbilityScores(character.id),
+            baseAbilityScores = getAbilityScores(character.id),
             tempAbilityScores = getTempAbilityScores(character.id),
             choiceOptions = getChoiceOptions(character.id),
         )
@@ -279,7 +279,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
                 it.toDomain().copy(
                     pronouns = getPronouns(id),
                     classes = getClasses(id),
-                    abilityScores = getAbilityScores(id),
+                    baseAbilityScores = getAbilityScores(id),
                     tempAbilityScores = getTempAbilityScores(id),
                     choiceOptions = getChoiceOptions(id),
                 )
@@ -346,7 +346,8 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         classes = classes,
         backgroundId = backgroundId.let(::TtBackgroundId),
         alignment = alignment.let(TtAlignment::valueOf),
-        abilityScores = abilityScores,
+        baseAbilityScores = abilityScores,
+        abilityScoreBonuses = emptyMap(),
         tempAbilityScores = tempAbilityScores,
         hp = hp,
         tempHp = tempHp,

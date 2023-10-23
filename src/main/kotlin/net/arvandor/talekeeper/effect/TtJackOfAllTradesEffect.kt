@@ -8,6 +8,9 @@ import org.bukkit.configuration.serialization.SerializableAs
 data class TtJackOfAllTradesEffect(
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Jack of all trades"
+
     override fun invoke(character: TtCharacter): TtCharacter {
         return character.copy(jackOfAllTrades = true)
     }

@@ -10,6 +10,9 @@ data class TtCharacterTraitEffect(
     private val traits: List<TtCharacterTrait>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Character trait: ${traits.joinToString(", ") { it.name }}"
+
     override fun invoke(character: TtCharacter) = character.copy(
         traits = character.traits + traits,
     )

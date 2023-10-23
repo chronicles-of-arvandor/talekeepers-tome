@@ -5,6 +5,7 @@ import net.arvandor.talekeeper.prerequisite.TtPrerequisite
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 
 interface TtEffect : ConfigurationSerializable {
+    val name: String
     val prerequisites: List<TtPrerequisite>
     operator fun invoke(character: TtCharacter): TtCharacter
 }

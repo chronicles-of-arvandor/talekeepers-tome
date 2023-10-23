@@ -9,6 +9,9 @@ data class TtSpeedEffect(
     val speed: Int,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Speed bonus: $speed"
+
     override fun invoke(character: TtCharacter): TtCharacter {
         return character.copy(speed = character.speed.copy(value = character.speed.value + speed))
     }

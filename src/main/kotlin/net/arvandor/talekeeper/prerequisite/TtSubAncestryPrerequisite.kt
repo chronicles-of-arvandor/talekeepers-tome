@@ -11,7 +11,12 @@ import org.bukkit.configuration.serialization.SerializableAs
 data class TtSubAncestryPrerequisite(val ancestryId: TtAncestryId, val subAncestryId: TtSubAncestryId) :
     TtPrerequisite {
     override val name: String
-        get() = "Sub-ancestry: ${Services.INSTANCE.get(TtAncestryService::class.java).getAncestry(ancestryId)?.getSubAncestry(subAncestryId)?.name}"
+        get() {
+            val ancestryService = Services.INSTANCE.get(TtAncestryService::class.java)
+            val ancestry = ancestryService.getAncestry(ancestryId)
+            val subAncestry = ancestry?.getSubAncestry(subAncestryId)
+            return "Sub-ancestry: ${ancestry?.name} (${subAncestry?.name})"
+        }
 
     override fun isMetBy(character: TtCharacter): Boolean {
         return character.ancestryId == ancestryId && character.subAncestryId == subAncestryId

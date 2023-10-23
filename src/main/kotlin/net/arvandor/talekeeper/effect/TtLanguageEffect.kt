@@ -10,6 +10,9 @@ data class TtLanguageEffect(
     private val languages: List<TtLanguageId>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Language: ${languages.joinToString(", ") { it.value }}"
+
     override fun invoke(character: TtCharacter) = character.copy(languages = character.languages + languages)
 
     override fun serialize() = mapOf(

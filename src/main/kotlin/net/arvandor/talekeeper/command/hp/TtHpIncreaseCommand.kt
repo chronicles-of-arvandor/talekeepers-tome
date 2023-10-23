@@ -45,6 +45,8 @@ class TtHpIncreaseCommand(private val plugin: TalekeepersTome) : CommandExecutor
             return true
         }
 
+        val amount = args.lastOrNull()?.toIntOrNull() ?: 1
+
         asyncTask(plugin) {
             val minecraftProfile = minecraftProfileService.getMinecraftProfile(target).join()
             if (minecraftProfile == null) {
@@ -62,12 +64,14 @@ class TtHpIncreaseCommand(private val plugin: TalekeepersTome) : CommandExecutor
                 return@asyncTask
             }
 
-            characterService.save(character.copy(hp = character.hp + 1)).onFailure {
+            val cappedHp = (character.hp + amount).coerceAtMost(character.maxHp)
+            val cappedAmount = cappedHp - character.hp
+            characterService.save(character.copy(hp = cappedHp)).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving ${if (sender == target) "your" else "${target.name}'s"} character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
-            sender.sendMessage("$GREEN+1 HP")
+            sender.sendMessage("$GREEN+$cappedAmount HP")
 
             syncTask(plugin) {
                 plugin.server.dispatchCommand(sender, "hp")
@@ -87,6 +91,7 @@ class TtHpIncreaseCommand(private val plugin: TalekeepersTome) : CommandExecutor
     ) = when {
         args.isEmpty() -> plugin.server.onlinePlayers.map(Player::getName)
         args.size == 1 -> plugin.server.onlinePlayers.map(Player::getName).filter { it.startsWith(args[0], ignoreCase = true) }
+        args.size == 2 -> (1..600).map(Int::toString).filter { args[1].startsWith(it, ignoreCase = true) }
         else -> emptyList()
     }
 }

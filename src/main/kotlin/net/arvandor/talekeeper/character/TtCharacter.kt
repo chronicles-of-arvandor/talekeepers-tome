@@ -75,12 +75,13 @@ data class TtCharacter(
     val classes: Map<TtClassId, TtClassInfo>,
     val backgroundId: TtBackgroundId,
     val alignment: TtAlignment,
-    val abilityScores: Map<TtAbility, Int>,
+    val baseAbilityScores: Map<TtAbility, Int>,
     val tempAbilityScores: Map<TtAbility, Int>,
     val hp: Int,
     val tempHp: Int,
     val experience: Int,
     // these are determined from other values, so they're not stored in the repository
+    val abilityScoreBonuses: Map<TtAbility, Int>,
     val feats: List<TtFeatId>,
     val spells: List<TtSpellId>,
     val skillProficiencies: List<TtSkill>,
@@ -166,9 +167,10 @@ data class TtCharacter(
 
     fun getModifier(ability: TtAbility): Int {
         val abilityService = Services.INSTANCE[TtAbilityService::class.java]
-        val abilityScore = abilityScores[ability] ?: 0
+        val baseAbilityScore = baseAbilityScores[ability] ?: 0
         val tempAbilityScore = tempAbilityScores[ability] ?: 0
-        return abilityService.getModifier(abilityScore + tempAbilityScore)
+        val abilityScoreBonus = abilityScoreBonuses[ability] ?: 0
+        return abilityService.getModifier(baseAbilityScore + tempAbilityScore + abilityScoreBonus)
     }
 
     fun display(player: Player) {
@@ -535,7 +537,7 @@ data class TtCharacter(
                             },
                             TextComponent(
                                 TtAbility.values()
-                                    .joinToString(" / ") { ability -> "${ability.shortName} ${abilityScores[ability] ?: "?"}" } + " ",
+                                    .joinToString(" / ") { ability -> "${ability.shortName} ${(baseAbilityScores[ability] ?: 0) + (abilityScoreBonuses[ability] ?: 0)}" } + " ",
                             ).apply {
                                 color = GRAY
                             },

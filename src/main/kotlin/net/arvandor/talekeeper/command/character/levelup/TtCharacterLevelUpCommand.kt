@@ -93,6 +93,7 @@ class TtCharacterLevelUpCommand(private val plugin: TalekeepersTome) : CommandEx
             val level = experienceService.getLevelAtExperience(character.experience)
             if (level <= character.classes.map { (_, classInfo) -> classInfo.level }.sum()) {
                 sender.sendMessage("${RED}You do not have enough experience to level up.")
+                return@asyncTask
             }
 
             val updatedCharacter = characterService.save(

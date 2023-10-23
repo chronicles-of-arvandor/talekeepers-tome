@@ -10,6 +10,9 @@ data class TtSavingThrowProficiencyEffect(
     val abilities: List<TtAbility>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Saving throw proficiency: ${abilities.joinToString(", ") { it.displayName }}"
+
     override fun invoke(character: TtCharacter) = character.copy(savingThrowProficiencies = character.savingThrowProficiencies + abilities)
 
     override fun serialize() = mapOf(

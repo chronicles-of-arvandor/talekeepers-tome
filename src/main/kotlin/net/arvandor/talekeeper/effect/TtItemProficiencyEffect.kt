@@ -10,6 +10,9 @@ data class TtItemProficiencyEffect(
     val items: List<TtItemId>,
     override val prerequisites: List<TtPrerequisite>,
 ) : TtEffect {
+    override val name: String
+        get() = "Item proficiency: ${items.joinToString(", ") { it.value }}"
+
     override fun invoke(character: TtCharacter) = character.copy(
         itemProficiencies = character.itemProficiencies + items,
     )

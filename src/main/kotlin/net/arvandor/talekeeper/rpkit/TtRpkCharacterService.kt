@@ -199,7 +199,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                     classes = mapOf(classId to TtClassInfo(1, null)),
                     backgroundId = backgroundId,
                     alignment = TtAlignment.NEUTRAL,
-                    abilityScores = mapOf(
+                    baseAbilityScores = mapOf(
                         STRENGTH to 12,
                         DEXTERITY to 12,
                         CONSTITUTION to 12,
@@ -207,6 +207,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                         WISDOM to 12,
                         CHARISMA to 12,
                     ),
+                    abilityScoreBonuses = emptyMap(),
                     tempAbilityScores = emptyMap(),
                     hp = clazz.baseHp,
                     tempHp = 0,

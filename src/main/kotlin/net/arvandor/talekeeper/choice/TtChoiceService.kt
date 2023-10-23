@@ -74,6 +74,15 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
         }
     }
 
+    fun getCompletedChoices(character: TtCharacter): List<TtChoice> {
+        return getApplicableChoices(character).filter { choice ->
+            getChosenOption(character, choice.id).onFailure {
+                plugin.logger.log(SEVERE, "Failed to get chosen option for character ${character.id} and choice ${choice.id}", it.reason.cause)
+                return@filter false
+            } != null
+        }
+    }
+
     internal fun displayPendingChoices(player: Player, character: TtCharacter) {
         val choices = getPendingChoices(character)
         if (choices.isNotEmpty()) {
