@@ -24,6 +24,7 @@ import net.arvandor.talekeeper.jooq.Tables.TT_CHARACTER
 import net.arvandor.talekeeper.jooq.Tables.TT_CHARACTER_ABILITY_SCORE
 import net.arvandor.talekeeper.jooq.Tables.TT_CHARACTER_CLASS
 import net.arvandor.talekeeper.jooq.Tables.TT_CHARACTER_PRONOUNS
+import net.arvandor.talekeeper.jooq.Tables.TT_CHARACTER_SPELL_SLOTS
 import net.arvandor.talekeeper.jooq.Tables.TT_CHARACTER_TEMP_ABILITY_SCORE
 import net.arvandor.talekeeper.jooq.tables.records.TtCharacterRecord
 import net.arvandor.talekeeper.pronouns.TtPronounSetId
@@ -48,11 +49,14 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             val newAbilityScores = character.baseAbilityScores.map { (ability, score) -> upsertAbilityScore(transactionalDsl, character.id, ability, score) }.toMap()
             deleteTempAbilityScores(transactionalDsl, character.id)
             val newTempAbilityScores = character.tempAbilityScores.map { (ability, score) -> upsertTempAbilityScore(transactionalDsl, character.id, ability, score) }.toMap()
+            deleteSpellSlots(transactionalDsl, character.id)
+            val newUsedSpellSlots = character.usedSpellSlots.map { (spellSlotLevel, usedSpellSlots) -> upsertSpellSlots(transactionalDsl, character.id, spellSlotLevel, usedSpellSlots) }.toMap()
             return@transactionResult newState.copy(
                 pronouns = newPronouns,
                 classes = newClasses,
                 baseAbilityScores = newAbilityScores,
                 tempAbilityScores = newTempAbilityScores,
+                usedSpellSlots = newUsedSpellSlots,
             )
         }
     }
@@ -201,6 +205,19 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         return ability to value
     }
 
+    private fun upsertSpellSlots(dsl: DSLContext, characterId: TtCharacterId, spellSlotLevel: Int, usedSpellSlots: Int): Pair<Int, Int> {
+        dsl.insertInto(TT_CHARACTER_SPELL_SLOTS)
+            .set(TT_CHARACTER_SPELL_SLOTS.CHARACTER_ID, characterId.value)
+            .set(TT_CHARACTER_SPELL_SLOTS.SPELL_SLOT_LEVEL, spellSlotLevel)
+            .set(TT_CHARACTER_SPELL_SLOTS.USED_SPELL_SLOTS, usedSpellSlots)
+            .onConflict(TT_CHARACTER_SPELL_SLOTS.CHARACTER_ID, TT_CHARACTER_SPELL_SLOTS.SPELL_SLOT_LEVEL).doUpdate()
+            .set(TT_CHARACTER_SPELL_SLOTS.USED_SPELL_SLOTS, usedSpellSlots)
+            .where(TT_CHARACTER_SPELL_SLOTS.CHARACTER_ID.eq(characterId.value))
+            .and(TT_CHARACTER_SPELL_SLOTS.SPELL_SLOT_LEVEL.eq(spellSlotLevel))
+            .execute()
+        return spellSlotLevel to usedSpellSlots
+    }
+
     fun delete(id: TtCharacterId) {
         dsl.deleteFrom(TT_CHARACTER)
             .where(TT_CHARACTER.ID.eq(id.value))
@@ -231,6 +248,12 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             .execute()
     }
 
+    private fun deleteSpellSlots(dsl: DSLContext, characterId: TtCharacterId) {
+        dsl.deleteFrom(TT_CHARACTER_SPELL_SLOTS)
+            .where(TT_CHARACTER_SPELL_SLOTS.CHARACTER_ID.eq(characterId.value))
+            .execute()
+    }
+
     fun get(id: TtCharacterId): TtCharacter? = dsl.selectFrom(TT_CHARACTER)
         .where(TT_CHARACTER.ID.eq(id.value))
         .fetchOne()
@@ -240,6 +263,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             abilityScores = getAbilityScores(id),
             tempAbilityScores = getTempAbilityScores(id),
             choiceOptions = getChoiceOptions(id),
+            usedSpellSlots = getUsedSpellSlots(id),
         )
 
     fun get(rpkitId: RPKCharacterId): TtCharacter? = dsl.selectFrom(TT_CHARACTER)
@@ -253,6 +277,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
                 abilityScores = getAbilityScores(id),
                 tempAbilityScores = getTempAbilityScores(id),
                 choiceOptions = getChoiceOptions(id),
+                usedSpellSlots = getUsedSpellSlots(id),
             )
         }
 
@@ -267,6 +292,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             baseAbilityScores = getAbilityScores(character.id),
             tempAbilityScores = getTempAbilityScores(character.id),
             choiceOptions = getChoiceOptions(character.id),
+            usedSpellSlots = getUsedSpellSlots(character.id),
         )
     }
 
@@ -282,6 +308,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
                     baseAbilityScores = getAbilityScores(id),
                     tempAbilityScores = getTempAbilityScores(id),
                     choiceOptions = getChoiceOptions(id),
+                    usedSpellSlots = getUsedSpellSlots(id),
                 )
             }
     }
@@ -325,12 +352,21 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             throw it.reason.cause
         }
 
+    private fun getUsedSpellSlots(characterId: TtCharacterId): Map<Int, Int> =
+        dsl.selectFrom(TT_CHARACTER_SPELL_SLOTS)
+            .where(TT_CHARACTER_SPELL_SLOTS.CHARACTER_ID.eq(characterId.value))
+            .fetch()
+            .map { result ->
+                result.spellSlotLevel to result.usedSpellSlots
+            }.toMap()
+
     private fun TtCharacterRecord.toDomain(
         pronouns: Map<TtPronounSetId, Int> = emptyMap(),
         classes: Map<TtClassId, TtClassInfo> = emptyMap(),
         abilityScores: Map<TtAbility, Int> = emptyMap(),
         tempAbilityScores: Map<TtAbility, Int> = emptyMap(),
         choiceOptions: Map<TtChoiceId, TtChoiceOptionId> = emptyMap(),
+        usedSpellSlots: Map<Int, Int> = emptyMap(),
     ) = TtCharacter(
         plugin,
         id = id.let(::TtCharacterId),
@@ -352,6 +388,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         hp = hp,
         tempHp = tempHp,
         experience = experience,
+        usedSpellSlots = usedSpellSlots,
         feats = emptyList(),
         spells = emptyList(),
         skillProficiencies = emptyList(),

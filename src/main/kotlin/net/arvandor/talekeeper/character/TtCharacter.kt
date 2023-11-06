@@ -55,6 +55,8 @@ import org.bukkit.inventory.ItemStack
 import java.text.DecimalFormat
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
 data class TtCharacter(
     private val plugin: TalekeepersTome,
@@ -80,6 +82,7 @@ data class TtCharacter(
     val hp: Int,
     val tempHp: Int,
     val experience: Int,
+    val usedSpellSlots: Map<Int, Int>,
     // these are determined from other values, so they're not stored in the repository
     val abilityScoreBonuses: Map<TtAbility, Int>,
     val feats: List<TtFeatId>,
@@ -165,12 +168,43 @@ data class TtCharacter(
             }
         }
 
+    val casterLevel: Int
+        get() {
+            val classService = Services.INSTANCE[TtClassService::class.java]
+            return classes.mapNotNull { (classId, info) ->
+                classService.getClass(classId)?.let {
+                    it to info
+                }
+            }.groupBy { (clazz, info) ->
+                val subClass = info.subclassId?.let(clazz::getSubClass)
+                if (subClass?.casterLevelsPerLevel != null) {
+                    subClass.casterLevelsPerLevel
+                } else {
+                    clazz.levelsPerCasterLevel
+                }
+            }.map { (levelsPerCasterLevel, classes) ->
+                if (levelsPerCasterLevel != null) {
+                    floor(
+                        classes.sumOf { (_, info) -> info.level }
+                            .toDouble() / levelsPerCasterLevel.toDouble(),
+                    ).roundToInt()
+                } else {
+                    0
+                }
+            }.sum()
+        }
+
     fun getModifier(ability: TtAbility): Int {
         val abilityService = Services.INSTANCE[TtAbilityService::class.java]
         val baseAbilityScore = baseAbilityScores[ability] ?: 0
         val tempAbilityScore = tempAbilityScores[ability] ?: 0
         val abilityScoreBonus = abilityScoreBonuses[ability] ?: 0
         return abilityService.getModifier(baseAbilityScore + tempAbilityScore + abilityScoreBonus)
+    }
+
+    fun getMaxSpellSlotCount(spellSlotLevel: Int): Int {
+        val characterService = Services.INSTANCE[TtCharacterService::class.java]
+        return characterService.getSpellSlotCount(casterLevel, spellSlotLevel)
     }
 
     fun display(player: Player) {

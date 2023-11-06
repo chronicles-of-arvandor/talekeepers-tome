@@ -318,6 +318,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                             hp = 1,
                             tempHp = 0,
                             experience = 0,
+                            usedSpellSlots = emptyMap(),
                             feats = emptyList(),
                             spells = emptyList(),
                             skillProficiencies = emptyList(),

@@ -212,6 +212,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                     hp = clazz.baseHp,
                     tempHp = 0,
                     experience = 0,
+                    usedSpellSlots = emptyMap(),
                     feats = emptyList(),
                     spells = emptyList(),
                     skillProficiencies = emptyList(),

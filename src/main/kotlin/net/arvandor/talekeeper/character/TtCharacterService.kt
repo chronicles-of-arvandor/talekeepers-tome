@@ -50,6 +50,21 @@ class TtCharacterService(
             plugin.saveConfig()
         }
 
+    private val spellSlotCount = plugin.config.getConfigurationSection("spell-slots")
+        ?.getKeys(false)
+        ?.mapNotNull { it.toIntOrNull() }
+        ?.associateWith { casterLevel ->
+            plugin.config.getConfigurationSection("spell-slots.$casterLevel")
+                ?.getKeys(false)
+                ?.mapNotNull {
+                    it.toIntOrNull()?.let { spellLevel ->
+                        spellLevel to plugin.config.getInt("spell-slots.$casterLevel.$spellLevel")
+                    }
+                }
+                ?.toMap()
+        }
+        ?: emptyMap()
+
     fun getCharacter(id: TtCharacterId): Result4k<TtCharacter?, ServiceFailure> {
         val character = resultFrom {
             characterRepo.get(id)
@@ -229,6 +244,10 @@ class TtCharacterService(
     fun deleteCreationRequest(id: RPKMinecraftProfileId): Result4k<Unit, ServiceFailure> = resultFrom {
         characterCreationRequestRepo.delete(id)
     }.mapFailure { it.toServiceFailure() }
+
+    fun getSpellSlotCount(casterLevel: Int, spellSlotLevel: Int): Int {
+        return spellSlotCount[casterLevel]?.get(spellSlotLevel) ?: 0
+    }
 
     // This stuff is mostly for RPKit, so we don't expose it outside the plugin, aside from through the RPKit character service
 

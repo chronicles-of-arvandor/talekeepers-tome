@@ -135,6 +135,9 @@ commands:
   spells:
     description: Display a list of spells
     usage: /<command> (page)
+  spellslots:
+    description: Display your spell slots
+    usage: /<command> (player)
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
@@ -168,4 +171,7 @@ permissions:
     default: op
   talekeeper.commands.skills.other:
     description: Allows viewing other players' skills
+    default: op
+  taleekeeper.commands.spellslots.other:
+    description: Allows viewing other players' spell slots
     default: op
