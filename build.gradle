@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'net.arvandor'
-version = '1.6.0'
+version = '1.7.0-SNAPSHOT'
 
 def githubUsername = ""
 def githubToken = ""
