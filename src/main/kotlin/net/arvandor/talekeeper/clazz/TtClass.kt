@@ -12,6 +12,7 @@ data class TtClass(
     val skullTexture: String,
     val baseHp: Int,
     val features: Map<Int, List<TtClassFeature>>,
+    val levelsPerCasterLevel: Int?,
 ) : ConfigurationSerializable {
 
     fun getSubClass(id: TtSubClassId) = subClasses.firstOrNull { it.id == id }
@@ -26,6 +27,7 @@ data class TtClass(
         "skull-texture" to skullTexture,
         "base-hp" to baseHp,
         "features" to features.mapKeys { (level, _) -> level.toString() },
+        "caster-levels-per-level" to levelsPerCasterLevel,
     )
 
     companion object {
@@ -40,6 +42,7 @@ data class TtClass(
             (serialized["features"] as? Map<String, List<TtClassFeature>>)
                 ?.mapKeys { (level, _) -> level.toInt() }
                 ?: emptyMap(),
+            serialized["levels-per-caster-level"] as? Int,
         )
     }
 }

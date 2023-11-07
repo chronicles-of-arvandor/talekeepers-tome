@@ -10,6 +10,7 @@ data class TtSubClass(
     val name: String,
     val features: Map<Int, List<TtClassFeature>>,
     val icon: ItemStack,
+    val casterLevelsPerLevel: Int?,
 ) : ConfigurationSerializable {
 
     override fun serialize() = mapOf(
@@ -17,6 +18,7 @@ data class TtSubClass(
         "name" to name,
         "features" to features.mapKeys { (level, _) -> level.toString() },
         "icon" to icon,
+        "caster-levels-per-level" to casterLevelsPerLevel,
     )
 
     companion object {
@@ -28,6 +30,7 @@ data class TtSubClass(
                 ?.mapKeys { (level, _) -> level.toInt() }
                 ?: emptyMap(),
             serialized["icon"] as ItemStack,
+            serialized["caster-levels-per-level"] as? Int,
         )
     }
 }

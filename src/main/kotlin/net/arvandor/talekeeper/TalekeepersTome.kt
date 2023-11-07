@@ -36,6 +36,7 @@ import net.arvandor.talekeeper.command.hp.TtHpCommand
 import net.arvandor.talekeeper.command.skills.TtSkillsCommand
 import net.arvandor.talekeeper.command.spell.TtSpellCommand
 import net.arvandor.talekeeper.command.spells.TtSpellsCommand
+import net.arvandor.talekeeper.command.spellslots.TtSpellSlotsCommand
 import net.arvandor.talekeeper.command.subclass.TtSubClassCommand
 import net.arvandor.talekeeper.distance.TtDistance
 import net.arvandor.talekeeper.effect.TtAbilityEffect
@@ -302,5 +303,6 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("skills")?.setExecutor(TtSkillsCommand(this))
         getCommand("spell")?.setExecutor(TtSpellCommand(this))
         getCommand("spells")?.setExecutor(TtSpellsCommand())
+        getCommand("spellslots")?.setExecutor(TtSpellSlotsCommand(this))
     }
 }
