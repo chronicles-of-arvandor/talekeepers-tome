@@ -244,6 +244,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                     birthdayYear = birthdayYear,
                     birthdayDay = birthdayDay,
                     choiceOptions = emptyMap(),
+                    isShelved = false,
                 ),
             ).onFailure {
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
