@@ -101,6 +101,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             .set(TT_CHARACTER.WEIGHT_HIDDEN, character.isWeightHidden)
             .set(TT_CHARACTER.BIRTHDAY_YEAR, character.birthdayYear)
             .set(TT_CHARACTER.BIRTHDAY_DAY, character.birthdayDay)
+            .set(TT_CHARACTER.SHELVED, character.isShelved)
             .onConflict(TT_CHARACTER.ID).doUpdate()
             .set(TT_CHARACTER.ID, character.id.value)
             .set(TT_CHARACTER.PROFILE_ID, character.profileId.value)
@@ -139,6 +140,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
             .set(TT_CHARACTER.WEIGHT_HIDDEN, character.isWeightHidden)
             .set(TT_CHARACTER.BIRTHDAY_YEAR, character.birthdayYear)
             .set(TT_CHARACTER.BIRTHDAY_DAY, character.birthdayDay)
+            .set(TT_CHARACTER.SHELVED, character.isShelved)
             .set(TT_CHARACTER.VERSION, character.version + 1)
             .where(TT_CHARACTER.ID.eq(character.id.value))
             .and(TT_CHARACTER.VERSION.eq(character.version))
@@ -427,5 +429,6 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         birthdayYear = birthdayYear,
         birthdayDay = birthdayDay,
         choiceOptions = choiceOptions,
+        isShelved = shelved,
     )
 }

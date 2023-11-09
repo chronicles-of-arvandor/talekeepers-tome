@@ -78,6 +78,8 @@ class TtCharacterCreateCommand(private val plugin: TalekeepersTome) : CommandExe
             staffMinecraftProfile?.profile as? RPKProfile
         }
 
+        val unshelvedCharacterLimit = characterService.getUnshelvedCharacterLimit(minecraftProfile)
+
         asyncTask(plugin) {
             val ctx = characterService.getCreationContext(minecraftProfile.id).onFailure {
                 sender.sendMessage("${RED}An error occurred while getting your character creation context.")
@@ -86,6 +88,18 @@ class TtCharacterCreateCommand(private val plugin: TalekeepersTome) : CommandExe
             }
             if (ctx != null) {
                 sender.sendMessage("${RED}You are already creating a character.")
+                return@asyncTask
+            }
+
+            val characters = characterService.getCharacters(profile.id).onFailure {
+                sender.sendMessage("${RED}There was an error getting your characters.")
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
+                return@asyncTask
+            }
+
+            if (characters.count { !it.isShelved } >= unshelvedCharacterLimit) {
+                sender.sendMessage("${RED}You have the maximum amount of active characters. Please shelve one and try again.")
+                // TODO monetisation opportunity! link people to the store page!
                 return@asyncTask
             }
 

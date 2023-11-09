@@ -115,6 +115,7 @@ data class TtCharacter(
     val isHeightHidden: Boolean,
     val isWeightHidden: Boolean,
     val choiceOptions: Map<TtChoiceId, TtChoiceOptionId>,
+    val isShelved: Boolean,
 ) {
 
     val age: Int

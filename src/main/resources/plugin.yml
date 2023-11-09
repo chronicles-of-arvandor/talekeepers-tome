@@ -10,6 +10,7 @@ depend:
   - rpk-notification-lib-bukkit
   - rpk-stat-lib-bukkit
   - rpk-language-lib-bukkit
+  - rpk-store-lib-bukkit
   - numinous-treasury
   - magisters-months
 commands:
