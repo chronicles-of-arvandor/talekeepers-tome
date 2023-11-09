@@ -44,18 +44,24 @@ class TtCharacterListCommand(private val plugin: TalekeepersTome) : CommandExecu
             1
         }
 
-        val filter = if (args.isNotEmpty()) {
+        val filterName = if (args.isNotEmpty()) {
             when (args[0].lowercase()) {
-                "active" -> { character: TtCharacter -> !character.isShelved }
-                "shelved" -> { character: TtCharacter -> character.isShelved }
-                "all" -> { _: TtCharacter -> true }
+                "active" -> "active"
+                "shelved" -> "shelved"
+                "all" -> "all"
                 else -> {
                     sender.sendMessage("${RED}Usage: /character list [active|shelved|all] (page) (player)")
                     return true
                 }
             }
         } else {
-            { _: TtCharacter -> true }
+            "all"
+        }
+
+        val filter = when (filterName) {
+            "active" -> { character: TtCharacter -> !character.isShelved }
+            "shelved" -> { character: TtCharacter -> character.isShelved }
+            else -> { _: TtCharacter -> true }
         }
 
         val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
@@ -187,7 +193,7 @@ class TtCharacterListCommand(private val plugin: TalekeepersTome) : CommandExecu
                 "Click here to view the next page",
                 { pageNumber -> "Page $pageNumber" },
                 10,
-                { pageNumber -> "/character list $pageNumber" },
+                { pageNumber -> "/character list $filterName $pageNumber" },
             )
 
             if (view.isPageValid(page)) {
