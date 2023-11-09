@@ -1,4 +1,4 @@
-package net.arvandor.talekeeper.command.character.switch
+package net.arvandor.talekeeper.command.character.shelve
 
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.RPKProfile
@@ -10,25 +10,26 @@ import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.util.levenshtein
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
-import org.bukkit.Sound
+import org.bukkit.Sound.ITEM_BOTTLE_FILL_DRAGONBREATH
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.time.Duration
+import java.time.Instant
 import java.util.logging.Level.SEVERE
 import kotlin.math.min
 
-class TtCharacterSwitchCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
-
+class TtCharacterShelveCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("${RED}You must be a player to switch character.")
+            sender.sendMessage("${RED}You must be a player to shelve a character.")
             return true
         }
 
         if (args.isEmpty()) {
-            sender.sendMessage("${RED}Usage: /character swtich [name|id]")
+            sender.sendMessage("${RED}Usage: /character shelve [name|id]")
             return true
         }
 
@@ -53,9 +54,29 @@ class TtCharacterSwitchCommand(private val plugin: TalekeepersTome) : CommandExe
                 return@asyncTask
             }
 
+            val activeCharacter = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
+                sender.sendMessage("${RED}An error occurred while getting your active character.")
+                plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
+                return@asyncTask
+            }
+
             val profile = minecraftProfile.profile
             if (profile !is RPKProfile) {
                 sender.sendMessage("${RED}You do not have a profile. Please try relogging, or contact an admin if the error persists.")
+                return@asyncTask
+            }
+
+            val cooldown = characterService.getShelveCooldown(profile.id)
+            if (cooldown > Duration.ZERO) {
+                val hours = cooldown.toHours()
+                val minutes = cooldown.toMinutesPart()
+                val seconds = cooldown.toSecondsPart()
+                val cooldownString = buildString {
+                    if (hours > 0) append("${hours}h")
+                    if (minutes > 0) append("${minutes}m")
+                    if (seconds > 0) append("${seconds}s")
+                }
+                sender.sendMessage("${RED}You cannot shelve another character for $cooldownString.")
                 return@asyncTask
             }
 
@@ -65,24 +86,37 @@ class TtCharacterSwitchCommand(private val plugin: TalekeepersTome) : CommandExe
                 return@asyncTask
             }
 
-            val closestMatch = characters.minByOrNull { min(it.id.value.levenshtein(characterName), it.name.levenshtein(characterName)) }
+            val closestMatch = characters.minByOrNull {
+                min(
+                    it.id.value.levenshtein(characterName),
+                    it.name.levenshtein(characterName),
+                )
+            }
             if (closestMatch == null) {
                 sender.sendMessage("${RED}You do not have a character by that name.")
                 return@asyncTask
             }
 
             if (closestMatch.isShelved) {
-                sender.sendMessage("${RED}You cannot switch to a shelved character.")
+                sender.sendMessage("${RED}That character is already shelved.")
                 return@asyncTask
             }
 
-            characterService.setActiveCharacter(minecraftProfile, closestMatch).onFailure {
-                sender.sendMessage("${RED}There was an error setting your active character.")
+            if (closestMatch.id == activeCharacter?.id) {
+                sender.sendMessage("${RED}You cannot shelve your active character.")
+                return@asyncTask
+            }
+
+            characterService.save(closestMatch.copy(isShelved = true)).onFailure {
+                sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }
-            sender.playSound(sender.location, Sound.BLOCK_BELL_RESONATE, 1.0f, 1.0f)
-            sender.sendMessage("${GREEN}Switched to ${closestMatch.name}.")
+
+            characterService.setShelveCooldown(profile.id, Instant.now())
+
+            sender.sendMessage("${GREEN}Shelved ${closestMatch.name}.")
+            sender.playSound(sender.location, ITEM_BOTTLE_FILL_DRAGONBREATH, 1.0f, 1.0f)
         }
         return true
     }

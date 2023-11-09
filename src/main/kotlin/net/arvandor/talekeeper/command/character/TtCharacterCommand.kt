@@ -14,8 +14,10 @@ import net.arvandor.talekeeper.command.character.name.TtCharacterNameCommand
 import net.arvandor.talekeeper.command.character.profile.TtCharacterProfileCommand
 import net.arvandor.talekeeper.command.character.pronouns.TtCharacterPronounsCommand
 import net.arvandor.talekeeper.command.character.requests.TtCharacterRequestsCommand
+import net.arvandor.talekeeper.command.character.shelve.TtCharacterShelveCommand
 import net.arvandor.talekeeper.command.character.subclass.TtCharacterSubClassCommand
 import net.arvandor.talekeeper.command.character.switch.TtCharacterSwitchCommand
+import net.arvandor.talekeeper.command.character.unshelve.TtCharacterUnshelveCommand
 import net.arvandor.talekeeper.command.character.weight.TtCharacterWeightCommand
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.command.Command
@@ -40,6 +42,8 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
     private val levelUpCommand = TtCharacterLevelUpCommand(plugin)
     private val listCommand = TtCharacterListCommand(plugin)
     private val switchCommand = TtCharacterSwitchCommand(plugin)
+    private val shelveCommand = TtCharacterShelveCommand(plugin)
+    private val unshelveCommand = TtCharacterUnshelveCommand(plugin)
     private val requestsCommand = TtCharacterRequestsCommand(plugin)
 
     private val contextAliases = listOf("context", "ctx")
@@ -57,6 +61,10 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
     private val levelUpAliases = listOf("levelup")
     private val listAliases = listOf("list", "ls")
     private val switchAliases = listOf("switch")
+
+    // the verb is technically always "shelve" but players WILL get this wrong. i had to look it up.
+    private val shelveAliases = listOf("shelve", "shelf")
+    private val unshelveAliases = listOf("unshelve", "unshelf")
     private val requestsAliases = listOf("requests", "request", "req", "reqs")
 
     private val subcommands = contextAliases +
@@ -93,6 +101,8 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
             in levelUpAliases -> levelUpCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in listAliases -> listCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in switchAliases -> switchCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in shelveAliases -> shelveCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in unshelveAliases -> unshelveCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in requestsAliases -> requestsCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("${RED}Usage: /character [${subcommands.joinToString("|")}]")
@@ -126,6 +136,8 @@ class TtCharacterCommand(plugin: TalekeepersTome) : CommandExecutor, TabComplete
                 in levelUpAliases -> levelUpCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in listAliases -> listCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in switchAliases -> switchCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in shelveAliases -> shelveCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+                in unshelveAliases -> unshelveCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 in requestsAliases -> requestsCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
                 else -> emptyList()
             }

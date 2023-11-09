@@ -129,33 +129,57 @@ class TtCharacterListCommand(private val plugin: TalekeepersTome) : CommandExecu
                         return@sortedWith compareName.compare(a, b)
                     }
                     .map { character ->
-                        arrayOf(
-                            TextComponent(character.name).apply {
-                                if (character.id == activeCharacter?.id) {
-                                    color = WHITE
-                                    hoverEvent = HoverEvent(
-                                        SHOW_TEXT,
-                                        Text("This is your active character."),
-                                    )
-                                } else if (!character.isShelved) {
-                                    color = GREEN
-                                    hoverEvent = HoverEvent(
-                                        SHOW_TEXT,
-                                        Text("Click here to switch to ${character.name}"),
-                                    )
-                                    clickEvent = ClickEvent(
-                                        RUN_COMMAND,
-                                        "/character switch ${character.id.value}",
-                                    )
-                                } else {
-                                    color = YELLOW
-                                    hoverEvent = HoverEvent(
-                                        SHOW_TEXT,
-                                        Text("This character is currently shelved."),
-                                    )
-                                }
-                            },
-                        )
+                        buildList {
+                            add(
+                                TextComponent(character.name).apply {
+                                    if (character.id == activeCharacter?.id) {
+                                        color = WHITE
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("This is your active character."),
+                                        )
+                                    } else if (!character.isShelved) {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to switch to ${character.name}"),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/character switch ${character.id.value}",
+                                        )
+                                    } else {
+                                        color = YELLOW
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("This character is currently shelved."),
+                                        )
+                                    }
+                                },
+                            )
+                            if (character.id != activeCharacter?.id) {
+                                add(TextComponent(" "))
+                                add(
+                                    TextComponent(
+                                        if (character.isShelved) {
+                                            "[Unshelve]"
+                                        } else {
+                                            "[Shelve]"
+                                        },
+                                    ).apply {
+                                        color = GREEN
+                                        hoverEvent = HoverEvent(
+                                            SHOW_TEXT,
+                                            Text("Click here to ${if (character.isShelved) "unshelve" else "shelve"} ${character.name}"),
+                                        )
+                                        clickEvent = ClickEvent(
+                                            RUN_COMMAND,
+                                            "/character ${if (character.isShelved) "unshelve" else "shelve"} ${character.id.value}",
+                                        )
+                                    },
+                                )
+                            }
+                        }.toTypedArray()
                     },
                 "$GREEN< Previous",
                 "Click here to view the previous page",

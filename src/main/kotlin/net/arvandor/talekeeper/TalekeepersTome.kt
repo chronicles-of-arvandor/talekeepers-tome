@@ -17,6 +17,7 @@ import net.arvandor.talekeeper.character.TtCharacterCreationContextRepository
 import net.arvandor.talekeeper.character.TtCharacterCreationRequestRepository
 import net.arvandor.talekeeper.character.TtCharacterRepository
 import net.arvandor.talekeeper.character.TtCharacterService
+import net.arvandor.talekeeper.character.TtShelveCooldownRepository
 import net.arvandor.talekeeper.choice.TtChoice
 import net.arvandor.talekeeper.choice.TtChoiceService
 import net.arvandor.talekeeper.choice.option.TtChoiceOption
@@ -262,13 +263,21 @@ class TalekeepersTome : JavaPlugin() {
         val characterRepo = TtCharacterRepository(this, dsl)
         val optionRepo = TtChoiceOptionRepository(dsl)
         val pronounRepo = TtPronounRepository(dsl)
+        val unshelveCooldownRepo = TtShelveCooldownRepository(dsl)
 
         // Having access to unit formatting is required for ancestry serialization when saving default ancestries
         Services.INSTANCE.require(RPKUnitService::class.java).whenAvailable {
             Services.INSTANCE[TtAncestryService::class.java] = TtAncestryService(this)
         }
         Services.INSTANCE[TtBackgroundService::class.java] = TtBackgroundService(this)
-        Services.INSTANCE[TtCharacterService::class.java] = TtCharacterService(this, dsl, characterRepo, characterCreationContextRepo, characterCreationRequestRepo)
+        Services.INSTANCE[TtCharacterService::class.java] = TtCharacterService(
+            this,
+            dsl,
+            characterRepo,
+            characterCreationContextRepo,
+            characterCreationRequestRepo,
+            unshelveCooldownRepo,
+        )
         Services.INSTANCE[TtChoiceService::class.java] = TtChoiceService(this, optionRepo)
         Services.INSTANCE[TtClassService::class.java] = TtClassService(this)
         Services.INSTANCE[TtEffectService::class.java] = TtEffectService(this)

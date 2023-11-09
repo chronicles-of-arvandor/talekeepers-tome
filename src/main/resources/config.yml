@@ -6,6 +6,9 @@ database:
 characters:
   defaults:
     inventory: []
+  shelf:
+    unshelved-character-limit: 2
+    unshelve-cooldown: PT48H
 point-buy:
   cost:
     8: 0

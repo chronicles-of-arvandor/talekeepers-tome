@@ -26,6 +26,8 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType.BLINDNESS
 import org.bukkit.potion.PotionEffectType.SLOW
 import org.jooq.DSLContext
+import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 class TtCharacterService(
@@ -34,6 +36,7 @@ class TtCharacterService(
     private val characterRepo: TtCharacterRepository,
     private val characterCreationContextRepo: TtCharacterCreationContextRepository,
     private val characterCreationRequestRepo: TtCharacterCreationRequestRepository,
+    private val shelveRepo: TtShelveCooldownRepository,
 ) : Service {
 
     override fun getPlugin() = plugin
@@ -41,6 +44,10 @@ class TtCharacterService(
     private val characters = ConcurrentHashMap<TtCharacterId, TtCharacter>()
     private val charactersByRpkitId = ConcurrentHashMap<RPKCharacterId, TtCharacterId>()
     private val activeCharacters = ConcurrentHashMap<RPKMinecraftProfileId, TtCharacterId>()
+    private val defaultCharacterLimit = plugin.config.getInt("characters.shelf.unshelved-character-limit", 2)
+    private val unshelveCooldown = plugin.config.getString("characters.shelf.unshelve-cooldown")
+        ?.let(Duration::parse)
+        ?: Duration.ofHours(48)
 
     var defaultInventory: Array<ItemStack?>
         get() = (plugin.config.getList("characters.defaults.inventory") as? List<ItemStack?>)?.toTypedArray()
@@ -247,6 +254,21 @@ class TtCharacterService(
 
     fun getSpellSlotCount(casterLevel: Int, spellSlotLevel: Int): Int {
         return spellSlotCount[casterLevel]?.get(spellSlotLevel) ?: 0
+    }
+
+    fun getUnshelvedCharacterLimit(minecraftProfile: RPKMinecraftProfile): Int {
+        val permissionBonus = (1..100).filter { minecraftProfile.hasPermission("talekeeper.characters.unshelved.limit.$it") }.maxOrNull() ?: 0
+        return defaultCharacterLimit + permissionBonus
+    }
+
+    fun getShelveCooldown(profileId: RPKProfileId): Duration {
+        val cooldownStartTime = shelveRepo.get(profileId)
+        val cooldownEndTime = cooldownStartTime?.plus(unshelveCooldown) ?: return Duration.ZERO
+        return Duration.between(Instant.now(), cooldownEndTime)
+    }
+
+    fun setShelveCooldown(profileId: RPKProfileId, cooldownStartTime: Instant) {
+        shelveRepo.upsert(profileId, cooldownStartTime)
     }
 
     // This stuff is mostly for RPKit, so we don't expose it outside the plugin, aside from through the RPKit character service
