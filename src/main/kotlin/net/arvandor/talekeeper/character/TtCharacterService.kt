@@ -1,6 +1,9 @@
 package net.arvandor.talekeeper.character
 
 import com.rpkit.characters.bukkit.character.RPKCharacterId
+import com.rpkit.characters.bukkit.event.character.RPKBukkitCharacterDeleteEvent
+import com.rpkit.characters.bukkit.event.character.RPKBukkitCharacterSwitchEvent
+import com.rpkit.characters.bukkit.event.character.RPKBukkitCharacterUpdateEvent
 import com.rpkit.core.service.Service
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.RPKProfileId
@@ -19,6 +22,8 @@ import net.arvandor.talekeeper.effect.TtEffectService
 import net.arvandor.talekeeper.failure.ServiceFailure
 import net.arvandor.talekeeper.failure.ServiceFailureType.GENERAL
 import net.arvandor.talekeeper.failure.toServiceFailure
+import net.arvandor.talekeeper.rpkit.TtRpkCharacterWrapper
+import net.arvandor.talekeeper.rpkit.TtRpkEventCancelledException
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.scheduler.syncTask
 import org.bukkit.inventory.ItemStack
@@ -123,6 +128,19 @@ class TtCharacterService(
         syncTask(plugin) {
             BukkitExtensionsKt.toBukkitPlayer(minecraftProfile)?.let { player ->
                 asyncTask(plugin) {
+                    val event = RPKBukkitCharacterSwitchEvent(
+                        minecraftProfile,
+                        oldCharacter?.let(::TtRpkCharacterWrapper),
+                        character?.let(::TtRpkCharacterWrapper),
+                        true,
+                    )
+
+                    plugin.server.pluginManager.callEvent(event)
+
+                    if (event.isCancelled) {
+                        return@asyncTask
+                    }
+
                     resultFrom {
                         dsl.transaction { config ->
                             val transactionalDsl = config.dsl()
@@ -198,6 +216,14 @@ class TtCharacterService(
     }
 
     fun save(character: TtCharacter, dsl: DSLContext = plugin.dsl): Result4k<TtCharacter, ServiceFailure> = resultFrom {
+        val event = RPKBukkitCharacterUpdateEvent(TtRpkCharacterWrapper(character), true)
+
+        plugin.server.pluginManager.callEvent(event)
+
+        if (event.isCancelled) {
+            throw TtRpkEventCancelledException("Character update event was cancelled")
+        }
+
         characterRepo.upsert(character, dsl)
     }.mapFailure { it.toServiceFailure() }
         .peek { upsertedCharacter ->
@@ -209,6 +235,14 @@ class TtCharacterService(
         }
 
     fun delete(id: TtCharacterId): Result4k<Unit, ServiceFailure> = resultFrom {
+        val character = characters[id]
+        if (character != null) {
+            val event = RPKBukkitCharacterDeleteEvent(TtRpkCharacterWrapper(character), true)
+            plugin.server.pluginManager.callEvent(event)
+            if (event.isCancelled) {
+                throw TtRpkEventCancelledException("Character delete event was cancelled")
+            }
+        }
         characterRepo.delete(id)
     }.mapFailure { it.toServiceFailure() }
         .peek {

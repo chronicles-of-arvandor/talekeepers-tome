@@ -1,5 +1,6 @@
 package net.arvandor.talekeeper.command.character.context.create
 
+import com.rpkit.characters.bukkit.event.character.RPKBukkitCharacterCreateEvent
 import com.rpkit.core.service.Services
 import com.rpkit.players.bukkit.profile.RPKProfile
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
@@ -18,6 +19,7 @@ import net.arvandor.talekeeper.character.TtCharacterId
 import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.choice.TtChoiceService
 import net.arvandor.talekeeper.clazz.TtClassService
+import net.arvandor.talekeeper.rpkit.TtRpkCharacterWrapper
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.spawn.TtSpawnService
 import net.arvandor.talekeeper.speed.TtSpeed
@@ -292,64 +294,78 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                 }
             }
 
+            val unsavedCharacter = TtCharacter(
+                plugin,
+                id = TtCharacterId.generate(),
+                profileId = ctx.profileId,
+                minecraftProfileId = null,
+                name = ctx.name,
+                pronouns = ctx.pronouns,
+                birthdayYear = ctx.birthdayYear,
+                birthdayDay = ctx.birthdayDay,
+                ancestryId = ctx.ancestryId,
+                subAncestryId = ctx.subAncestryId,
+                firstClassId = ctx.firstClassId,
+                classes = ctx.classes,
+                backgroundId = ctx.backgroundId,
+                alignment = ctx.alignment,
+                baseAbilityScores = ctx.abilityScoreChoices,
+                abilityScoreBonuses = emptyMap(),
+                tempAbilityScores = emptyMap(),
+                hp = 1,
+                tempHp = 0,
+                experience = 0,
+                usedSpellSlots = emptyMap(),
+                feats = emptyList(),
+                spells = emptyList(),
+                skillProficiencies = emptyList(),
+                skillExpertise = emptyList(),
+                jackOfAllTrades = false,
+                initiativeBonus = 0,
+                itemProficiencies = emptyList(),
+                savingThrowProficiencies = emptyList(),
+                speed = TtSpeed(0, TtSpeedUnit.FEET),
+                languages = emptyList(),
+                traits = emptyList(),
+                description = ctx.description,
+                height = ctx.height,
+                weight = ctx.weight,
+                isDead = false,
+                location = newCharacterSpawn,
+                inventoryContents = defaultInventory,
+                health = 20.0,
+                foodLevel = 20,
+                exhaustion = 0f,
+                saturation = 5f,
+                isProfileHidden = ctx.isProfileHidden,
+                isNameHidden = ctx.isNameHidden,
+                isAgeHidden = ctx.isAgeHidden,
+                isAncestryHidden = ctx.isAncestryHidden,
+                isDescriptionHidden = ctx.isDescriptionHidden,
+                isHeightHidden = ctx.isHeightHidden,
+                isWeightHidden = ctx.isWeightHidden,
+                choiceOptions = emptyMap(),
+                isShelved = false,
+            )
+
+            val event = RPKBukkitCharacterCreateEvent(
+                TtRpkCharacterWrapper(unsavedCharacter),
+                true,
+            )
+
+            plugin.server.pluginManager.callEvent(event)
+
+            if (event.isCancelled) {
+                sender.sendMessage("${RED}Character creation was cancelled.")
+                return@asyncTask
+            }
+
             val character = resultFrom {
                 plugin.dsl.transactionResult { config ->
                     val transactionalDsl = config.dsl()
 
                     val character = characterService.save(
-                        TtCharacter(
-                            plugin,
-                            id = TtCharacterId.generate(),
-                            profileId = ctx.profileId,
-                            minecraftProfileId = null,
-                            name = ctx.name,
-                            pronouns = ctx.pronouns,
-                            birthdayYear = ctx.birthdayYear,
-                            birthdayDay = ctx.birthdayDay,
-                            ancestryId = ctx.ancestryId,
-                            subAncestryId = ctx.subAncestryId,
-                            firstClassId = ctx.firstClassId,
-                            classes = ctx.classes,
-                            backgroundId = ctx.backgroundId,
-                            alignment = ctx.alignment,
-                            baseAbilityScores = ctx.abilityScoreChoices,
-                            abilityScoreBonuses = emptyMap(),
-                            tempAbilityScores = emptyMap(),
-                            hp = 1,
-                            tempHp = 0,
-                            experience = 0,
-                            usedSpellSlots = emptyMap(),
-                            feats = emptyList(),
-                            spells = emptyList(),
-                            skillProficiencies = emptyList(),
-                            skillExpertise = emptyList(),
-                            jackOfAllTrades = false,
-                            initiativeBonus = 0,
-                            itemProficiencies = emptyList(),
-                            savingThrowProficiencies = emptyList(),
-                            speed = TtSpeed(0, TtSpeedUnit.FEET),
-                            languages = emptyList(),
-                            traits = emptyList(),
-                            description = ctx.description,
-                            height = ctx.height,
-                            weight = ctx.weight,
-                            isDead = false,
-                            location = newCharacterSpawn,
-                            inventoryContents = defaultInventory,
-                            health = 20.0,
-                            foodLevel = 20,
-                            exhaustion = 0f,
-                            saturation = 5f,
-                            isProfileHidden = ctx.isProfileHidden,
-                            isNameHidden = ctx.isNameHidden,
-                            isAgeHidden = ctx.isAgeHidden,
-                            isAncestryHidden = ctx.isAncestryHidden,
-                            isDescriptionHidden = ctx.isDescriptionHidden,
-                            isHeightHidden = ctx.isHeightHidden,
-                            isWeightHidden = ctx.isWeightHidden,
-                            choiceOptions = emptyMap(),
-                            isShelved = false,
-                        ),
+                        unsavedCharacter,
                         transactionalDsl,
                     ).onFailure {
                         throw it.reason.cause
