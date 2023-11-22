@@ -51,6 +51,7 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+    implementation 'com.mixpanel:mixpanel-java:1.5.2'
     implementation 'com.rpkit:rpk-core-bukkit:2.4.2:all'
     implementation 'com.rpkit:rpk-player-lib-bukkit:2.4.2:all'
     implementation 'com.rpkit:rpk-character-lib-bukkit:2.4.2:all'
@@ -147,6 +148,8 @@ shadowJar {
         include(dependency('org.checkerframework:checker-qual'))
         include(dependency('com.google.errorprone:error_prone_annotations'))
         include(dependency('com.zaxxer:HikariCP'))
+        include(dependency('com.mixpanel:mixpanel-java'))
+        include(dependency('org.json:json'))
     }
 
     relocate 'com.fasterxml', 'net.arvandor.talekeeper.shadow.com.fasterxml'
@@ -166,6 +169,8 @@ shadowJar {
     relocate 'org.mariadb', 'net.arvandor.talekeeper.shadow.org.mariadb'
     relocate 'org.reactivestreams', 'net.arvandor.talekeeper.shadow.org.reactivestreams'
     relocate 'waffle', 'net.arvandor.talekeeper.shadow.waffle'
+    relocate 'com.mixpanel', 'net.arvandor.talekeeper.shadow.com.mixpanel'
+    relocate 'org.json', 'net.arvandor.talekeeper.shadow.org.json'
 }
 
 artifacts {

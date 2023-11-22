@@ -69,6 +69,7 @@ import net.arvandor.talekeeper.listener.AsyncPlayerPreLoginListener
 import net.arvandor.talekeeper.listener.InventoryClickListener
 import net.arvandor.talekeeper.listener.PlayerJoinListener
 import net.arvandor.talekeeper.listener.PlayerQuitListener
+import net.arvandor.talekeeper.mixpanel.TtMixpanelService
 import net.arvandor.talekeeper.prerequisite.TtAbilityPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtAndPrerequisite
@@ -290,6 +291,7 @@ class TalekeepersTome : JavaPlugin() {
         Services.INSTANCE[TtSpawnService::class.java] = TtSpawnService(this)
         Services.INSTANCE[TtStaffService::class.java] = TtStaffService(this)
         Services.INSTANCE[TtExperienceService::class.java] = TtExperienceService(this)
+        Services.INSTANCE[TtMixpanelService::class.java] = TtMixpanelService(this)
 
         // RPKit services
         Services.INSTANCE[RPKCharacterService::class.java] = TtRpkCharacterService(this)
@@ -298,7 +300,7 @@ class TalekeepersTome : JavaPlugin() {
         server.pluginManager.registerEvents(AsyncPlayerPreLoginListener(), this)
         server.pluginManager.registerEvents(InventoryClickListener(), this)
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
-        server.pluginManager.registerEvents(PlayerQuitListener(), this)
+        server.pluginManager.registerEvents(PlayerQuitListener(this), this)
 
         getCommand("character")?.setExecutor(TtCharacterCommand(this))
         getCommand("ancestry")?.setExecutor(TtAncestryCommand())

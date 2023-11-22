@@ -10,6 +10,7 @@ import com.rpkit.players.bukkit.profile.RPKProfileId
 import com.rpkit.players.bukkit.profile.minecraft.BukkitExtensionsKt
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfile
 import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileId
+import com.rpkit.players.bukkit.profile.minecraft.RPKMinecraftProfileService
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
 import dev.forkhandles.result4k.Success
@@ -22,6 +23,10 @@ import net.arvandor.talekeeper.effect.TtEffectService
 import net.arvandor.talekeeper.failure.ServiceFailure
 import net.arvandor.talekeeper.failure.ServiceFailureType.GENERAL
 import net.arvandor.talekeeper.failure.toServiceFailure
+import net.arvandor.talekeeper.mixpanel.TtMixpanelService
+import net.arvandor.talekeeper.mixpanel.event.character.TtMixpanelCharacterCreationContextSavedEvent
+import net.arvandor.talekeeper.mixpanel.event.character.TtMixpanelCharacterSavedEvent
+import net.arvandor.talekeeper.mixpanel.event.character.TtMixpanelCharacterSwitchedEvent
 import net.arvandor.talekeeper.rpkit.TtRpkCharacterWrapper
 import net.arvandor.talekeeper.rpkit.TtRpkEventCancelledException
 import net.arvandor.talekeeper.scheduler.asyncTask
@@ -33,6 +38,7 @@ import org.bukkit.potion.PotionEffectType.SLOW
 import org.jooq.DSLContext
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class TtCharacterService(
@@ -206,6 +212,7 @@ class TtCharacterService(
                                     player.addPotionEffect(PotionEffect(SLOW, 1000000, 255))
                                 }
                             }
+                            trackCharacterSwitched(player.uniqueId, oldCharacter, character)
                         }
                     }
                 }
@@ -213,6 +220,20 @@ class TtCharacterService(
         }
 
         return Success(Unit)
+    }
+
+    private fun trackCharacterSwitched(minecraftUuid: UUID, oldCharacter: TtCharacter?, character: TtCharacter?) {
+        asyncTask(plugin) {
+            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
+            mixpanelService.trackEvent(
+                TtMixpanelCharacterSwitchedEvent(
+                    plugin,
+                    minecraftUuid,
+                    oldCharacter,
+                    character,
+                ),
+            )
+        }
     }
 
     fun save(character: TtCharacter, dsl: DSLContext = plugin.dsl): Result4k<TtCharacter, ServiceFailure> = resultFrom {
@@ -224,7 +245,9 @@ class TtCharacterService(
             throw TtRpkEventCancelledException("Character update event was cancelled")
         }
 
-        characterRepo.upsert(character, dsl)
+        val upsertedCharacter = characterRepo.upsert(character, dsl)
+        trackCharacterSaved(upsertedCharacter)
+        return@resultFrom upsertedCharacter
     }.mapFailure { it.toServiceFailure() }
         .peek { upsertedCharacter ->
             characters[upsertedCharacter.id] = upsertedCharacter
@@ -233,6 +256,22 @@ class TtCharacterService(
                 activeCharacters[upsertedCharacter.minecraftProfileId] = upsertedCharacter.id
             }
         }
+
+    private fun trackCharacterSaved(character: TtCharacter) {
+        asyncTask(plugin) {
+            val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+            val minecraftProfile = minecraftProfileService.getMinecraftProfile(character.minecraftProfileId).join()
+
+            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
+            mixpanelService.trackEvent(
+                TtMixpanelCharacterSavedEvent(
+                    plugin,
+                    minecraftProfile.minecraftUUID,
+                    character,
+                ),
+            )
+        }
+    }
 
     fun delete(id: TtCharacterId): Result4k<Unit, ServiceFailure> = resultFrom {
         val character = characters[id]
@@ -263,8 +302,26 @@ class TtCharacterService(
     }.mapFailure { it.toServiceFailure() }
 
     fun save(characterCreationContext: TtCharacterCreationContext): Result4k<TtCharacterCreationContext, ServiceFailure> = resultFrom {
-        characterCreationContextRepo.upsert(characterCreationContext)
+        val upsertedCtx = characterCreationContextRepo.upsert(characterCreationContext)
+        trackCharacterCreationContextSaved(upsertedCtx)
+        return@resultFrom upsertedCtx
     }.mapFailure { it.toServiceFailure() }
+
+    private fun trackCharacterCreationContextSaved(ctx: TtCharacterCreationContext) {
+        asyncTask(plugin) {
+            val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+            val minecraftProfile = minecraftProfileService.getMinecraftProfile(ctx.minecraftProfileId).join()
+
+            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
+            mixpanelService.trackEvent(
+                TtMixpanelCharacterCreationContextSavedEvent(
+                    plugin,
+                    minecraftProfile.minecraftUUID,
+                    ctx,
+                ),
+            )
+        }
+    }
 
     fun delete(id: TtCharacterCreationContextId, dsl: DSLContext = plugin.dsl): Result4k<Unit, ServiceFailure> = resultFrom {
         characterCreationContextRepo.delete(id, dsl)

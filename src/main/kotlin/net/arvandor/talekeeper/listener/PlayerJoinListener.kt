@@ -7,17 +7,22 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterCreationContext
 import net.arvandor.talekeeper.character.TtCharacterService
+import net.arvandor.talekeeper.mixpanel.TtMixpanelService
+import net.arvandor.talekeeper.mixpanel.event.player.TtMixpanelPlayerJoinedEvent
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import java.util.*
 import java.util.logging.Level.SEVERE
 
 class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
+        trackPlayerJoin(event.player.uniqueId)
+
         val minecraftProfileService = Services.INSTANCE.get(RPKMinecraftProfileService::class.java) ?: return
         val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(event.player) ?: return
         val profile = minecraftProfile.profile as? RPKProfile ?: return
@@ -70,6 +75,13 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
             } else if (ctx != null) {
                 ctx.display(event.player)
             }
+        }
+    }
+
+    private fun trackPlayerJoin(minecraftUuid: UUID) {
+        asyncTask(plugin) {
+            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return@asyncTask
+            mixpanelService.trackEvent(TtMixpanelPlayerJoinedEvent(minecraftUuid))
         }
     }
 }
