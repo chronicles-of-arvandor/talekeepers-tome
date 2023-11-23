@@ -7,8 +7,11 @@ import dev.forkhandles.result4k.onFailure
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacterCreationContext
 import net.arvandor.talekeeper.character.TtCharacterService
+import net.arvandor.talekeeper.mixpanel.TtMixpanelService
+import net.arvandor.talekeeper.mixpanel.event.player.TtMixpanelPlayerJoinedEvent
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.md_5.bungee.api.ChatColor.RED
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -18,6 +21,9 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
+        trackPlayerJoin(event.player)
+        updateUserDetails(event.player)
+
         val minecraftProfileService = Services.INSTANCE.get(RPKMinecraftProfileService::class.java) ?: return
         val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(event.player) ?: return
         val profile = minecraftProfile.profile as? RPKProfile ?: return
@@ -70,6 +76,26 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
             } else if (ctx != null) {
                 ctx.display(event.player)
             }
+        }
+    }
+
+    private fun trackPlayerJoin(player: Player) {
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return
+        asyncTask(plugin) {
+            mixpanelService.trackEvent(TtMixpanelPlayerJoinedEvent(player))
+        }
+    }
+
+    private fun updateUserDetails(player: Player) {
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return
+        asyncTask(plugin) {
+            mixpanelService.updateUserProps(
+                player,
+                mapOf(
+                    "\$name" to player.name,
+                    "\$avatar" to "https://minotar.net/avatar/${player.uniqueId}/256.png",
+                ),
+            )
         }
     }
 }

@@ -3,6 +3,7 @@ package net.arvandor.talekeeper.rpkit
 import com.rpkit.characters.bukkit.character.RPKCharacter
 import com.rpkit.characters.bukkit.character.RPKCharacterId
 import com.rpkit.characters.bukkit.character.RPKCharacterService
+import com.rpkit.characters.bukkit.event.character.RPKBukkitCharacterCreateEvent
 import com.rpkit.characters.bukkit.race.RPKRace
 import com.rpkit.core.bukkit.location.LocationsKt
 import com.rpkit.core.location.RPKLocation
@@ -128,6 +129,17 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
         val characterService = Services.INSTANCE[TtCharacterService::class.java]
         return CompletableFuture.runAsync {
             if (character is TtRpkCharacterWrapper) {
+                val event = RPKBukkitCharacterCreateEvent(
+                    character,
+                    true,
+                )
+
+                plugin.server.pluginManager.callEvent(event)
+
+                if (event.isCancelled) {
+                    return@runAsync
+                }
+
                 characterService.save(character.character)
             }
         }
@@ -186,66 +198,83 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
             val classId = clazz.id
             val background = backgroundService.getAll().first()
             val backgroundId = background.id
-            characterService.save(
-                TtCharacter(
-                    plugin,
-                    profileId = profile?.id ?: throw RuntimeException("Profile cannot be null"),
-                    minecraftProfileId = null,
-                    name = name ?: "",
-                    pronouns = emptyMap(),
-                    ancestryId = (species as? TtRpkAncestryWrapper)?.ancestry?.id ?: throw RuntimeException("Species must be a Talekeeper's Tome ancestry"),
-                    subAncestryId = null,
-                    firstClassId = classId,
-                    classes = mapOf(classId to TtClassInfo(1, null)),
-                    backgroundId = backgroundId,
-                    alignment = TtAlignment.NEUTRAL,
-                    baseAbilityScores = mapOf(
-                        STRENGTH to 12,
-                        DEXTERITY to 12,
-                        CONSTITUTION to 12,
-                        INTELLIGENCE to 12,
-                        WISDOM to 12,
-                        CHARISMA to 12,
-                    ),
-                    abilityScoreBonuses = emptyMap(),
-                    tempAbilityScores = emptyMap(),
-                    hp = clazz.baseHp,
-                    tempHp = 0,
-                    experience = 0,
-                    usedSpellSlots = emptyMap(),
-                    feats = emptyList(),
-                    spells = emptyList(),
-                    skillProficiencies = emptyList(),
-                    skillExpertise = emptyList(),
-                    jackOfAllTrades = false,
-                    initiativeBonus = 0,
-                    itemProficiencies = emptyList(),
-                    savingThrowProficiencies = emptyList(),
-                    speed = TtSpeed(0, FEET),
-                    languages = emptyList(),
-                    traits = emptyList(),
-                    description = description ?: "",
-                    height = height ?: 0.0,
-                    weight = weight ?: 0.0,
-                    isDead = isDead ?: false,
-                    location = LocationsKt.toBukkitLocation(location ?: throw RuntimeException("Location cannot be null")),
-                    inventoryContents = inventoryContents ?: emptyArray(),
-                    health = 20.0,
-                    foodLevel = 20,
-                    exhaustion = 0f,
-                    saturation = 5f,
-                    isProfileHidden = isProfileHidden ?: false,
-                    isNameHidden = isNameHidden ?: false,
-                    isAgeHidden = isAgeHidden ?: false,
-                    isAncestryHidden = isSpeciesHidden ?: false,
-                    isDescriptionHidden = isDescriptionHidden ?: false,
-                    isHeightHidden = isHeightHidden ?: false,
-                    isWeightHidden = isWeightHidden ?: false,
-                    birthdayYear = birthdayYear,
-                    birthdayDay = birthdayDay,
-                    choiceOptions = emptyMap(),
-                    isShelved = false,
+            val unsavedCharacter = TtCharacter(
+                plugin,
+                profileId = profile?.id ?: throw RuntimeException("Profile cannot be null"),
+                minecraftProfileId = null,
+                name = name ?: "",
+                pronouns = emptyMap(),
+                ancestryId = (species as? TtRpkAncestryWrapper)?.ancestry?.id
+                    ?: throw RuntimeException("Species must be a Talekeeper's Tome ancestry"),
+                subAncestryId = null,
+                firstClassId = classId,
+                classes = mapOf(classId to TtClassInfo(1, null)),
+                backgroundId = backgroundId,
+                alignment = TtAlignment.NEUTRAL,
+                baseAbilityScores = mapOf(
+                    STRENGTH to 12,
+                    DEXTERITY to 12,
+                    CONSTITUTION to 12,
+                    INTELLIGENCE to 12,
+                    WISDOM to 12,
+                    CHARISMA to 12,
                 ),
+                abilityScoreBonuses = emptyMap(),
+                tempAbilityScores = emptyMap(),
+                hp = clazz.baseHp,
+                tempHp = 0,
+                experience = 0,
+                usedSpellSlots = emptyMap(),
+                feats = emptyList(),
+                spells = emptyList(),
+                skillProficiencies = emptyList(),
+                skillExpertise = emptyList(),
+                jackOfAllTrades = false,
+                initiativeBonus = 0,
+                itemProficiencies = emptyList(),
+                savingThrowProficiencies = emptyList(),
+                speed = TtSpeed(0, FEET),
+                languages = emptyList(),
+                traits = emptyList(),
+                description = description ?: "",
+                height = height ?: 0.0,
+                weight = weight ?: 0.0,
+                isDead = isDead ?: false,
+                location = LocationsKt.toBukkitLocation(location ?: throw RuntimeException("Location cannot be null")),
+                inventoryContents = inventoryContents ?: emptyArray(),
+                health = 20.0,
+                foodLevel = 20,
+                exhaustion = 0f,
+                saturation = 5f,
+                isProfileHidden = isProfileHidden ?: false,
+                isNameHidden = isNameHidden ?: false,
+                isAgeHidden = isAgeHidden ?: false,
+                isAncestryHidden = isSpeciesHidden ?: false,
+                isDescriptionHidden = isDescriptionHidden ?: false,
+                isHeightHidden = isHeightHidden ?: false,
+                isWeightHidden = isWeightHidden ?: false,
+                birthdayYear = birthdayYear,
+                birthdayDay = birthdayDay,
+                choiceOptions = emptyMap(),
+                isShelved = false,
+            )
+
+            val event = RPKBukkitCharacterCreateEvent(
+                TtRpkCharacterWrapper(unsavedCharacter),
+                true,
+            )
+
+            plugin.server.pluginManager.callEvent(event)
+
+            if (event.isCancelled) {
+                // This is slightly weird behaviour but the contract for this function requires a character
+                // This implementation more-or-less matches the reference implementation, where createCharacter will
+                // return the character, whether or not addCharacter succeeds
+                return@supplyAsync TtRpkCharacterWrapper(unsavedCharacter)
+            }
+
+            characterService.save(
+                unsavedCharacter,
             ).onFailure {
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 throw it.reason.cause
