@@ -19,7 +19,7 @@ class TtMixpanelService(private val plugin: TalekeepersTome) : Service {
         val props = event.props?.let { eventProps ->
             JSONObject().apply {
                 eventProps.forEach { (key, value) ->
-                    put(key, value)
+                    put(key, JSONObject.wrap(value))
                 }
             }
         }
