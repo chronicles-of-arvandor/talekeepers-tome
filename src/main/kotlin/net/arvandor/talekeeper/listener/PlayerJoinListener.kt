@@ -22,6 +22,7 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         trackPlayerJoin(event.player)
+        updateUserDetails(event.player)
 
         val minecraftProfileService = Services.INSTANCE.get(RPKMinecraftProfileService::class.java) ?: return
         val minecraftProfile = minecraftProfileService.getPreloadedMinecraftProfile(event.player) ?: return
@@ -79,9 +80,22 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
     }
 
     private fun trackPlayerJoin(player: Player) {
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return
         asyncTask(plugin) {
-            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return@asyncTask
             mixpanelService.trackEvent(TtMixpanelPlayerJoinedEvent(player))
+        }
+    }
+
+    private fun updateUserDetails(player: Player) {
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return
+        asyncTask(plugin) {
+            mixpanelService.updateUserProps(
+                player,
+                mapOf(
+                    "\$name" to player.name,
+                    "\$avatar" to "https://minotar.net/avatar/${player.uniqueId}/256.png",
+                ),
+            )
         }
     }
 }
