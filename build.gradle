@@ -38,6 +38,7 @@ repositories {
             password githubToken
         }
     }
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -58,7 +59,7 @@ dependencies {
     implementation 'com.rpkit:rpk-notification-lib-bukkit:2.4.2:all'
     implementation 'com.rpkit:rpk-stat-lib-bukkit:2.4.2:all'
     implementation 'com.rpkit:rpk-language-lib-bukkit:2.4.2:all'
-    implementation 'net.kingdommc.darkages:numinous-treasury:0.4.1'
+    implementation 'net.arvandor:numinous-treasury:0.6.0'
     implementation 'net.arvandor:magisters-months:1.1.2'
     jooqGenerator 'org.jooq:jooq-meta-extensions:3.18.3'
 }
