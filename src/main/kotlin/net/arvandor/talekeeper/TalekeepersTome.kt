@@ -70,6 +70,8 @@ import net.arvandor.talekeeper.listener.InventoryClickListener
 import net.arvandor.talekeeper.listener.PlayerJoinListener
 import net.arvandor.talekeeper.listener.PlayerQuitListener
 import net.arvandor.talekeeper.mixpanel.TtMixpanelService
+import net.arvandor.talekeeper.mixpanel.event.player.TtMixpanelPlayerJoinedEvent
+import net.arvandor.talekeeper.mixpanel.event.player.TtMixpanelPlayerLeftEvent
 import net.arvandor.talekeeper.prerequisite.TtAbilityPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtAncestryPrerequisite
 import net.arvandor.talekeeper.prerequisite.TtAndPrerequisite
@@ -315,5 +317,17 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("spell")?.setExecutor(TtSpellCommand(this))
         getCommand("spells")?.setExecutor(TtSpellsCommand())
         getCommand("spellslots")?.setExecutor(TtSpellSlotsCommand(this))
+
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
+        server.onlinePlayers.forEach { player ->
+            mixpanelService.trackEvent(TtMixpanelPlayerJoinedEvent(player.uniqueId))
+        }
+    }
+
+    override fun onDisable() {
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
+        server.onlinePlayers.forEach { player ->
+            mixpanelService.trackEvent(TtMixpanelPlayerLeftEvent(player.uniqueId))
+        }
     }
 }
