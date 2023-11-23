@@ -2,15 +2,14 @@ package net.arvandor.talekeeper.mixpanel.event.character
 
 import net.arvandor.talekeeper.TalekeepersTome
 import net.arvandor.talekeeper.character.TtCharacter
-import java.util.*
+import org.bukkit.OfflinePlayer
 
 data class TtMixpanelCharacterSwitchedEvent(
     private val plugin: TalekeepersTome,
-    val minecraftUuid: UUID,
+    override val player: OfflinePlayer,
     val oldCharacter: TtCharacter?,
     override val character: TtCharacter?,
 ) : TtMixpanelCharacterEvent(plugin) {
-    override val distinctId = minecraftUuid.toString()
     override val eventName = "Character Switched"
     override val props: Map<String, Any?>
         get() = characterProps + oldCharacterProps

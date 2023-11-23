@@ -31,6 +31,7 @@ import net.arvandor.talekeeper.rpkit.TtRpkCharacterWrapper
 import net.arvandor.talekeeper.rpkit.TtRpkEventCancelledException
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.scheduler.syncTask
+import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType.BLINDNESS
@@ -38,7 +39,6 @@ import org.bukkit.potion.PotionEffectType.SLOW
 import org.jooq.DSLContext
 import java.time.Duration
 import java.time.Instant
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class TtCharacterService(
@@ -212,7 +212,7 @@ class TtCharacterService(
                                     player.addPotionEffect(PotionEffect(SLOW, 1000000, 255))
                                 }
                             }
-                            trackCharacterSwitched(player.uniqueId, oldCharacter, character)
+                            trackCharacterSwitched(player, oldCharacter, character)
                         }
                     }
                 }
@@ -222,13 +222,13 @@ class TtCharacterService(
         return Success(Unit)
     }
 
-    private fun trackCharacterSwitched(minecraftUuid: UUID, oldCharacter: TtCharacter?, character: TtCharacter?) {
+    private fun trackCharacterSwitched(player: OfflinePlayer, oldCharacter: TtCharacter?, character: TtCharacter?) {
         asyncTask(plugin) {
             val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
             mixpanelService.trackEvent(
                 TtMixpanelCharacterSwitchedEvent(
                     plugin,
-                    minecraftUuid,
+                    player,
                     oldCharacter,
                     character,
                 ),
@@ -258,18 +258,22 @@ class TtCharacterService(
         }
 
     private fun trackCharacterSaved(character: TtCharacter) {
+        val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
         asyncTask(plugin) {
-            val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
             val minecraftProfile = minecraftProfileService.getMinecraftProfile(character.minecraftProfileId).join()
-
-            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
-            mixpanelService.trackEvent(
-                TtMixpanelCharacterSavedEvent(
-                    plugin,
-                    minecraftProfile.minecraftUUID,
-                    character,
-                ),
-            )
+            syncTask(plugin) {
+                val player = plugin.server.getOfflinePlayer(minecraftProfile.minecraftUUID)
+                asyncTask(plugin) {
+                    mixpanelService.trackEvent(
+                        TtMixpanelCharacterSavedEvent(
+                            plugin,
+                            player,
+                            character,
+                        ),
+                    )
+                }
+            }
         }
     }
 
@@ -308,18 +312,22 @@ class TtCharacterService(
     }.mapFailure { it.toServiceFailure() }
 
     private fun trackCharacterCreationContextSaved(ctx: TtCharacterCreationContext) {
+        val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
         asyncTask(plugin) {
-            val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
             val minecraftProfile = minecraftProfileService.getMinecraftProfile(ctx.minecraftProfileId).join()
-
-            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
-            mixpanelService.trackEvent(
-                TtMixpanelCharacterCreationContextSavedEvent(
-                    plugin,
-                    minecraftProfile.minecraftUUID,
-                    ctx,
-                ),
-            )
+            syncTask(plugin) {
+                val player = plugin.server.getOfflinePlayer(minecraftProfile.minecraftUUID)
+                asyncTask(plugin) {
+                    mixpanelService.trackEvent(
+                        TtMixpanelCharacterCreationContextSavedEvent(
+                            plugin,
+                            player,
+                            ctx,
+                        ),
+                    )
+                }
+            }
         }
     }
 

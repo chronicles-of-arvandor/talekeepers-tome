@@ -320,14 +320,14 @@ class TalekeepersTome : JavaPlugin() {
 
         val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
         server.onlinePlayers.forEach { player ->
-            mixpanelService.trackEvent(TtMixpanelPlayerJoinedEvent(player.uniqueId))
+            mixpanelService.trackEvent(TtMixpanelPlayerJoinedEvent(player))
         }
     }
 
     override fun onDisable() {
         val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
         server.onlinePlayers.forEach { player ->
-            mixpanelService.trackEvent(TtMixpanelPlayerLeftEvent(player.uniqueId))
+            mixpanelService.trackEvent(TtMixpanelPlayerLeftEvent(player))
         }
     }
 }

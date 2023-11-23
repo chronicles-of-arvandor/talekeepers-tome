@@ -7,17 +7,17 @@ import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.mixpanel.TtMixpanelService
 import net.arvandor.talekeeper.mixpanel.event.player.TtMixpanelPlayerLeftEvent
 import net.arvandor.talekeeper.scheduler.asyncTask
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority.MONITOR
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
 
 class PlayerQuitListener(private val plugin: TalekeepersTome) : Listener {
 
     @EventHandler(priority = MONITOR)
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        trackPlayerLeave(event.player.uniqueId)
+        trackPlayerLeave(event.player)
 
         val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java] ?: return
         val characterService = Services.INSTANCE[TtCharacterService::class.java] ?: return
@@ -31,10 +31,10 @@ class PlayerQuitListener(private val plugin: TalekeepersTome) : Listener {
         }
     }
 
-    private fun trackPlayerLeave(minecraftUuid: UUID) {
+    private fun trackPlayerLeave(player: Player) {
+        val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return
         asyncTask(plugin) {
-            val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java] ?: return@asyncTask
-            mixpanelService.trackEvent(TtMixpanelPlayerLeftEvent(minecraftUuid))
+            mixpanelService.trackEvent(TtMixpanelPlayerLeftEvent(player))
         }
     }
 }
