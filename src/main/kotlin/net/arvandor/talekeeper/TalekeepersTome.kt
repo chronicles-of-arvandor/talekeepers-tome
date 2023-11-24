@@ -316,7 +316,7 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("subclass")?.setExecutor(TtSubClassCommand(this))
         getCommand("skills")?.setExecutor(TtSkillsCommand(this))
         getCommand("spell")?.setExecutor(TtSpellCommand(this))
-        getCommand("spells")?.setExecutor(TtSpellsCommand())
+        getCommand("spells")?.setExecutor(TtSpellsCommand(this))
         getCommand("spellslots")?.setExecutor(TtSpellSlotsCommand(this))
         getCommand("cast")?.setExecutor(TtCastCommand(this))
 
