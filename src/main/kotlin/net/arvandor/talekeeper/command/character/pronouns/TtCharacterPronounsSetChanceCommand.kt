@@ -59,7 +59,7 @@ class TtCharacterPronounsSetChanceCommand(private val plugin: TalekeepersTome) :
 
         asyncTask(plugin) {
             var character = characterService.getActiveCharacter(minecraftProfile.id).onFailure {
-                sender.sendMessage("${RED}An error occurred while getting your active character. Please contact an admin.")
+                sender.sendMessage("${RED}An error occurred while getting your active character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
             }

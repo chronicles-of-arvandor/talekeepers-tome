@@ -12,6 +12,7 @@ import net.arvandor.talekeeper.experience.TtExperienceService
 import net.arvandor.talekeeper.scheduler.asyncTask
 import net.arvandor.talekeeper.scheduler.syncTask
 import net.arvandor.talekeeper.spell.TtSpell
+import net.arvandor.talekeeper.spell.TtSpellId
 import net.arvandor.talekeeper.spell.TtSpellService
 import net.arvandor.talekeeper.spell.duration.TtInstantSpellDuration
 import net.arvandor.talekeeper.spell.duration.TtPermanentSpellDuration
@@ -97,7 +98,7 @@ class TtSpellCommand(private val plugin: TalekeepersTome) : CommandExecutor, Tab
             return true
         }
 
-        val spell = spellService.getSpell(spellName)
+        val spell = spellService.getSpell(TtSpellId(spellName)) ?: spellService.getSpell(spellName)
         if (spell == null) {
             sender.sendMessage("${RED}There is no spell by that name.")
             return true

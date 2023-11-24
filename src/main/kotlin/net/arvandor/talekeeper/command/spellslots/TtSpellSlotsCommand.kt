@@ -13,6 +13,8 @@ import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
 import net.md_5.bungee.api.ChatColor.WHITE
 import net.md_5.bungee.api.ChatColor.YELLOW
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT
 import net.md_5.bungee.api.chat.TextComponent
@@ -102,16 +104,12 @@ class TtSpellSlotsCommand(private val plugin: TalekeepersTome) : CommandExecutor
                                 color = GREEN
                                 hoverEvent = HoverEvent(
                                     SHOW_TEXT,
-                                    Text("You will soon be able to cast this spell by clicking here!"),
+                                    Text("Click here to cast ${spell.name} at level $level."),
                                 )
-//                                hoverEvent = HoverEvent(
-//                                    SHOW_TEXT,
-//                                    Text("Click here to cast ${spell.name} at level $level.")
-//                                )
-//                                clickEvent = ClickEvent(
-//                                    RUN_COMMAND,
-//                                    "/cast ${spell.name} $level"
-//                                )
+                                clickEvent = ClickEvent(
+                                    RUN_COMMAND,
+                                    "/cast ${spell.name} $level",
+                                )
                             } else {
                                 color = WHITE
                             }
