@@ -68,7 +68,10 @@ class TtCharacterDescriptionExtendCommand(private val plugin: TalekeepersTome) :
                         return@asyncTask
                     }
 
-                    val updatedCharacter = characterService.save(character.copy(description = context.getSessionData("description") as? String ?: "")).onFailure {
+                    val updatedCharacter = characterService.save(
+                        character.copy(description = context.getSessionData("description") as? String ?: ""),
+                        player = conversable,
+                    ).onFailure {
                         plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                         conversable.sendMessage("${RED}An error occurred while saving your character.")
                         return@asyncTask
@@ -127,7 +130,10 @@ class TtCharacterDescriptionExtendCommand(private val plugin: TalekeepersTome) :
             }
 
             if (args.isNotEmpty()) {
-                val updatedCharacter = characterService.save(character.copy(description = character.description + " " + args.joinToString(" "))).onFailure {
+                val updatedCharacter = characterService.save(
+                    character.copy(description = character.description + " " + args.joinToString(" ")),
+                    player = sender,
+                ).onFailure {
                     sender.sendMessage("${RED}An error occurred while saving your character.")
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                     return@asyncTask

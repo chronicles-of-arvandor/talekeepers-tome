@@ -87,7 +87,7 @@ class TtCharacterAlignmentSetCommand(private val plugin: TalekeepersTome) : Comm
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(alignment = alignment)).onFailure {
+            val updatedCharacter = characterService.save(character.copy(alignment = alignment), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

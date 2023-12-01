@@ -52,7 +52,7 @@ class TtCharacterDescriptionHideCommand(private val plugin: TalekeepersTome) : C
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(isDescriptionHidden = true)).onFailure {
+            val updatedCharacter = characterService.save(character.copy(isDescriptionHidden = true), player = sender).onFailure {
                 sender.sendMessage("${ChatColor.RED}An error occurred while saving your character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

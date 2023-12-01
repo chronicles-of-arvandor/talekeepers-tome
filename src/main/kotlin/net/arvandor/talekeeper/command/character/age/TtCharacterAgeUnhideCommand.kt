@@ -54,7 +54,7 @@ class TtCharacterAgeUnhideCommand(private val plugin: TalekeepersTome) : Command
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(isAgeHidden = false)).onFailure {
+            val updatedCharacter = characterService.save(character.copy(isAgeHidden = false), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

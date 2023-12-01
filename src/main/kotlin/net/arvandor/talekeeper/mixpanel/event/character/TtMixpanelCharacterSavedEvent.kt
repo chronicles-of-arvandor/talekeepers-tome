@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer
 
 data class TtMixpanelCharacterSavedEvent(
     private val plugin: TalekeepersTome,
-    override val player: OfflinePlayer,
+    override val player: OfflinePlayer?,
     override val character: TtCharacter,
 ) : TtMixpanelCharacterEvent(plugin) {
     override val eventName = "Character Saved"

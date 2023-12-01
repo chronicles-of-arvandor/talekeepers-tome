@@ -66,7 +66,7 @@ class TtCharacterNameSetCommand(private val plugin: TalekeepersTome) : CommandEx
                     return@asyncTask
                 }
 
-                val updatedCharacter = characterService.save(character.copy(name = input)).onFailure {
+                val updatedCharacter = characterService.save(character.copy(name = input), player = conversable).onFailure {
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                     conversable.sendMessage("${RED}An error occurred while saving your character.")
                     return@asyncTask
@@ -121,7 +121,7 @@ class TtCharacterNameSetCommand(private val plugin: TalekeepersTome) : CommandEx
             }
 
             if (args.isNotEmpty()) {
-                val updatedCharacter = characterService.save(character.copy(name = args.joinToString(" "))).onFailure {
+                val updatedCharacter = characterService.save(character.copy(name = args.joinToString(" ")), player = sender).onFailure {
                     sender.sendMessage("${RED}An error occurred while saving your character.")
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                     return@asyncTask

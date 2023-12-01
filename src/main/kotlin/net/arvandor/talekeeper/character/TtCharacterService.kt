@@ -197,6 +197,10 @@ class TtCharacterService(
                     }.peek {
                         syncTask(plugin) {
                             if (oldCharacter != null) {
+                                oldCharacter.potionEffects.forEach { potionEffect ->
+                                    player.removePotionEffect(potionEffect.type)
+                                }
+
                                 if (oldCharacter.isDead) {
                                     player.removePotionEffect(BLINDNESS)
                                     player.removePotionEffect(SLOW)
@@ -209,6 +213,8 @@ class TtCharacterService(
                                 player.foodLevel = character.foodLevel
                                 player.exhaustion = character.exhaustion
                                 player.saturation = character.saturation
+
+                                player.addPotionEffects(character.potionEffects)
 
                                 if (character.isDead) {
                                     player.addPotionEffect(PotionEffect(BLINDNESS, 1000000, 0))
@@ -239,7 +245,7 @@ class TtCharacterService(
         }
     }
 
-    fun save(character: TtCharacter, dsl: DSLContext = plugin.dsl): Result4k<TtCharacter, ServiceFailure> = resultFrom {
+    fun save(character: TtCharacter, dsl: DSLContext = plugin.dsl, player: OfflinePlayer? = null): Result4k<TtCharacter, ServiceFailure> = resultFrom {
         val event = RPKBukkitCharacterUpdateEvent(TtRpkCharacterWrapper(character), true)
 
         plugin.server.pluginManager.callEvent(event)
@@ -249,7 +255,7 @@ class TtCharacterService(
         }
 
         val upsertedCharacter = characterRepo.upsert(character, dsl)
-        trackCharacterSaved(upsertedCharacter)
+        trackCharacterSaved(player, upsertedCharacter)
         return@resultFrom upsertedCharacter
     }.mapFailure { it.toServiceFailure() }
         .peek { upsertedCharacter ->
@@ -260,23 +266,16 @@ class TtCharacterService(
             }
         }
 
-    private fun trackCharacterSaved(character: TtCharacter) {
-        val minecraftProfileService = Services.INSTANCE[RPKMinecraftProfileService::class.java]
+    private fun trackCharacterSaved(player: OfflinePlayer?, character: TtCharacter) {
         val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
         asyncTask(plugin) {
-            val minecraftProfile = minecraftProfileService.getMinecraftProfile(character.minecraftProfileId).join()
-            syncTask(plugin) {
-                val player = plugin.server.getOfflinePlayer(minecraftProfile.minecraftUUID)
-                asyncTask(plugin) {
-                    mixpanelService.trackEvent(
-                        TtMixpanelCharacterSavedEvent(
-                            plugin,
-                            player,
-                            character,
-                        ),
-                    )
-                }
-            }
+            mixpanelService.trackEvent(
+                TtMixpanelCharacterSavedEvent(
+                    plugin,
+                    player,
+                    character,
+                ),
+            )
         }
     }
 

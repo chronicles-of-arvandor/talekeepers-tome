@@ -106,6 +106,7 @@ class TtCharacterLevelUpCommand(private val plugin: TalekeepersTome) : CommandEx
                         }
                     }.toMap(),
                 ),
+                player = sender,
             ).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)

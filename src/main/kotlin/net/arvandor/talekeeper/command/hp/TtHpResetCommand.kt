@@ -61,7 +61,7 @@ class TtHpResetCommand(private val plugin: TalekeepersTome) : CommandExecutor, T
                 return@asyncTask
             }
 
-            characterService.save(character.copy(hp = character.maxHp)).onFailure {
+            characterService.save(character.copy(hp = character.maxHp), player = sender as? Player).onFailure {
                 sender.sendMessage("${ChatColor.RED}An error occurred while saving ${if (sender == target) "your" else "${target.name}'s"} character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

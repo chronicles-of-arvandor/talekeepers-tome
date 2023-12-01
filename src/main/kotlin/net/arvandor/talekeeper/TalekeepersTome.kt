@@ -50,6 +50,7 @@ import net.arvandor.talekeeper.effect.TtInitiativeBonusEffect
 import net.arvandor.talekeeper.effect.TtItemProficiencyEffect
 import net.arvandor.talekeeper.effect.TtJackOfAllTradesEffect
 import net.arvandor.talekeeper.effect.TtLanguageEffect
+import net.arvandor.talekeeper.effect.TtPotionEffectEffect
 import net.arvandor.talekeeper.effect.TtSavingThrowProficiencyEffect
 import net.arvandor.talekeeper.effect.TtSkillExpertiseEffect
 import net.arvandor.talekeeper.effect.TtSkillProficiencyEffect
@@ -161,6 +162,7 @@ class TalekeepersTome : JavaPlugin() {
         ConfigurationSerialization.registerClass(TtItemProficiencyEffect::class.java, "ItemProficiencyEffect")
         ConfigurationSerialization.registerClass(TtJackOfAllTradesEffect::class.java, "JackOfAllTradesEffect")
         ConfigurationSerialization.registerClass(TtLanguageEffect::class.java, "LanguageEffect")
+        ConfigurationSerialization.registerClass(TtPotionEffectEffect::class.java, "PotionEffectEffect")
         ConfigurationSerialization.registerClass(TtSavingThrowProficiencyEffect::class.java, "SavingThrowProficiencyEffect")
         ConfigurationSerialization.registerClass(TtSkillProficiencyEffect::class.java, "SkillProficiencyEffect")
         ConfigurationSerialization.registerClass(TtSkillExpertiseEffect::class.java, "SkillExpertiseEffect")

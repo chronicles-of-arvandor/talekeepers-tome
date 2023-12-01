@@ -116,6 +116,7 @@ class TtCharacterSubClassSetCommand(private val plugin: TalekeepersTome) : Comma
                     character.copy(
                         classes = character.classes + (clazz.id to classInfo.copy(subclassId = subClass.id)),
                     ),
+                    player = sender,
                 ).onFailure {
                     sender.sendMessage("${RED}Failed to save character. Please contact an admin.")
                     plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)

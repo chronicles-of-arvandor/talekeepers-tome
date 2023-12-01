@@ -14,6 +14,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
 import java.util.logging.Level.SEVERE
 
 class TtExperienceSetCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
@@ -71,6 +72,7 @@ class TtExperienceSetCommand(private val plugin: TalekeepersTome) : CommandExecu
                 character.copy(
                     experience = experience.coerceIn(0, maxExperience),
                 ),
+                player = sender as? Player,
             ).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving the character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
