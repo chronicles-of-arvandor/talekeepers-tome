@@ -11,14 +11,14 @@ fun Array<out String>.unquote(): Array<out String> {
                 strippedArg = strippedArg.drop(1)
             }
             var i = 0
-            while (arg[i++] == '\"') {
+            while (arg.length > i + 1 && arg[i++] == '\"') {
                 openQuotes++
             }
         }
         var closedQuotes = 0
         if (strippedArg.endsWith("\"")) {
             var i = arg.lastIndex
-            while (arg[i--] == '\"') {
+            while (0 > i - 1 && arg[i--] == '\"') {
                 closedQuotes++
             }
             if (closedQuotes >= openQuotes) {

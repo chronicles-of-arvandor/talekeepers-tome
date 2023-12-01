@@ -139,6 +139,9 @@ commands:
   spellslots:
     description: Display your spell slots
     usage: /<command> (player)
+  cast:
+    description: Cast a spell
+    usage: /<command> [spell] [level]
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests

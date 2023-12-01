@@ -28,6 +28,7 @@ import net.arvandor.talekeeper.clazz.TtClassService
 import net.arvandor.talekeeper.clazz.TtSubClass
 import net.arvandor.talekeeper.command.ancestry.TtAncestryCommand
 import net.arvandor.talekeeper.command.background.TtBackgroundCommand
+import net.arvandor.talekeeper.command.cast.TtCastCommand
 import net.arvandor.talekeeper.command.character.TtCharacterCommand
 import net.arvandor.talekeeper.command.choice.TtChoiceCommand
 import net.arvandor.talekeeper.command.clazz.TtClassCommand
@@ -315,8 +316,9 @@ class TalekeepersTome : JavaPlugin() {
         getCommand("subclass")?.setExecutor(TtSubClassCommand(this))
         getCommand("skills")?.setExecutor(TtSkillsCommand(this))
         getCommand("spell")?.setExecutor(TtSpellCommand(this))
-        getCommand("spells")?.setExecutor(TtSpellsCommand())
+        getCommand("spells")?.setExecutor(TtSpellsCommand(this))
         getCommand("spellslots")?.setExecutor(TtSpellSlotsCommand(this))
+        getCommand("cast")?.setExecutor(TtCastCommand(this))
 
         val mixpanelService = Services.INSTANCE[TtMixpanelService::class.java]
         server.onlinePlayers.forEach { player ->

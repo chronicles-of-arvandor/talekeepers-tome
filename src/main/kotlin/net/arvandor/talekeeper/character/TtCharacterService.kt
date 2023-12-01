@@ -130,6 +130,9 @@ class TtCharacterService(
         val oldCharacter = getActiveCharacter(minecraftProfile.id).onFailure {
             return it
         }
+        if (oldCharacter?.id == character?.id) {
+            return Success(Unit)
+        }
 
         syncTask(plugin) {
             BukkitExtensionsKt.toBukkitPlayer(minecraftProfile)?.let { player ->

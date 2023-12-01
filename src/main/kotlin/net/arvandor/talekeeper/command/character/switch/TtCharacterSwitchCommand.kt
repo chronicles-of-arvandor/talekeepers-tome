@@ -76,6 +76,16 @@ class TtCharacterSwitchCommand(private val plugin: TalekeepersTome) : CommandExe
                 return@asyncTask
             }
 
+            if (closestMatch.minecraftProfileId != null) {
+                if (closestMatch.minecraftProfileId == minecraftProfile.id) {
+                    sender.sendMessage("${RED}You are already playing as ${closestMatch.name}.")
+                } else {
+                    val otherMinecraftProfile = minecraftProfileService.getMinecraftProfile(closestMatch.minecraftProfileId).join()
+                    sender.sendMessage("${RED}That character is already being played on ${otherMinecraftProfile.name}.")
+                }
+                return@asyncTask
+            }
+
             characterService.setActiveCharacter(minecraftProfile, closestMatch).onFailure {
                 sender.sendMessage("${RED}There was an error setting your active character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)

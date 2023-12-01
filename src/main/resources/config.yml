@@ -230,3 +230,6 @@ spell-slots:
     9: 1
 mixpanel:
   token: ''
+spells:
+  casting:
+    radius: 16
