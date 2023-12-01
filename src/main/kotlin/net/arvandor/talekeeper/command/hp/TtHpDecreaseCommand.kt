@@ -72,7 +72,7 @@ class TtHpDecreaseCommand(private val plugin: TalekeepersTome) : CommandExecutor
             val tempHpAmount = cappedAmount.coerceAtMost(character.tempHp)
             val hpAmount = cappedAmount - tempHpAmount
 
-            characterService.save(character.copy(hp = character.hp - hpAmount, tempHp = character.tempHp - tempHpAmount)).onFailure {
+            characterService.save(character.copy(hp = character.hp - hpAmount, tempHp = character.tempHp - tempHpAmount), player = sender as? Player).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving ${if (sender == target) "your" else "${target.name}'s"} character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

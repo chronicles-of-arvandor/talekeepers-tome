@@ -402,6 +402,7 @@ class TtCharacterRepository(private val plugin: TalekeepersTome, private val dsl
         speed = TtSpeed(0, FEET),
         languages = emptyList(),
         traits = emptyList(),
+        potionEffects = emptyList(),
         description = description,
         height = height,
         weight = weight,

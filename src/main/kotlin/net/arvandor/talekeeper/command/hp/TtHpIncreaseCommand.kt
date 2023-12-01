@@ -66,7 +66,7 @@ class TtHpIncreaseCommand(private val plugin: TalekeepersTome) : CommandExecutor
 
             val cappedHp = (character.hp + amount).coerceAtMost(character.maxHp)
             val cappedAmount = cappedHp - character.hp
-            characterService.save(character.copy(hp = cappedHp)).onFailure {
+            characterService.save(character.copy(hp = cappedHp), player = sender as? Player).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving ${if (sender == target) "your" else "${target.name}'s"} character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

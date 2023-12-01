@@ -54,7 +54,7 @@ class TtCharacterWeightHideCommand(private val plugin: TalekeepersTome) : Comman
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(isWeightHidden = true)).onFailure {
+            val updatedCharacter = characterService.save(character.copy(isWeightHidden = true), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

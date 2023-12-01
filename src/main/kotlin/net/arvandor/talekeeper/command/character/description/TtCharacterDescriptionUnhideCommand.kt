@@ -54,7 +54,7 @@ class TtCharacterDescriptionUnhideCommand(private val plugin: TalekeepersTome) :
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(isDescriptionHidden = false)).onFailure {
+            val updatedCharacter = characterService.save(character.copy(isDescriptionHidden = false), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

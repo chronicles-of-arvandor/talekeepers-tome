@@ -150,7 +150,7 @@ class TtCharacterPronounsAddCommand(private val plugin: TalekeepersTome) : Comma
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(pronouns = character.pronouns + (pronounSet.id to 1))).onFailure {
+            val updatedCharacter = characterService.save(character.copy(pronouns = character.pronouns + (pronounSet.id to 1)), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

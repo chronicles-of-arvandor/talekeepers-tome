@@ -52,6 +52,7 @@ import net.md_5.bungee.api.chat.hover.content.Text
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
 import java.text.DecimalFormat
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
@@ -96,6 +97,7 @@ data class TtCharacter(
     val speed: TtSpeed,
     val languages: List<TtLanguageId>,
     val traits: List<TtCharacterTrait>,
+    val potionEffects: List<PotionEffect>,
     // non-d&d
     val description: String,
     val height: Double,

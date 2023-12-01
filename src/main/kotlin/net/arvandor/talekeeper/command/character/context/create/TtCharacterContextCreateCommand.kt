@@ -327,6 +327,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                 speed = TtSpeed(0, TtSpeedUnit.FEET),
                 languages = emptyList(),
                 traits = emptyList(),
+                potionEffects = emptyList(),
                 description = ctx.description,
                 height = ctx.height,
                 weight = ctx.weight,
@@ -367,6 +368,7 @@ class TtCharacterContextCreateCommand(private val plugin: TalekeepersTome) : Com
                     val character = characterService.save(
                         unsavedCharacter,
                         transactionalDsl,
+                        sender,
                     ).onFailure {
                         throw it.reason.cause
                     }

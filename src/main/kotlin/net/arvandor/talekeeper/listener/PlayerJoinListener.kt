@@ -10,6 +10,7 @@ import net.arvandor.talekeeper.character.TtCharacterService
 import net.arvandor.talekeeper.mixpanel.TtMixpanelService
 import net.arvandor.talekeeper.mixpanel.event.player.TtMixpanelPlayerJoinedEvent
 import net.arvandor.talekeeper.scheduler.asyncTask
+import net.arvandor.talekeeper.scheduler.syncTask
 import net.md_5.bungee.api.ChatColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -38,6 +39,13 @@ class PlayerJoinListener(private val plugin: TalekeepersTome) : Listener {
                 plugin.logger.log(SEVERE, "Failed to get character creation context", failure.reason.cause)
                 event.player.sendMessage("${RED}Failed to get character creation context")
                 return@asyncTask
+            }
+            if (character != null) {
+                syncTask(plugin) {
+                    character.potionEffects.forEach { potionEffect ->
+                        event.player.addPotionEffect(potionEffect)
+                    }
+                }
             }
             if (character == null && ctx == null) {
                 characterService.save(

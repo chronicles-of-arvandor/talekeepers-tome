@@ -3,10 +3,11 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'nu.studer.jooq' version '8.2'
     id 'org.jmailen.kotlinter' version '3.14.0'
+    id 'maven-publish'
 }
 
 group = 'net.arvandor'
-version = '1.9.0'
+version = '1.10.0'
 
 def githubUsername = ""
 def githubToken = ""
@@ -176,4 +177,22 @@ shadowJar {
 
 artifacts {
     archives shadowJar
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/chronicles-of-arvandor/talekeepers-tome/")
+            credentials {
+                username = githubUsername
+                password = githubToken
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
 }

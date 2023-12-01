@@ -76,6 +76,7 @@ class TtCharacterPronounsRemoveCommand(private val plugin: TalekeepersTome) : Co
                 character.copy(
                     pronouns = character.pronouns - pronounSetId,
                 ),
+                player = sender,
             ).onFailure {
                 sender.sendMessage("${RED}Failed to save character. Please contact an admin.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)

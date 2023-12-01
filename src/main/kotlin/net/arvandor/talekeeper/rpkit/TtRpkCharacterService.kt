@@ -236,6 +236,7 @@ class TtRpkCharacterService(private val plugin: TalekeepersTome) : RPKCharacterS
                 speed = TtSpeed(0, FEET),
                 languages = emptyList(),
                 traits = emptyList(),
+                potionEffects = emptyList(),
                 description = description ?: "",
                 height = height ?: 0.0,
                 weight = weight ?: 0.0,

@@ -21,6 +21,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
 import java.util.logging.Level.SEVERE
 
 class TtExperienceAddCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabCompleter {
@@ -113,6 +114,7 @@ class TtExperienceAddCommand(private val plugin: TalekeepersTome) : CommandExecu
             character.copy(
                 experience = (character.experience + experience).coerceAtMost(maxExperience),
             ),
+            player = sender as? Player,
         )
         if (result is Failure && result.reason.type == ServiceFailureType.CONFLICT && failures < 10) {
             val updatedCharacter = characterService.getCharacter(character.id).onFailure {

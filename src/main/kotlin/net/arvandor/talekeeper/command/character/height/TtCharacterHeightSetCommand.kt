@@ -126,7 +126,7 @@ class TtCharacterHeightSetCommand(private val plugin: TalekeepersTome) : Command
                     }
                 }
 
-                val updatedCharacter = characterService.save(character.copy(height = height)).onFailure {
+                val updatedCharacter = characterService.save(character.copy(height = height), player = conversable).onFailure {
                     plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                     conversable.sendMessage("${RED}An error occurred while saving your character.")
                     return@asyncTask
@@ -243,7 +243,7 @@ class TtCharacterHeightSetCommand(private val plugin: TalekeepersTome) : Command
                     }
                 }
 
-                val updatedCharacter = characterService.save(character.copy(height = height)).onFailure {
+                val updatedCharacter = characterService.save(character.copy(height = height), player = sender).onFailure {
                     sender.sendMessage("${RED}An error occurred while saving your character.")
                     plugin.logger.log(Level.SEVERE, it.reason.message, it.reason.cause)
                     return@asyncTask

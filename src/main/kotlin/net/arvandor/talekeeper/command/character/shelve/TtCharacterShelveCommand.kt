@@ -107,7 +107,7 @@ class TtCharacterShelveCommand(private val plugin: TalekeepersTome) : CommandExe
                 return@asyncTask
             }
 
-            characterService.save(closestMatch.copy(isShelved = true)).onFailure {
+            characterService.save(closestMatch.copy(isShelved = true), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

@@ -110,7 +110,10 @@ class TtCastCommand(private val plugin: TalekeepersTome) : CommandExecutor, TabC
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(usedSpellSlots = character.usedSpellSlots + (level to usedSpellSlots + 1))).onFailure {
+            val updatedCharacter = characterService.save(
+                character.copy(usedSpellSlots = character.usedSpellSlots + (level to usedSpellSlots + 1)),
+                player = sender,
+            ).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask

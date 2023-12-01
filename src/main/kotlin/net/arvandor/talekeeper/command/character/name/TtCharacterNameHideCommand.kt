@@ -54,7 +54,7 @@ class TtCharacterNameHideCommand(private val plugin: TalekeepersTome) : CommandE
                 return@asyncTask
             }
 
-            val updatedCharacter = characterService.save(character.copy(isNameHidden = true)).onFailure {
+            val updatedCharacter = characterService.save(character.copy(isNameHidden = true), player = sender).onFailure {
                 sender.sendMessage("${RED}An error occurred while saving your character.")
                 plugin.logger.log(SEVERE, it.reason.message, it.reason.cause)
                 return@asyncTask
