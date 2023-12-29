@@ -144,7 +144,7 @@ data class TtCharacter(
             val classHp = classes.map { (classId, classInfo) ->
                 val clazz = classService.getClass(classId)
                 val classLevel = classInfo.level
-                val classHp = clazz?.baseHp ?: 1
+                val classHp = ((clazz?.baseHp ?: 1) / 2) + 1
                 return@map if (classId == firstClassId) {
                     (classLevel - 1) * classHp
                 } else {
