@@ -143,6 +143,9 @@ commands:
   cast:
     description: Cast a spell
     usage: /<command> [spell] [level]
+  longrest:
+    description: Perform a long rest
+    usage: /<command>
 permissions:
   talekeeper.commands.character.requests:
     description: Allows viewing and accepting or declining new character requests
