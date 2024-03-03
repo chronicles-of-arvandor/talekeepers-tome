@@ -87,8 +87,9 @@ commands:
     description: |
       Choice management command
       /choice list - Lists pending choices
-      /choice view [choice id] - Views a choice
+      /choice view [choice id] (player) - Views a choice
       /choice select [choice id] [option id] - Selects an option for a choice
+      /choice reset [player] [choice id]
   hp:
     description: |
       Hit Points command
@@ -151,6 +152,9 @@ permissions:
     default: op
   talekeeper.commands.character.choice.view.other:
     description: Allows viewing other players' choices
+    default: op
+  talekeeper.commands.character.choice.reset:
+    description: Allows resetting choices
     default: op
   talekeeper.commands.hp.view.other:
     description: Allows viewing other players' HP

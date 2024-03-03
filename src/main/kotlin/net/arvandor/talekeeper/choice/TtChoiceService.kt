@@ -50,8 +50,12 @@ class TtChoiceService(private val plugin: TalekeepersTome, private val optionRep
         return@resultFrom choice.options.singleOrNull { it.id == optionId }
     }.mapFailure { it.toServiceFailure() }
 
-    fun setChosenOption(characterId: TtCharacterId, choiceId: TtChoiceId, optionId: TtChoiceOptionId): Result4k<Unit, ServiceFailure> = resultFrom {
-        optionRepository.upsert(characterId, choiceId, optionId)
+    fun setChosenOption(characterId: TtCharacterId, choiceId: TtChoiceId, optionId: TtChoiceOptionId?): Result4k<Unit, ServiceFailure> = resultFrom {
+        if (optionId == null) {
+            optionRepository.delete(characterId, choiceId)
+        } else {
+            optionRepository.upsert(characterId, choiceId, optionId)
+        }
     }.mapFailure { it.toServiceFailure() }
 
     fun getApplicableChoices(characterId: TtCharacterId): Result4k<List<TtChoice>, ServiceFailure> {
