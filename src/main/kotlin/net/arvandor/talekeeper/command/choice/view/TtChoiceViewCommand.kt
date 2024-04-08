@@ -103,6 +103,21 @@ class TtChoiceViewCommand(private val plugin: TalekeepersTome) : CommandExecutor
             sender.sendMessage("${GRAY}Prerequisites: ${choice.prerequisites.joinToString(", ") { it.name }}")
             if (chosenOption != null) {
                 sender.sendMessage("${GRAY}Chosen option: ${WHITE}${chosenOption.text}")
+                if (sender.hasPermission("talekeeper.commands.choice.reset")) {
+                    sender.spigot().sendMessage(
+                        TextComponent("Reset").apply {
+                            color = RED
+                            clickEvent = ClickEvent(
+                                RUN_COMMAND,
+                                "/choice reset ${target.name} ${choice.id.value}",
+                            )
+                            hoverEvent = HoverEvent(
+                                SHOW_TEXT,
+                                Text("Click here to reset this choice."),
+                            )
+                        },
+                    )
+                }
             } else {
                 val page = args.lastOrNull()?.toIntOrNull() ?: 1
 
